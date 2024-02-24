@@ -36,9 +36,20 @@
 @foreach ($messages as $i => $message)
     @if (class_basename($message) == 'ChatSystemMessage')
         <div class="list-group-item list-group-item-message text-center text-secondary border-0">
-            <p><a href="{{ route('profile', $message->senderUser->id) }}"
-                    class="fw-bold link-secondary link-underline-opacity-0">{{ $message->senderUser->firstname }}
-                    {{ $message->senderUser->surname }}</a> {{ $message->content }}</p>
+            <p>
+                <a href="{{ route('profile', $message->senderUser->id) }}"
+                    class="fw-bold link-secondary link-underline-opacity-0">
+                    {{ $message->senderUser->firstname }} {{ $message->senderUser->surname }}
+                </a>
+                {{ $message->content }}
+                @if ($message->recipientUser)
+                    <a href="{{ route('profile', $message->recipientUser->id) }}"
+                        class="fw-bold link-secondary link-underline-opacity-0">
+                        {{ $message->recipientUser->firstname }} {{ $message->recipientUser->surname }}
+                    </a>
+                @endif
+
+            </p>
         </div>
     @else
         <div class="list-group-item list-group-item-action list-group-item-message d-flex gap-2 message justify-content-center rounded border-0 @if ($message->senderUser->id != auth()->user()->id && !$message->viewed_at) unread @endif rounded-0"

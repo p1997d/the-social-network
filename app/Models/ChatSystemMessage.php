@@ -22,6 +22,11 @@ class ChatSystemMessage extends Model
         return $this->belongsTo(User::class, 'sender');
     }
 
+    public function recipientUser()
+    {
+        return $this->belongsTo(User::class, 'recipient');
+    }
+
     public function getDate()
     {
         $sentAt = Carbon::parse($this->sent_at);
