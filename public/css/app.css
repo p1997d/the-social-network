@@ -1,0 +1,139 @@
+html {
+    scroll-behavior: auto !important;
+}
+
+body {
+    height: 100dvh;
+    padding-top: 5rem;
+    padding-bottom: 1rem;
+}
+
+.title {
+    font-size: 12px;
+}
+
+.tooltip {
+    --bs-tooltip-max-width: 240px;
+}
+
+.tooltip-inner {
+    padding: 10px;
+}
+
+.searchForm:focus {
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    box-shadow: none;
+}
+
+.addcolon label::after,
+.addcolon .infotitle::after {
+    content: ":";
+}
+
+.onlineBadge {
+    top: 75% !important;
+    left: 75% !important;
+    border-color: var(--bs-body-bg) !important;
+}
+
+.card-header,
+.card-footer {
+    background-color: rgba(var(--bs-tertiary-bg-rgb), 1) !important;
+}
+
+.messages-header {
+    width: inherit;
+    top: 3rem;
+    border-top: 2rem solid var(--bs-body-bg) !important;
+}
+
+.messages-footer {
+    width: inherit;
+    top: auto;
+    bottom: 0;
+    border-bottom: 1rem solid var(--bs-body-bg) !important;
+}
+
+.messages-body {
+    padding-top: 4rem !important;
+    padding-bottom: 2rem !important;
+}
+
+.sidebar {
+    width: 12rem;
+    top: 5rem;
+}
+
+.message-buttons {
+    display: none;
+}
+
+.message:hover .message-buttons {
+    display: block;
+}
+
+.messages-body .list-group {
+    padding: 1rem 1rem 2rem 1rem !important;
+}
+
+.list-group-item-message {
+    --bs-list-group-bg: var(--bs-tertiary-bg);
+    --bs-list-group-action-hover-bg: var(--bs-secondary-bg);
+}
+
+.unread {
+    --bs-list-group-bg: var(--bs-secondary-bg);
+}
+
+.messages-list-group:not(:has(.list-group-item-message))::before {
+    content: "Здесь будет выводиться история переписки.";
+    text-align: center !important;
+    margin: auto 0;
+}
+
+.search-messages-list-group:not(:has(.list-group-item-message))::before {
+    content: "Не найдено сообщений по такому запросу.";
+    text-align: center !important;
+    margin: auto 0;
+}
+
+.message_image {
+    max-width: 100%;
+    max-height: 300px;
+}
+
+.plyr--video {
+    width: fit-content;
+    height: 300px;
+}
+
+.plyr--audio {
+    width: 400px;
+}
+
+@media (max-width: 992px) {
+    body {
+        padding-bottom: 4.5rem;
+    }
+
+    .messages-header {
+        top: 3rem;
+    }
+
+    .messages-footer {
+        bottom: 3rem;
+    }
+
+    .messages-body {
+        padding-top: 4rem !important;
+    }
+
+    .messages-body .list-group {
+        padding-bottom: 5rem !important;
+    }
+
+    .sidebar {
+        width: auto;
+        top: 0;
+    }
+}
