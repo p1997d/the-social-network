@@ -5,16 +5,17 @@ namespace App\Http\Controllers\Messanger;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Classes\Messages;
+use App\Classes\Chatlogs;
 use App\Models\User;
 use App\Models\Dialog;
 use App\Models\Chat;
 use App\Models\ChatMember;
 use App\Models\ChatMessage;
-use App\Models\ChatSystemMessage;
-use App\Models\ChatMessageDelete;
 use Illuminate\Support\Facades\Crypt;
 use morphos\Russian;
+use App\Services\FriendsService;
+use App\Services\ChatService;
+use App\Services\DialogService;
 
 
 class IndexController extends Controller
@@ -54,7 +55,7 @@ class IndexController extends Controller
                 return view('main.info', ['info' => 'Страница удалена либо ещё не создана.']);
             }
 
-            $messages = Dialog::getMessages($sender, $recipient)->paginate(25)->appends(['to' => $to])->onEachSide(1);
+            $messages = DialogService::getMessages($sender, $recipient)->paginate(25)->appends(['to' => $to])->onEachSide(1);
 
             return view('messenger.chat', compact('type', 'title', 'recipient', 'messages'));
         } else if ($chat) {
@@ -70,26 +71,28 @@ class IndexController extends Controller
 
             $countMembers = Russian\pluralize($members->count(), 'участник');
 
-            $messages = Chat::getMessages($chat, $page);
+            $messages = ChatService::getMessages($chat)->forPage($page, 25)->values();
 
             return view('messenger.chat', compact('type', 'title', 'messages', 'recipient', 'countMembers'));
         } else {
-            $users = Dialog::getDialogs($sender);
-            $chats = Chat::getChats($sender);
+            $user_profile = User::find(Auth::id());
 
-            $messages = [];
+            $users = DialogService::getDialogs();
+            $chats = ChatService::getChats();
+
+            $chatlogs = [];
 
             foreach ($users as $user) {
-                $messages[] = new Messages($user, 'to');
+                $chatlogs[] = new Chatlogs($user, 'to');
             }
 
             foreach ($chats as $chat) {
-                $messages[] = new Messages($chat, 'chat');
+                $chatlogs[] = new Chatlogs($chat, 'chat');
             }
 
-            $friends = User::find(Auth::id())->listFriends()->get();
+            $friends = FriendsService::listFriends($user_profile)->get();
 
-            return view('messenger.list', compact('title', 'messages', 'friends'));
+            return view('messenger.list', compact('title', 'chatlogs', 'friends'));
         }
     }
 
@@ -109,7 +112,7 @@ class IndexController extends Controller
         }
 
         $content = Crypt::decrypt($message->content);
-        $attachments = $message->getAttachments();
+        $attachments = $message->attachments();
 
         return compact('content', 'attachments');
     }

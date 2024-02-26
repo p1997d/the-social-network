@@ -29,7 +29,7 @@ class FriendsWebSocket implements ShouldBroadcast
         $this->title = $title;
         $this->subtitle = "";
         $this->description = $auth_user ? "$auth_user->firstname $auth_user->surname $description" : null;
-        $this->image = $auth_user ? $auth_user->getAvatar() : null;
+        $this->image = $auth_user ? $auth_user->avatar() : null;
         $this->link = route('profile', $auth_user->id);
     }
 

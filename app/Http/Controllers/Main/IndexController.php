@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Main;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Models\Friends;
+use App\Services\FriendsService;
+use App\Services\UserService;
 
 class IndexController extends Controller
 {
@@ -26,20 +27,22 @@ class IndexController extends Controller
             return view('main.info', ['info' => 'Страница удалена либо ещё не создана.']);
         }
 
-        $listFriends = $user_profile->listFriends();
+        $listFriends = FriendsService::listFriends($user_profile);
 
-        $allInfo = $user_profile->getInfo();
+        $allInfo = UserService::getInfo($user_profile);
 
         $listCommonFriends = null;
         $listIncoming = null;
         $listOutgoing = null;
         $listOnline = null;
 
+        $friendForm = UserService::getFriendsForms($user_profile);
+
         if (Auth::check()) {
-            $listIncoming = Friends::listIncoming();
-            $listOutgoing = Friends::listOutgoing();
-            $listCommonFriends = $user_profile->listCommonFriends();
-            $listOnline = $user_profile->listOnlineFriends();
+            $listIncoming = FriendsService::listIncoming();
+            $listOutgoing = FriendsService::listOutgoing();
+            $listCommonFriends = FriendsService::listCommonFriends($user_profile);
+            $listOnline = FriendsService::listOnlineFriends($user_profile);
         }
 
         return view(
@@ -53,6 +56,7 @@ class IndexController extends Controller
                 'listOutgoing',
                 'listIncoming',
                 'listOnline',
+                'friendForm',
             )
         );
     }

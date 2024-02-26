@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use App\Events\MessagesWebSocket;
 use Carbon\Carbon;
+use App\Services\DialogService;
 
 Carbon::setLocale('ru');
 
@@ -19,7 +20,7 @@ class DialogController extends Controller
     private function getData($request)
     {
         $sender = User::find(Auth::id());
-        $senderAvatar = $sender->getAvatar();
+        $senderAvatar = $sender->avatar();
 
         $decryptContent = $request->content;
         $content = Crypt::encrypt($decryptContent);
@@ -63,7 +64,7 @@ class DialogController extends Controller
                 $model->name = $file->getClientOriginalName();
                 $model->path = $filePath;
                 $model->type = $file->getMimeType();
-                $model->size = $file->getSize();
+                $model->size = $file->size();
                 $model->author = $sender->id;
 
                 $model->save();
@@ -77,7 +78,7 @@ class DialogController extends Controller
 
         $message->save();
 
-        $attachments = $message->getAttachments();
+        $attachments = $message->attachments();
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent', 'sentAtFormat', 'attachments');
 
@@ -105,7 +106,7 @@ class DialogController extends Controller
             'changed_at' => $changedAt
         ]);
 
-        $attachments = $message->getAttachments();
+        $attachments = $message->attachments();
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent', 'changedAtFormat', 'attachments');
 
@@ -153,7 +154,7 @@ class DialogController extends Controller
         $sender = Auth::user();
         $recipient = User::find($id);
 
-        $messages = Dialog::getMessages($sender, $recipient)->get();
+        $messages = DialogService::getMessages($sender, $recipient)->get();
         foreach ($messages as $message) {
             if ($message->sender == $sender->id) {
                 $message->update(['delete_for_sender' => 1]);
@@ -173,7 +174,7 @@ class DialogController extends Controller
         $sender = User::find($message->sender);
         $recipient = User::find($message->recipient);
 
-        $messageIds = Dialog::getMessages($sender, $recipient)->get()->filter(function ($item) use ($message) {
+        $messageIds = DialogService::getMessages($sender, $recipient)->get()->filter(function ($item) use ($message) {
             return $item->id <= $message->id && $item->viewed_at == null;
         })->pluck('id');
 

@@ -21,7 +21,7 @@
             @endif
         @endauth
         <div data-bs-toggle="collapse">
-            <img src="{{ $user_profile->getAvatar() }}" style="width: 350px" class="rounded object-fit-cover" />
+            <img src="{{ $user_profile->avatar() }}" style="width: 350px" class="rounded object-fit-cover" />
         </div>
     </div>
 </div>

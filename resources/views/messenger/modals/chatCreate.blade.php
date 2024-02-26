@@ -12,7 +12,7 @@
                         @foreach ($friends as $friend)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <label class="form-check-label stretched-link" for="user{{ $friend->id }}">
-                                    <img src="{{ $friend->getAvatar() }}" class="rounded-circle object-fit-cover"
+                                    <img src="{{ $friend->avatar() }}" class="rounded-circle object-fit-cover"
                                         width="32" height="32" />
                                     {{ $friend->firstname }} {{ $friend->surname }}
                                 </label>

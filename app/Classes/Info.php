@@ -2,7 +2,7 @@
 
 namespace App\Classes;
 
-class AllInfo
+class Info
 {
     public $title, $icon, $description;
 

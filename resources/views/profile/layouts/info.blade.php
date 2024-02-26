@@ -8,8 +8,8 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="fs-5">{{ $user_profile->firstname }} {{ $user_profile->surname }}</div>
         <div class="fs-7 text-secondary">
-            {{ $user_profile->isOnline()['online'] }}
-            @if ($user_profile->isOnline()['mobile'])
+            {{ $user_profile->online()['online'] }}
+            @if ($user_profile->online()['mobile'])
                 <i class="bi bi-phone"></i>
             @endif
         </div>

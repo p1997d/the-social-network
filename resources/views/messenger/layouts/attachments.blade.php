@@ -1,8 +1,8 @@
 <div class="container attachments">
-    @if ($message->getAttachments())
+    @if ($message->attachments())
         <div
-            class="row row-cols-{{ $message->getAttachments('image')->count() < 5 ? $message->getAttachments('image')->count() : 5 }} g-2 my-2">
-            @foreach ($message->getAttachments() as $attachment)
+            class="row row-cols-{{ $message->attachments('image')->count() < 5 ? $message->attachments('image')->count() : 5 }} g-2 my-2">
+            @foreach ($message->attachments() as $attachment)
                 @switch(explode('/', $attachment->type)[0])
                     @case('image')
                         <div class="col">
@@ -36,7 +36,7 @@
                                     <div class="card-body d-flex justify content-start gap-2">
                                         <i class="bi bi-file-earmark"></i>
                                         <div>{{ $attachment->name }}</div>
-                                        <div class="text-secondary">{{ $attachment->getSize() }}</div>
+                                        <div class="text-secondary">{{ $attachment->size() }}</div>
                                     </div>
                                 </div>
                             </a>

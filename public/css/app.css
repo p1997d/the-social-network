@@ -31,8 +31,8 @@ body {
 }
 
 .onlineBadge {
-    top: 75% !important;
-    left: 75% !important;
+    top: 65% !important;
+    left: 65% !important;
     border-color: var(--bs-body-bg) !important;
 }
 

@@ -56,7 +56,7 @@
             id="{{ $message->id }}">
             <div>
                 <a href="{{ route('profile', $message->senderUser->id) }}" class="profileImageLink">
-                    <img src="{{ $message->senderUser->getAvatar() }}" width="36" height="36"
+                    <img src="{{ $message->senderUser->avatar() }}" width="36" height="36"
                         class="rounded-circle object-fit-cover">
                 </a>
             </div>
@@ -106,7 +106,7 @@
             (isset($messages[$i + 1]) &&
                 !Carbon::parse($messages[$i + 1]->sent_at)->isSameDay(Carbon::parse($message->sent_at))))
         <div class="list-group-item text-center border-0 bg-transparent text-secondary">
-            {{ $message->getDate() }}
+            {{ $message->date() }}
         </div>
     @endif
 @endforeach

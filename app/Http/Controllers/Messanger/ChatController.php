@@ -23,7 +23,7 @@ class ChatController extends Controller
     private function getData($request)
     {
         $sender = User::find(Auth::id());
-        $senderAvatar = $sender->getAvatar();
+        $senderAvatar = $sender->avatar();
 
         $decryptContent = $request->content;
         $content = Crypt::encrypt($decryptContent);
@@ -122,7 +122,7 @@ class ChatController extends Controller
                 $model->name = $file->getClientOriginalName();
                 $model->path = $filePath;
                 $model->type = $file->getMimeType();
-                $model->size = $file->getSize();
+                $model->size = $file->size();
                 $model->author = $sender->id;
 
                 $model->save();
@@ -136,7 +136,7 @@ class ChatController extends Controller
 
         $message->save();
 
-        $attachments = $message->getAttachments();
+        $attachments = $message->attachments();
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'chat', 'decryptContent', 'sentAtFormat', 'attachments');
 
@@ -162,7 +162,7 @@ class ChatController extends Controller
             'changed_at' => $changedAt
         ]);
 
-        $attachments = $message->getAttachments();
+        $attachments = $message->attachments();
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'decryptContent', 'changedAtFormat', 'attachments');
 

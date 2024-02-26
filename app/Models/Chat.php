@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Services\GeneralService;
+use App\Services\ChatService;
 
 class Chat extends Model
 {
@@ -15,51 +17,18 @@ class Chat extends Model
     protected $quarde = false;
     protected $guarded = [];
 
-    public static function getChats($user)
+    public function avatar()
     {
-
-        $chatIds = ChatMember::where('user', $user->id)->pluck('chat');
-
-        $chats = Chat::whereIn('id', $chatIds)->get();
-
-        return $chats;
+        return GeneralService::getAvatar($this);
     }
 
-    public function getAvatar()
+    public function lastMessage()
     {
-        $chat = clone $this;
-
-        if ($chat->avatar && Storage::exists("public/avatars/" . $chat->avatar)) {
-            return Storage::url("public/avatars/" . $chat->avatar);
-        }
-
-        return "https://ui-avatars.com/api/?name=$chat->title&background=random&size=150";
+        return ChatService::getMessages($this->id)->first();
     }
 
-    public function getLastMessage()
+    public function unreadMessagesCount()
     {
-        $userMessages = ChatMessage::where('chat', $this->id)->get();
-        $systemMessages = ChatSystemMessage::where('chat', $this->id)->get();
-
-        $mergedMessages = $userMessages->merge($systemMessages)->sortBy('sent_at')->last();
-
-        return $mergedMessages;
-    }
-
-    public static function getMessages($chat, $page)
-    {
-        $userMessages = ChatMessage::where([['chat', $chat], ['delete_for_all', '!=', 1]])->get()->filter(function ($item) {
-            return ChatMessageDelete::where([
-                ['message', $item->id],
-                ['user', auth()->user()->id]
-            ])->doesntExist();
-        });
-        $systemMessages = ChatSystemMessage::where('chat', $chat)->get();
-
-        $messagesCollection = collect([])->merge($userMessages)->merge($systemMessages)->sortByDesc('sent_at');
-
-        $messages = $messagesCollection->forPage($page, 25)->values();
-
-        return $messages;
+        return ChatService::getUnreadMessagesCount($this->id);
     }
 }

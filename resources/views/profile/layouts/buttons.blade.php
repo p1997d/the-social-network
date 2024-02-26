@@ -4,7 +4,7 @@
             <a href="{{ route('info.editprofile') }}" class="btn btn-primary w-100">Редактировать</a>
         @else
             <a href="{{ route('messages', ['to' => $user_profile->id]) }}" class="btn btn-primary">Отправить сообщение</a>
-            @foreach ($user_profile->getFriendsForms() as $form)
+            @foreach ($friendForm as $form)
                 <form class="w-100 formFriends" method="POST"
                     action="{{ $form->link }}">
                     @csrf

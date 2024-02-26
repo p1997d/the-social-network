@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Classes\Sidebar;
-use App\Models\Dialog;
-use App\Models\Friends;
+use App\Services\MessagesService;
+use App\Services\FriendsService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         view()->composer('*', function ($view) {
-            $unreadMessagesCount = Dialog::getUnreadMessagesCount();
-            $incomingCount = Friends::listIncoming()->count();
+            $unreadMessagesCount = MessagesService::getUnreadMessagesCount();
+            $incomingCount = FriendsService::listIncoming()->count();
 
             $sidebar = [
                 new Sidebar('Моя страница', 'bi-house-door-fill', route('index')),

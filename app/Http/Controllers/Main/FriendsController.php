@@ -9,6 +9,8 @@ use App\Models\Friends;
 use App\Models\User;
 use morphos\Russian;
 use App\Events\FriendsWebSocket;
+use App\Services\FriendsService;
+use App\Services\UserService;
 
 class FriendsController extends Controller
 {
@@ -30,11 +32,11 @@ class FriendsController extends Controller
             $title = "Друзья " . Russian\inflectName($user_profile->firstname, 'родительный') . " " . Russian\inflectName($user_profile->surname, 'родительный');
         }
 
-        $listFriends = $user_profile->listFriends();
-        $listCommonFriends = $user_profile->listCommonFriends();
-        $listOnline = $user_profile->listOnlineFriends();
-        $listOutgoing = Friends::listOutgoing();
-        $listIncoming = Friends::listIncoming();
+        $listFriends = FriendsService::listFriends($user_profile);
+        $listCommonFriends = FriendsService::listCommonFriends($user_profile);
+        $listOnline = FriendsService::listOnlineFriends($user_profile);
+        $listOutgoing = FriendsService::listOutgoing();
+        $listIncoming = FriendsService::listIncoming();
 
         switch ($section) {
             case '':
@@ -67,7 +69,7 @@ class FriendsController extends Controller
                 'listCommonFriends',
                 'listOutgoing',
                 'listIncoming',
-                'listOnline'
+                'listOnline',
             )
         );
     }

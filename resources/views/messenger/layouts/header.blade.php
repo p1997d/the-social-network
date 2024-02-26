@@ -15,7 +15,7 @@
                     @endif
                 </a>
                 @if ($recipient->id != auth()->id())
-                    <p class="m-0 text-secondary">{{ $recipient->isOnline()['online'] }}</p>
+                    <p class="m-0 text-secondary">{{ $recipient->online()['online'] }}</p>
                 @endif
             @else
                 <a href="#" class="link-body-emphasis">

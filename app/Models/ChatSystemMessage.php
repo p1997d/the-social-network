@@ -5,9 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-
-Carbon::setLocale('ru');
+use App\Services\GeneralService;
 
 class ChatSystemMessage extends Model
 {
@@ -27,14 +25,8 @@ class ChatSystemMessage extends Model
         return $this->belongsTo(User::class, 'recipient');
     }
 
-    public function getDate()
+    public function date()
     {
-        $sentAt = Carbon::parse($this->sent_at);
-
-        $date = $sentAt->isYesterday() ? 'Вчера' :
-            ($sentAt->isToday() ? 'Сегодня' :
-                ($sentAt->isCurrentYear() ? $sentAt->isoFormat('D MMMM') : $sentAt->isoFormat('D MMMM YYYY')));
-
-        return $date;
+        return GeneralService::getDate($this->sent_at);
     }
 }
