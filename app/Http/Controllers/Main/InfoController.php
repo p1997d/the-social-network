@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Info;
 use App\Services\InfoService;
+use App\Enums\Education;
+use App\Enums\FamilyStatus;
 
 
 class InfoController extends Controller
@@ -57,8 +59,9 @@ class InfoController extends Controller
 
         $user = User::find(Auth::id());
 
-        $education = InfoService::educationList();
-        $familyStatus = InfoService::familyStatusList($user->sex);
+        $education = Education::cases();
+        // $familyStatus = InfoService::familyStatusList($user->sex);
+        $familyStatus = FamilyStatus::cases();
         $location = InfoService::locationList($user->info->location);
 
         return view('main.editprofile', compact('familyStatus', 'education', 'location'));

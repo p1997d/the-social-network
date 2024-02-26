@@ -6,38 +6,6 @@ use Illuminate\Support\Facades\File;
 
 class InfoService
 {
-    public static function educationList()
-    {
-        $education = [
-            1 => "Дошкольное",
-            2 => "Начальное общее — 1—4 классы",
-            3 => "Основное общее — 5—9 классы",
-            4 => "Среднее общее — 10—11 классы",
-            5 => "Среднее профессиональное",
-            6 => "Высшее I степени — бакалавриат",
-            7 => "Высшее II степени — специалитет, магистратура",
-            8 => "Высшее III степени — подготовка кадров высшей квалификации",
-        ];
-
-        return $education;
-    }
-
-    public static function familyStatusList($sex)
-    {
-        $familyStatus = [
-            1 => $sex == "male" ? "Не женат" : "Не замужем",
-            2 => "Встречаюсь",
-            3 => $sex == "male" ? "Помолвлен" : "Помолвлена",
-            4 => $sex == "male" ? "Женат" : "Замужем",
-            5 => "В гражданском браке",
-            6 => $sex == "male" ? "Влюблён" : "Влюблена",
-            7 => "Всё сложно",
-            8 => "В активном поиске"
-        ];
-
-        return $familyStatus;
-    }
-
     public static function locationList($location)
     {
         $areas = json_decode(File::get(public_path("json/areas.json")), true);
@@ -62,24 +30,6 @@ class InfoService
         }
 
         return $regions;
-    }
-
-    public static function getEducation($education)
-    {
-        if (!$education) {
-            return null;
-        }
-
-        return self::educationList()[$education];
-    }
-
-    public static function getFamilyStatus($family_status, $sex)
-    {
-        if (!$family_status) {
-            return null;
-        }
-
-        return self::familyStatusList($sex)[$family_status];
     }
 
     public static function getLocation($location)

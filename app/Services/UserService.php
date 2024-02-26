@@ -76,14 +76,12 @@ class UserService
             $info[] = new Info('Местоположение', 'bi-geo-alt', end($location)['name']);
         }
 
-        $education = InfoService::getEducation($user->info->education);
-        if ($education) {
-            $info[] = new Info('Образование', 'bi-mortarboard', $education);
+        if ($user->info->education) {
+            $info[] = new Info('Образование', 'bi-mortarboard', $user->info->education->description());
         }
 
-        $familyStatus = InfoService::getFamilyStatus($user->info->family_status, $user->sex);
-        if ($familyStatus) {
-            $info[] = new Info('Семейное положение', 'bi-heart', $familyStatus);
+        if ($user->info->family_status) {
+            $info[] = new Info('Семейное положение', 'bi-heart', $user->info->family_status->description($user->sex));
         }
 
         return $info;

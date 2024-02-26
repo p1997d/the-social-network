@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\File;
+use App\Enums\Education;
+use App\Enums\FamilyStatus;
 
 class Info extends Model
 {
@@ -14,7 +15,12 @@ class Info extends Model
     protected $quarde = false;
     protected $guarded = [];
 
-    public function getUser()
+    protected $casts = [
+        'education' => Education::class,
+        'family_status' => FamilyStatus::class,
+    ];
+
+    public function user()
     {
         return $this->belongsTo(User::class, 'user');
     }

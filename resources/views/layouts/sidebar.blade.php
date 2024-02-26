@@ -4,7 +4,7 @@
             <a href="{{ $item->link }}"
                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0 p-2">
                 <div>
-                    <span class="text-primary-emphasis">
+                    <span class="text-primary-emphasis me-1">
                         <i class="bi {{ $item->icon }}"></i>
                     </span>
                     {{ $item->title }}
