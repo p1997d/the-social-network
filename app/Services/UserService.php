@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Classes\FriendsForm;
 use App\Classes\Info;
 use App\Models\Friends;
+use App\Models\Location;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 
@@ -71,9 +72,9 @@ class UserService
             return $info;
         }
 
-        $location = InfoService::getLocation($user->info->location);
-        if ($location) {
-            $info[] = new Info('Местоположение', 'bi-geo-alt', end($location)['name']);
+        if ($user->info->location) {
+            $location = json_decode($user->info->location);
+            $info[] = new Info('Местоположение', 'bi-geo-alt', Location::find(end($location))->name);
         }
 
         if ($user->info->education) {

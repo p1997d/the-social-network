@@ -18,7 +18,7 @@ Route::group(['namespace' => 'Info'], function () {
     Route::post('/deleteavatar', [App\Http\Controllers\Main\InfoController::class, 'deleteAvatar'])->name('info.deleteavatar');
     Route::get('/edit', [App\Http\Controllers\Main\InfoController::class, 'editProfile'])->name('info.editprofile');
     Route::post('/updateprofile', [App\Http\Controllers\Main\InfoController::class, 'updateProfile'])->name('info.updateprofile');
-    Route::get('/getareas', [App\Http\Controllers\Main\InfoController::class, 'getAreas'])->name('info.getareas');
+    Route::get('/nextlocation', [App\Http\Controllers\Main\InfoController::class, 'nextLocation'])->name('info.nextlocation');
 });
 
 Route::group(['namespace' => 'Friends'], function () {

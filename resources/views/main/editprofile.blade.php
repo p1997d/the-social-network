@@ -135,7 +135,7 @@
                                         <option selected value="">Не выбрано</option>
                                         @foreach ($location[0] as $area)
                                             <option value="{{ $area['id'] }}"
-                                                {{ ($location[1]['id'] ?? null) == $area['id'] ? 'selected' : '' }}>
+                                                {{ optional(json_decode(optional(auth()->user()->info)->location))[0] == $area['id'] ? 'selected' : '' }}>
                                                 {{ $area['name'] }}
                                             </option>
                                         @endforeach
@@ -147,9 +147,9 @@
                                     <select class="form-select" id="selectRegion2" name="region2"
                                         data-parent="{{ $location[1]['id'] ?? null }}">
                                         <option selected value="">Не выбрано</option>
-                                        @foreach ($location[1]['areas'] ?? [] as $area)
+                                        @foreach ($location[1] ?? [] as $area)
                                             <option value="{{ $area['id'] }}"
-                                                {{ ($location[2]['id'] ?? null) == $area['id'] ? 'selected' : '' }}>
+                                                {{ optional(json_decode(optional(auth()->user()->info)->location))[1] == $area['id'] ? 'selected' : '' }}>
                                                 {{ $area['name'] }}
                                             </option>
                                         @endforeach
@@ -161,9 +161,9 @@
                                     <select class="form-select" id="selectRegion3" name="region3"
                                         data-parent="{{ $location[2]['id'] ?? null }}">
                                         <option selected value="">Не выбрано</option>
-                                        @foreach ($location[2]['areas'] ?? [] as $area)
+                                        @foreach ($location[2] ?? [] as $area)
                                             <option value="{{ $area['id'] }}"
-                                                {{ ($location[3]['id'] ?? null) == $area['id'] ? 'selected' : '' }}>
+                                                {{ optional(json_decode(optional(auth()->user()->info)->location))[2] == $area['id'] ? 'selected' : '' }}>
                                                 {{ $area['name'] }}
                                             </option>
                                         @endforeach

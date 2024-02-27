@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Info;
+use App\Models\Location;
 use App\Services\InfoService;
 use App\Enums\Education;
 use App\Enums\FamilyStatus;
@@ -60,9 +61,8 @@ class InfoController extends Controller
         $user = User::find(Auth::id());
 
         $education = Education::cases();
-        // $familyStatus = InfoService::familyStatusList($user->sex);
         $familyStatus = FamilyStatus::cases();
-        $location = InfoService::locationList($user->info->location);
+        $location = InfoService::getLocation();
 
         return view('main.editprofile', compact('familyStatus', 'education', 'location'));
     }
@@ -70,14 +70,20 @@ class InfoController extends Controller
     public function updateProfile(Request $request)
     {
         $user = User::find(Auth::user()->id);
-        $location = implode(".", array_filter([$request->region1, $request->region2, $request->region3]));
+
+        $location = null;
+        $locationArray = array_filter([$request->region1, $request->region2, $request->region3]);
+
+        if (!empty($locationArray)) {
+            $location = json_encode($locationArray);
+        }
 
         Info::updateOrCreate(
             [
                 'user' => $user->id
             ],
             [
-                'location' => $location != '' ? $location : null,
+                'location' => $location ?? null,
                 'education' => $request->education,
                 'family_status' => $request->family_status
             ]
@@ -93,9 +99,9 @@ class InfoController extends Controller
         return back()->with('success', 'Изменения сохранены');
     }
 
-    public function getAreas(Request $request)
+    public function nextLocation(Request $request)
     {
-        $areas = InfoService::getAreas($request->region1, $request->region2, $request->region3);
-        return $areas;
+        $location = Location::where('parent_id', $request->region)->get()->sortBy('name')->values();
+        return $location;
     }
 }
