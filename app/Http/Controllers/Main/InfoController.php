@@ -64,7 +64,9 @@ class InfoController extends Controller
         $familyStatus = FamilyStatus::cases();
         $location = InfoService::getLocation();
 
-        return view('main.editprofile', compact('familyStatus', 'education', 'location'));
+        $userinfo = optional($user->info);
+
+        return view('main.editprofile', compact('familyStatus', 'education', 'location', 'userinfo'));
     }
 
     public function updateProfile(Request $request)
