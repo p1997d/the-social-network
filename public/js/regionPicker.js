@@ -5,9 +5,9 @@ $(document).ready(async function () {
         theme: 'bootstrap-5'
     };
 
-    // $('#selectRegion1').select2(options);
-    // $('#selectRegion2').select2(options);
-    // $('#selectRegion3').select2(options);
+    $('#selectRegion1').select2(options);
+    $('#selectRegion2').select2(options);
+    $('#selectRegion3').select2(options);
 
     let disabledOption = '<option selected value="0">Не выбрано</option>';
 

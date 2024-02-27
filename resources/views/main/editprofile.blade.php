@@ -128,47 +128,39 @@
                     </div>
                     <div class="row mb-3">
                         <label for="colFormLabelSm" class="col-sm-3 col-form-label">Местоположение</label>
-                        <div class="col-sm-9 d-flex justify-content-between gap-2">
-                            <div class="w-100">
-                                <div id="forSelectRegion1">
-                                    <select class="form-select" id="selectRegion1" name="region1">
-                                        <option selected value="">Не выбрано</option>
-                                        @foreach ($location[0] as $area)
-                                            <option value="{{ $area['id'] }}"
-                                                {{ optional(json_decode($userinfo->location))[0] == $area['id'] ? 'selected' : '' }}>
-                                                {{ $area['name'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                        <div class="col-sm-9 row pe-0">
+                            <div class="col-4 pe-0" id="forSelectRegion1">
+                                <select class="form-select" id="selectRegion1" name="region1">
+                                    <option selected value="">Не выбрано</option>
+                                    @foreach ($location[0] as $area)
+                                        <option value="{{ $area['id'] }}"
+                                            {{ optional(json_decode($userinfo->location))[0] == $area['id'] ? 'selected' : '' }}>
+                                            {{ $area['name'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="w-100">
-                                <div id="forSelectRegion2">
-                                    <select class="form-select" id="selectRegion2" name="region2"
-                                        data-parent="{{ $location[1]['id'] ?? null }}">
-                                        <option selected value="">Не выбрано</option>
-                                        @foreach ($location[1] ?? [] as $area)
-                                            <option value="{{ $area['id'] }}"
-                                                {{ optional(json_decode($userinfo->location))[1] == $area['id'] ? 'selected' : '' }}>
-                                                {{ $area['name'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="col-4 pe-0" id="forSelectRegion2">
+                                <select class="form-select" id="selectRegion2" name="region2">
+                                    <option selected value="">Не выбрано</option>
+                                    @foreach ($location[1] ?? [] as $area)
+                                        <option value="{{ $area['id'] }}"
+                                            {{ optional(json_decode($userinfo->location))[1] == $area['id'] ? 'selected' : '' }}>
+                                            {{ $area['name'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="w-100">
-                                <div id="forSelectRegion3">
-                                    <select class="form-select" id="selectRegion3" name="region3"
-                                        data-parent="{{ $location[2]['id'] ?? null }}">
-                                        <option selected value="">Не выбрано</option>
-                                        @foreach ($location[2] ?? [] as $area)
-                                            <option value="{{ $area['id'] }}"
-                                                {{ optional(json_decode($userinfo->location))[2] == $area['id'] ? 'selected' : '' }}>
-                                                {{ $area['name'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="col-4 pe-0" id="forSelectRegion3">
+                                <select class="form-select" id="selectRegion3" name="region3">
+                                    <option selected value="">Не выбрано</option>
+                                    @foreach ($location[2] ?? [] as $area)
+                                        <option value="{{ $area['id'] }}"
+                                            {{ optional(json_decode($userinfo->location))[2] == $area['id'] ? 'selected' : '' }}>
+                                            {{ $area['name'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
