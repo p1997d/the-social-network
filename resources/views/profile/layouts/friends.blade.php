@@ -1,7 +1,7 @@
 @auth
 
     @if ($user_profile->id != auth()->user()->id && $listCommonFriends->count() != 0)
-        <div class="card mb-3">
+        <div class="card mb-3 shadow">
             <div class="card-header">
                 <a href="{{ route('friends', ['id' => $user_profile->id, 'section' => 'common']) }}"
                     class="link-body-emphasis">Общие друзья</a>
@@ -37,7 +37,7 @@
         </div>
     @else
         @if ($listOnline->count() != 0)
-            <div class="card mb-3">
+            <div class="card mb-3 shadow">
                 <div class="card-header">
                     <a href="{{ route('friends', ['id' => $user_profile->id, 'section' => 'online']) }}"
                         class="link-body-emphasis">Друзья онлайн</a>
@@ -75,7 +75,7 @@
     @endif
 
     @if ($listFriends->count() != 0)
-        <div class="card mb-3">
+        <div class="card mb-3 shadow">
             <div class="card-header">
                 @if ($user_profile == auth()->user())
                     <a href="{{ route('friends') }}" class="link-body-emphasis">Друзья</a>

@@ -1,4 +1,4 @@
-<div class="z-3 position-fixed messages-footer mt-5">
+<div class="z-3 position-fixed messages-footer mt-5 shadow-top">
     <div class="bg-body-tertiary p-2 border rounded-bottom" id="formMessage">
         <form class="messageForm" id="sendMessageForm" method="POST" enctype="multipart/form-data"
             action="{{ route($type == 'chat' ? 'messages.chat.send' : 'messages.send', $recipient->id) }}">

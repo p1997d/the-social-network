@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="col-lg-auto">
-        <div class="card mb-3">
+        <div class="card mb-3 shadow">
             <div class="card-body">
                 @include('profile.layouts.avatar')
                 @include('profile.layouts.buttons')

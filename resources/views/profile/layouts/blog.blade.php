@@ -1,4 +1,4 @@
-<div class="card mb-3">
+<div class="card mb-3 shadow">
     <div class="card-body">
         <form class="d-flex gap-2">
             <input type="text" class="form-control" placeholder="Что у вас нового?" />
@@ -6,7 +6,7 @@
         </form>
     </div>
 </div>
-<div class="card mb-3">
+<div class="card mb-3 shadow">
     <div class="card-body d-flex justify-content-between">
         <button class="btn btn-outline-secondary">Все записи</button>
         <button class="btn btn-text"><i class="bi bi-search"></i></button>

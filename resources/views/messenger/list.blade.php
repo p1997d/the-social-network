@@ -9,7 +9,7 @@
 
 @section('content')
     <div class="col-lg-7">
-        <div class="card h-100">
+        <div class="card h-100 shadow">
             <div class="card-header d-flex justify-content-between">
                 @include('messenger.layouts.search')
                 <div>

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="col">
-        <div class="card d-flex flex-column messages w-auto h-100">
+        <div class="card d-flex flex-column messages w-auto h-100 shadow">
             <div class="card-header d-flex justify-content-between">
                 @include('messenger.layouts.search')
             </div>

@@ -1,4 +1,4 @@
-<div class="card mb-3">
+<div class="card mb-3 shadow">
     <div class="card-header">
         Группы <span class="text-secondary">0</span>
     </div>

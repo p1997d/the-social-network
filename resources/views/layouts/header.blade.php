@@ -1,5 +1,5 @@
 <header class="header-pjax">
-    <nav class="navbar bg-body-tertiary fixed-top">
+    <nav class="navbar bg-body-tertiary fixed-top shadow">
         <div class="container d-none d-lg-flex">
             <div class="d-flex align-items-center">
                 <a class="navbar-brand d-flex flex-column fs-8" href="/">
@@ -27,7 +27,7 @@
             </div>
         @endif
     </nav>
-    <nav class="navbar bg-body-tertiary d-lg-none d-block fixed-bottom">
+    <nav class="navbar bg-body-tertiary d-lg-none d-block fixed-bottom shadow-top">
         <div class="container">
             <div class="container text-center">
                 <div class="row py-1">

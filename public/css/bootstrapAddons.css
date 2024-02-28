@@ -30,3 +30,7 @@
     --bs-tooltip-bg: var(--bs-tertiary-bg);
     --bs-tooltip-color: var(--bs-emphasis-color);
 }
+
+.shadow-top {
+    box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, .15);
+}

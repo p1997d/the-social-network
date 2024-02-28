@@ -1,4 +1,4 @@
-<div class="position-fixed z-3 messages-header">
+<div class="position-fixed z-3 messages-header shadow">
     <div class="justify-content-between bg-body-tertiary p-2 border rounded-top main-message-header d-flex">
         <div>
             <a href="{{ route('messages') }}" class="btn btn-text px-0">

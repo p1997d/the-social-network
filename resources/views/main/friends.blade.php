@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="col">
-        <div class="card friends-pjax">
+        <div class="card friends-pjax shadow">
             <div class="card-header">
                 <p class="fs-4 d-none d-lg-block border-bottom pb-3">{{ $title }}</p>
                 <a href="{{ route('friends', ['id' => request('id')]) }}" class="btn btn-outline-secondary">
