@@ -1,18 +1,24 @@
-<div class="card mb-3 shadow">
-    <div class="card-body">
-        <form class="d-flex gap-2">
-            <input type="text" class="form-control" placeholder="Что у вас нового?" />
-            <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-send"></i></button>
-        </form>
-    </div>
-</div>
+@auth
+    @if (auth()->user()->id == $user_profile->id)
+        <div class="card mb-3 shadow">
+            <div class="card-body">
+                <form class="d-flex gap-2">
+                    <input type="text" class="form-control" placeholder="Что у вас нового?" />
+                    <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-send"></i></button>
+                </form>
+            </div>
+        </div>
+    @endif
+@endauth
+
+
 <div class="card mb-3 shadow">
     <div class="card-body d-flex justify-content-between">
         <button class="btn btn-outline-secondary">Все записи</button>
         <button class="btn btn-text"><i class="bi bi-search"></i></button>
     </div>
 </div>
-    {{-- <div class="card mb-3">
+{{-- <div class="card mb-3">
         <div class="card-header d-flex align-items-center gap-2">
             <img src="https://placehold.co/40x40" class="rounded-circle h-100" />
             <div>

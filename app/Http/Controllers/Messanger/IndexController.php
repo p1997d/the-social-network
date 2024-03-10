@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Messanger;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Classes\Chatlogs;
 use App\Models\User;
 use App\Models\Dialog;
 use App\Models\Chat;
 use App\Models\ChatMember;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Crypt;
-use morphos\Russian;
+use App\Services\GeneralService;
 use App\Services\FriendsService;
 use App\Services\ChatService;
 use App\Services\DialogService;
@@ -69,7 +68,7 @@ class IndexController extends Controller
                 return redirect()->route('messages');
             }
 
-            $countMembers = Russian\pluralize($members->count(), 'участник');
+            $countMembers = GeneralService::getPluralize($members->count(), 'участник');
 
             $messages = ChatService::getMessages($chat)->forPage($page, 25)->values();
 
@@ -77,17 +76,17 @@ class IndexController extends Controller
         } else {
             $user_profile = User::find(Auth::id());
 
-            $users = DialogService::getDialogs();
+            $dialogs = DialogService::getDialogs();
             $chats = ChatService::getChats();
 
             $chatlogs = [];
 
-            foreach ($users as $user) {
-                $chatlogs[] = new Chatlogs($user, 'to');
+            foreach ($dialogs as $dialog) {
+                $chatlogs[] = $dialog;
             }
 
             foreach ($chats as $chat) {
-                $chatlogs[] = new Chatlogs($chat, 'chat');
+                $chatlogs[] = $chat;
             }
 
             $friends = FriendsService::listFriends($user_profile)->get();

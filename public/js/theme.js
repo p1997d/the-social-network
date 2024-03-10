@@ -2,8 +2,12 @@ $(document).ready(function () {
     theme();
 });
 
+$(document).on('pjax:end', function () {
+    theme();
+});
+
 function theme() {
-    $('.btnSwitch').on("click", function () {
+    $('.btnSwitch').off("click").on("click", function () {
         if ($('html').attr('data-bs-theme') == 'light') {
             setTheme('dark');
         }

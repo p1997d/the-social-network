@@ -21,10 +21,10 @@
                 <a href="#" class="link-body-emphasis">
                     {{ $recipient->title }}
                 </a>
-                <p class="m-0 text-secondary">{{$countMembers}}</p>
+                <p class="m-0 text-secondary">{{ $countMembers }}</p>
             @endif
         </div>
-        <div>
+        <div class="d-flex align-items-center">
             <div class="dropdown">
                 <button class="btn btn-text" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-three-dots"></i>
@@ -41,6 +41,15 @@
                     </li>
                 </ul>
             </div>
+            <a @if (class_basename($recipient) == 'User') href="{{ route('profile', $recipient->id) }}" @endif>
+                @include('layouts.avatar', [
+                    'model' => $recipient,
+                    'width' => '32px',
+                    'height' => '32px',
+                    'class' => 'rounded-circle object-fit-cover',
+                    'modal' => false
+                ])
+            </a>
         </div>
     </div>
 

@@ -46,6 +46,11 @@
         <!-- Plyr -->
         <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 
+        <!-- isInViewport -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/is-in-viewport/3.0.4/isInViewport.min.js"
+            integrity="sha512-eAT5Hvi9/Yx33YvSUPOpAYEA3HnUt5oKCSyPGRQwNgqD7K/90JRpFnkaL1M6ROZtLkckQKJ4WYh9cS7Urr4YjA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
         <script>
             const userId = {{ auth()->check() ? auth()->user()->id : null }};
         </script>
@@ -53,22 +58,24 @@
         <script src="{{ asset('js/app.js') }}"></script>
         <script src="{{ asset('js/friends.js') }}"></script>
         <script src="{{ asset('js/theme.js') }}"></script>
-
+        <script src="{{ asset('js/messanger.js') }}"></script>
+        <script src="{{ asset('js/modalImage.js') }}"></script>
 
         @vite('resources/js/echo.js')
     @show
 </head>
 
 <body class="d-flex flex-column">
-    @include('layouts.header')
-
     <main class="flex-grow-1 mb-3 container pb-5">
         @section('main')
             <div class="row gx-3 h-100">
                 <div class="col-auto p-0 d-none d-lg-block" id="sidebar">
                     @include('layouts.sidebar')
                 </div>
-                @yield('content')
+                <div class="col" id="pjax-container">
+                    @include('layouts.header')
+                    @yield('content')
+                </div>
             </div>
         @show
 

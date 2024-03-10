@@ -4,39 +4,10 @@
     Carbon::setLocale('ru');
 @endphp
 
-<div
-    class="list-group-item list-group-item-action list-group-item-empty gap-2 message justify-content-center rounded border-0 rounded-0 d-none">
-    <div>
-        <a href="" class="profileImageLink">
-            <img src="" width="36" height="36" class="rounded-circle object-fit-cover">
-        </a>
-    </div>
-    <div class="w-100">
-        <div class="d-flex justify-content-between w-100">
-            <div>
-                <a href="" class="profileNameLink"></a>
-                <span class="text-secondary fs-7 sent-at"></span>
-            </div>
-            <div class="message-buttons">
-                <button class="btn btn-text text-emphasis fs-7 px-1 py-0 editButton" data-bs-messageid="">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-text text-emphasis fs-7 px-1 py-0 deleteModal" data-bs-toggle="modal"
-                    data-bs-target="#deleteModal" data-bs-messageid="" data-bs-mymessage="">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </div>
-        <div class="m-0 text-break content">
-            <div class="container text-center attachments"></div>
-        </div>
-    </div>
-</div>
-
 @foreach ($messages as $i => $message)
     @if (class_basename($message) == 'ChatSystemMessage')
         <div class="list-group-item list-group-item-message text-center text-secondary border-0">
-            <p>
+            <p class="mx-auto">
                 <a href="{{ route('profile', $message->senderUser->id) }}"
                     class="fw-bold link-secondary link-underline-opacity-0">
                     {{ $message->senderUser->firstname }} {{ $message->senderUser->surname }}
@@ -52,12 +23,17 @@
             </p>
         </div>
     @else
-        <div class="list-group-item list-group-item-action list-group-item-message d-flex gap-2 message justify-content-center rounded border-0 @if ($message->senderUser->id != auth()->user()->id && !$message->viewed_at) unread @endif rounded-0"
+        <div class="list-group-item list-group-item-action list-group-item-message gap-2 message justify-content-center rounded border-0 @if ($message->senderUser->id != auth()->user()->id && !$message->viewed_at) unread @endif rounded-0"
             id="{{ $message->id }}">
             <div>
                 <a href="{{ route('profile', $message->senderUser->id) }}" class="profileImageLink">
-                    <img src="{{ $message->senderUser->avatar() }}" width="36" height="36"
-                        class="rounded-circle object-fit-cover">
+                    @include('layouts.avatar', [
+                        'model' => $message->senderUser,
+                        'width' => '36px',
+                        'height' => '36px',
+                        'class' => 'rounded-circle object-fit-cover',
+                        'modal' => false
+                    ])
                 </a>
             </div>
             <div class="w-100">
@@ -110,3 +86,32 @@
         </div>
     @endif
 @endforeach
+
+<div
+    class="list-group-item list-group-item-action list-group-item-empty gap-2 message justify-content-center rounded border-0 rounded-0">
+    <div>
+        <a href="" class="profileImageLink">
+            <img src="" width="36" height="36" class="rounded-circle object-fit-cover">
+        </a>
+    </div>
+    <div class="w-100">
+        <div class="d-flex justify-content-between w-100">
+            <div>
+                <a href="" class="profileNameLink"></a>
+                <span class="text-secondary fs-7 sent-at"></span>
+            </div>
+            <div class="message-buttons">
+                <button class="btn btn-text text-emphasis fs-7 px-1 py-0 editButton" data-bs-messageid="">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-text text-emphasis fs-7 px-1 py-0 deleteModal" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal" data-bs-messageid="" data-bs-mymessage="">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="m-0 text-break content">
+            <div class="container attachments"></div>
+        </div>
+    </div>
+</div>

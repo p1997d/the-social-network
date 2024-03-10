@@ -12,8 +12,13 @@
                         @foreach ($friends as $friend)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <label class="form-check-label stretched-link" for="user{{ $friend->id }}">
-                                    <img src="{{ $friend->avatar() }}" class="rounded-circle object-fit-cover"
-                                        width="32" height="32" />
+                                    @include('layouts.avatar', [
+                                        'model' => $friend,
+                                        'width' => '32px',
+                                        'height' => '32px',
+                                        'class' => 'rounded-circle object-fit-cover',
+                                        'modal' => false
+                                    ])
                                     {{ $friend->firstname }} {{ $friend->surname }}
                                 </label>
                                 <input class="form-check-input me-1" type="checkbox" value="{{ $friend->id }}"
@@ -24,7 +29,8 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-between align-self-center">
                     <div class="flex-fill">
-                        <input class="form-control" type="text" name="title" required placeholder="Введите название чата">
+                        <input class="form-control" type="text" name="title" required
+                            placeholder="Введите название чата">
                     </div>
                     <div>
                         <button type="submit" class="btn btn-primary btn-sm">Создать чат</button>

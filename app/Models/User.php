@@ -10,11 +10,11 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use Carbon\CarbonInterface;
-use App\Classes\AllInfo;
 use App\Services\GeneralService;
 use App\Services\UserService;
+use App\Services\FriendsService;
 use App\Services\DialogService;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 Carbon::setLocale('ru');
 
@@ -71,11 +71,6 @@ class User extends Authenticatable
         return $this->hasMany(Dialog::class, 'recipient', 'id');
     }
 
-    public function avatar()
-    {
-        return GeneralService::getAvatar($this);
-    }
-
     public function online()
     {
         return UserService::isOnline($this->id);
@@ -93,11 +88,26 @@ class User extends Authenticatable
 
     public function friendForm()
     {
-        return UserService::getFriendsForms($this);
+        return FriendsService::getFriendsForms($this);
     }
 
     public function scopeGetRandomUsers(Builder $query, $count)
     {
         return $query->inRandomOrder()->take($count)->get();
+    }
+
+    public function avatar()
+    {
+        return GeneralService::getAvatar($this);
+    }
+
+    public function avatarDefault()
+    {
+        return "https://ui-avatars.com/api/?name=$this->firstname+$this->surname&background=random&size=150";
+    }
+
+    public function avatarFile()
+    {
+        return $this->hasOneThrough(File::class, Info::class, 'user', 'id', 'id', 'avatar');
     }
 }

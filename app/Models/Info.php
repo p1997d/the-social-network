@@ -24,4 +24,9 @@ class Info extends Model
     {
         return $this->belongsTo(User::class, 'user');
     }
+
+    public function avatarFile()
+    {
+        return $this->hasOne(File::class, 'id', 'avatar');
+    }
 }

@@ -9,11 +9,11 @@ use App\Models\ChatMember;
 use App\Models\ChatMessage;
 use App\Models\ChatSystemMessage;
 use App\Models\ChatMessageDelete;
-use App\Models\File;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use App\Events\MessagesWebSocket;
-use App\Models\User;
+use App\Services\FileService;
 use Carbon\Carbon;
 
 Carbon::setLocale('ru');
@@ -114,18 +114,11 @@ class ChatController extends Controller
 
         if (request()->attachments) {
             foreach (request()->attachments as $i => $file) {
-                $filePath = $sender->id . '/' . time() . '_' . $i . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('files', $filePath, 'public');
+                $group = 'messages';
 
-                $model = new File();
+                $name =  time() . '_' . $i;
 
-                $model->name = $file->getClientOriginalName();
-                $model->path = $filePath;
-                $model->type = $file->getMimeType();
-                $model->size = $file->size();
-                $model->author = $sender->id;
-
-                $model->save();
+                $model = FileService::create($sender, $group, $name, $file);
 
                 $attachments[] = $model->id;
                 $attachmentsModels[] = $model->id;

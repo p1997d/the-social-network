@@ -1,15 +1,22 @@
-<div class="container attachments">
+<div class="attachments">
     @if ($message->attachments())
         <div
-            class="row row-cols-{{ $message->attachments('image')->count() < 5 ? $message->attachments('image')->count() : 5 }} g-2 my-2">
+            class="row row-cols-{{ $message->attachments('image')->count() < 5 ? $message->attachments('image')->count() : 5 }} g-2 my-1">
             @foreach ($message->attachments() as $attachment)
                 @switch(explode('/', $attachment->type)[0])
                     @case('image')
-                        <div class="col">
-                            <div data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-image="{{ asset("storage/files/$attachment->path") }}">
-                                <img src="{{ asset("storage/files/$attachment->path") }}" class="message_image"/>
+                        @if (!$attachment->deleted_at)
+                            <div class="col">
+                                <div class="openImageModal" data-user="{{ $attachment->author }}"
+                                    data-photo="{{ $attachment->id }}" data-type="messages" tabindex="0">
+                                    <img src="{{ asset("storage/files/$attachment->path") }}" class="photos rounded" />
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="col-12">
+                                <span class="text-secondary">Фотография удалена</span>
+                            </div>
+                        @endif
                     @break
 
                     @case('audio')

@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use morphos\Russian;
 
 Carbon::setLocale('ru');
 
@@ -11,8 +14,10 @@ class GeneralService
 {
     public static function getAvatar($model)
     {
-        if (optional($model->info)->avatar && Storage::exists("public/avatars/" . $model->info->avatar)) {
-            return Storage::url("public/avatars/" . $model->info->avatar);
+        $file = $model->avatarFile;
+
+        if ($file && Storage::exists("public/files/" . $file->path)) {
+            return Storage::url("public/files/" . $file->path);
         }
 
         $name = class_basename($model) == "User" ? "$model->firstname+$model->surname" : $model->title;
@@ -29,5 +34,23 @@ class GeneralService
         ($sentAt->isCurrentYear() ? $sentAt->isoFormat('D MMMM') : $sentAt->isoFormat('D MMMM YYYY')));
 
         return $date;
+    }
+
+    public static function getPluralize($count, $text){
+        return Russian\pluralize($count, $text);
+    }
+
+    public static function getTitleAndUser($id, $type)
+    {
+        $user = User::find(Auth::id());
+        $title = "Мои " . mb_strtolower($type);
+
+        if ($id && $id != $user->id) {
+            $user = User::find($id);
+            $genitiveName = UserService::getGenitiveName($user);
+            $title = $type . " " . $genitiveName;
+        }
+
+        return array($title, $user);
     }
 }

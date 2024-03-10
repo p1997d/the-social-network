@@ -1,11 +1,11 @@
-const url = new URL(window.location.href);
-const recipient = url.searchParams.get('to') || url.searchParams.get('chat');
-const typeRecipient = url.searchParams.has('to') ? 'to' : url.searchParams.has('chat') ? 'chat' : null;
+let url, recipient, typeRecipient;
+
 var page;
 var players = [];
 
 $(document).ready(function () {
-    start();
+    getURL();
+    restartingHandlers();
     checkRead();
 
     $('<input>').attr({
@@ -28,7 +28,13 @@ $(document).ready(function () {
         });
     }
 
-    restart();
+    resetPage();
+});
+
+$(document).on('pjax:end', function () {
+    getURL();
+    resetPage();
+    restartingHandlers();
 });
 
 $(window).scroll(function () {
@@ -49,13 +55,19 @@ $(window).scroll(function () {
                     url.searchParams.set('page', page);
                     $(document).scrollTop(height2 - height1);
                 }
-                start()
+                restartingHandlers()
             }
         });
     }
 });
 
-function start() {
+function getURL() {
+    url = new URL(window.location.href);
+    recipient = url.searchParams.get('to') || url.searchParams.get('chat');
+    typeRecipient = url.searchParams.has('to') ? 'to' : url.searchParams.has('chat') ? 'chat' : null;
+}
+
+function restartingHandlers() {
     $('[data-bs-toggle="tooltip"]').tooltip();
 
     $('#deleteModal').off('show.bs.modal');
@@ -90,7 +102,7 @@ function start() {
             type: "GET",
             data: {
                 id: messageId,
-                typeRecipient: typeRecipient
+                typeRecipient
             },
             success: function (data) {
                 if (typeRecipient == 'to') {
@@ -139,7 +151,7 @@ function start() {
                 $.pjax.reload({ container: ".sidebar", async: false });
                 $(document).scrollTop($(document).height());
                 $('.listfiles').find('.fileBadge').remove();
-                start();
+                restartingHandlers();
             },
             error: function () {
                 $('.listfiles').find('.fileBadge').remove();
@@ -249,7 +261,7 @@ function isVisible(tag) {
     return ((tb <= wt + w.height()) && (tt >= wt));
 }
 
-function restart() {
+function resetPage() {
     page = 2;
     url.searchParams.set('page', page);
     if ($('.unread').length) {
@@ -265,7 +277,7 @@ function changeMessagesBlock(data) {
             $row = getAttachments(data);
 
             $(".list-group-item-empty").clone()
-                .removeClass('list-group-item-empty d-none')
+                .removeClass('list-group-item-empty')
                 .addClass('list-group-item-message d-flex')
                 .addClass(userId === data.sender.id ? '' : 'unread')
                 .attr('id', data.message.id)
@@ -338,8 +350,13 @@ function getAttachments(data) {
         switch (item.type.split('/')[0]) {
             case 'image':
                 $col = $('<div>').addClass('col').appendTo($row);
-                $a = $('<a>').attr('href', `storage/files/${item.path}`).attr('target', '_blank').appendTo($col);
-                $img = $('<img>').attr('src', `storage/files/${item.path}`).addClass('w-100 h-100 object-fit-cover').appendTo($a);
+                $div = $('<div>')
+                    .attr('data-bs-toggle', 'modal')
+                    .attr('data-bs-target', '#imageModal')
+                    .attr('data-bs-image', `storage/files/${item.path}`)
+                    .attr('data-bs-id', `${item.id}`)
+                    .appendTo($col);
+                $img = $('<img>').attr('src', `storage/files/${item.path}`).addClass('message_image').appendTo($div);
                 break;
 
             case 'audio':

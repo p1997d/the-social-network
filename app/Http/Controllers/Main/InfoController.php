@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Main;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Info;
 use App\Models\Location;
 use App\Services\InfoService;
+use App\Services\FileService;
 use App\Enums\Education;
 use App\Enums\FamilyStatus;
 
@@ -18,20 +18,17 @@ class InfoController extends Controller
 {
     public function updateAvatar(Request $request)
     {
-
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $user = Auth::user();
 
-        $avatarPath = $user->id . '/' . time() . '.' . request()->avatar->getClientOriginalExtension();
-
-        $request->avatar->storeAs('avatars', $avatarPath, 'public');
+        $avatar = FileService::create($user, 'avatars', time(), request()->avatar);
 
         Info::updateOrCreate(
             ['user' => $user->id],
-            ['avatar' => $avatarPath]
+            ['avatar' => $avatar->id]
         );
 
         return back();
@@ -40,9 +37,7 @@ class InfoController extends Controller
     public function deleteAvatar()
     {
         $user = Auth::user();
-        if (optional($user->info)->avatar && Storage::exists("public/avatars/" . $user->info->avatar)) {
-            Storage::delete("public/avatars/" . $user->info->avatar);
-
+        if (optional($user->info)->avatar) {
             $model = $user->info;
             $model->update([
                 'avatar' => null

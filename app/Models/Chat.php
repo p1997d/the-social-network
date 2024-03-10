@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Services\GeneralService;
 use App\Services\ChatService;
 
@@ -20,6 +18,16 @@ class Chat extends Model
     public function avatar()
     {
         return GeneralService::getAvatar($this);
+    }
+
+    public function avatarDefault()
+    {
+        return "https://ui-avatars.com/api/?name=$this->title&background=random&size=150";
+    }
+
+    public function avatarFile()
+    {
+        return $this->hasOne(File::class, 'id', 'avatar');
     }
 
     public function lastMessage()

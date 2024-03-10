@@ -20,8 +20,14 @@
                 </div>
             @endif
         @endauth
+
         <div data-bs-toggle="collapse">
-            <img src="{{ $user_profile->avatar() }}" style="width: 350px" class="rounded object-fit-cover" />
+            @include('layouts.avatar', [
+                'model' => $user_profile,
+                'width' => '350px',
+                'class' => 'rounded object-fit-cover',
+                'modal' => true
+            ])
         </div>
     </div>
 </div>

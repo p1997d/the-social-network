@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Services\FriendsService;
 use App\Services\UserService;
+use App\Services\PublicationsService;
 
 class IndexController extends Controller
 {
@@ -18,7 +20,7 @@ class IndexController extends Controller
         return view('auth.signin');
     }
 
-    public function profile($id)
+    public function profile(Request $request, $id)
     {
         $title = 'Главная';
         $user_profile = User::find($id);
@@ -31,19 +33,11 @@ class IndexController extends Controller
 
         $allInfo = UserService::getInfo($user_profile);
 
-        $listCommonFriends = null;
-        $listIncoming = null;
-        $listOutgoing = null;
-        $listOnline = null;
+        $friendForm = FriendsService::getFriendsForms($user_profile);
 
-        $friendForm = UserService::getFriendsForms($user_profile);
+        list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user_profile);
 
-        if (Auth::check()) {
-            $listIncoming = FriendsService::listIncoming();
-            $listOutgoing = FriendsService::listOutgoing();
-            $listCommonFriends = FriendsService::listCommonFriends($user_profile);
-            $listOnline = FriendsService::listOnlineFriends($user_profile);
-        }
+        $photos = PublicationsService::getPhotos($user_profile);
 
         return view(
             'profile.index',
@@ -57,6 +51,7 @@ class IndexController extends Controller
                 'listIncoming',
                 'listOnline',
                 'friendForm',
+                'photos',
             )
         );
     }

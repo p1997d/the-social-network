@@ -7,36 +7,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Friends;
 use App\Models\User;
-use morphos\Russian;
 use App\Events\FriendsWebSocket;
+use App\Services\GeneralService;
 use App\Services\FriendsService;
-use App\Services\UserService;
 
 class FriendsController extends Controller
 {
     public function friends(Request $request)
     {
+        $id = $request->query('id');
+        $section = $request->query('section');
+
         if (Auth::guest()) {
             return redirect()->route('auth.signin');
         }
 
-        $user_auth = Auth::user();
-        $id = $request->query('id');
-        $section = $request->query('section');
+        list($title, $user_profile) = GeneralService::getTitleAndUser($id, 'Друзья');
 
-        if (!$id) {
-            $user_profile = $user_auth;
-            $title = 'Мои друзья';
-        } else {
-            $user_profile = User::find($id);
-            $title = "Друзья " . Russian\inflectName($user_profile->firstname, 'родительный') . " " . Russian\inflectName($user_profile->surname, 'родительный');
-        }
-
-        $listFriends = FriendsService::listFriends($user_profile);
-        $listCommonFriends = FriendsService::listCommonFriends($user_profile);
-        $listOnline = FriendsService::listOnlineFriends($user_profile);
-        $listOutgoing = FriendsService::listOutgoing();
-        $listIncoming = FriendsService::listIncoming();
+        list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user_profile);
 
         switch ($section) {
             case '':
@@ -62,6 +50,7 @@ class FriendsController extends Controller
         return view(
             'main.friends',
             compact(
+                'section',
                 'title',
                 'user_profile',
                 'friends',
@@ -80,7 +69,7 @@ class FriendsController extends Controller
         $auth_user = Auth::user();
         $user_profile = User::find($id);
 
-        $models = $user_profile->getFriendsModels()->filter(function ($item) {
+        $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) {
             return $item->status == 0 || $item->status == 1;
         });
 
@@ -100,7 +89,7 @@ class FriendsController extends Controller
         $auth_user = Auth::user();
         $user_profile = User::find($id);
 
-        $models = $user_profile->getFriendsModels()->filter(function ($item) use ($auth_user) {
+        $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) use ($auth_user) {
             return $item->status == 0 && $item->user1 == $auth_user->id;
         });
 
@@ -120,7 +109,7 @@ class FriendsController extends Controller
         $auth_user = Auth::user();
         $user_profile = User::find($id);
 
-        $models = $user_profile->getFriendsModels()->filter(function ($item) use ($auth_user) {
+        $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) use ($auth_user) {
             return $item->status == 0 && $item->user2 == $auth_user->id;
         });
 
@@ -140,7 +129,7 @@ class FriendsController extends Controller
         $auth_user = Auth::user();
         $user_profile = User::find($id);
 
-        $models = $user_profile->getFriendsModels()->filter(function ($item) use ($auth_user) {
+        $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) use ($auth_user) {
             return $item->status == 0 && $item->user2 == $auth_user->id;
         });
 
@@ -160,7 +149,7 @@ class FriendsController extends Controller
         $auth_user = Auth::user();
         $user_profile = User::find($id);
 
-        $models = $user_profile->getFriendsModels()->filter(function ($item) {
+        $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) {
             return $item->status == 1;
         });
 

@@ -7,7 +7,7 @@
         <div class="col d-flex align-items-center justify-content-center">
             <div class="card" style="width: 35rem;">
                 <div class="card-header">
-                    <h4 class="text-decoration-underline m-0">Вход</h4>
+                    <h4 class="m-0">Вход</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ route('login') }}">

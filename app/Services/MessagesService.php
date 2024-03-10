@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Models\File;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Dialog;
 use App\Models\ChatMessage;
 use App\Models\ChatMember;
 use App\Models\ChatMessageDelete;
+use Illuminate\Support\Facades\Auth;
 
 class MessagesService
 {

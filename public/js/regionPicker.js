@@ -1,5 +1,12 @@
 $(document).ready(async function () {
+    regionPicker();
+});
 
+$(document).on('pjax:end', function () {
+    regionPicker();
+});
+
+function regionPicker() {
     let options = {
         language: "ru",
         theme: 'bootstrap-5'
@@ -13,7 +20,6 @@ $(document).ready(async function () {
 
     $('#selectRegion1').on("change", function () {
         $('#selectRegion2, #selectRegion3').empty();
-
 
         $.ajax({
             url: '/nextlocation',
@@ -33,8 +39,6 @@ $(document).ready(async function () {
     $('#selectRegion2').on("change", function () {
         $('#selectRegion3').empty();
 
-        console.log(this.value);
-
         $.ajax({
             url: '/nextlocation',
             type: "GET",
@@ -48,4 +52,4 @@ $(document).ready(async function () {
             }
         });
     });
-});
+}

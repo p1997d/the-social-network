@@ -1,8 +1,13 @@
 @auth
     <div class="dropdown">
         <button class="btn btn-text dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="{{ auth()->user()->avatar() }}" width="32" height="32"
-                class="rounded-circle object-fit-cover" />
+            @include('layouts.avatar', [
+                'model' => auth()->user(),
+                'width' => '32px',
+                'height' => '32px',
+                'class' => 'rounded-circle object-fit-cover',
+                'modal' => false
+            ])
             {{ auth()->user()->firstname }}
         </button>
         <ul class="dropdown-menu">

@@ -13,7 +13,7 @@
         <div class="col d-flex align-items-center justify-content-center">
             <div class="card" style="width: 50rem;">
                 <div class="card-header">
-                    <h4 class="text-decoration-underline m-0">Регистрация</h4>
+                    <h4 class="m-0">Регистрация</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ route('register') }}">

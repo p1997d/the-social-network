@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dialog;
 use App\Models\User;
-use App\Models\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use App\Events\MessagesWebSocket;
-use Carbon\Carbon;
 use App\Services\DialogService;
+use App\Services\FileService;
+use Carbon\Carbon;
 
 Carbon::setLocale('ru');
 
@@ -56,18 +56,8 @@ class DialogController extends Controller
 
         if (request()->attachments) {
             foreach (request()->attachments as $i => $file) {
-                $filePath = $sender->id . '/' . time() . '_' . $i . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('files', $filePath, 'public');
-
-                $model = new File();
-
-                $model->name = $file->getClientOriginalName();
-                $model->path = $filePath;
-                $model->type = $file->getMimeType();
-                $model->size = $file->size();
-                $model->author = $sender->id;
-
-                $model->save();
+                $name =  time() . '_' . $i;
+                $model = FileService::create($sender, 'messages', $name, $file);
 
                 $attachments[] = $model->id;
                 $attachmentsModels[] = $model->id;

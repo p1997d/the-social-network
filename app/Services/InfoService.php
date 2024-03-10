@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Location;
 use App\Models\User;
+use App\Models\Location;
 use Illuminate\Support\Facades\Auth;
 
 class InfoService
