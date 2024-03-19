@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-bs-theme="dark">
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
@@ -55,8 +55,8 @@
             const userId = {{ auth()->check() ? auth()->user()->id : null }};
         </script>
 
-        <script src="{{ asset('js/app.js') }}"></script>
         <script src="{{ asset('js/theme.js') }}"></script>
+        <script src="{{ asset('js/app.js') }}"></script>
         <script src="{{ asset('js/player.js') }}"></script>
         <script src="{{ asset('js/friends.js') }}"></script>
         <script src="{{ asset('js/messanger.js') }}"></script>

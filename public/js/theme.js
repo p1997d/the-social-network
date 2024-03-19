@@ -1,12 +1,25 @@
+
+if (!localStorage.getItem('theme')) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+    }
+    else {
+        setTheme('light');
+    }
+} else {
+    setTheme(localStorage.getItem('theme'));
+}
+
+
 $(document).ready(function () {
-    theme();
+    initializationThemeButton();
 });
 
 $(document).on('pjax:end', function () {
-    theme();
+    initializationThemeButton();
 });
 
-function theme() {
+function initializationThemeButton() {
     $('.btnSwitch').off("click").on("click", function () {
         if ($('html').attr('data-bs-theme') == 'light') {
             setTheme('dark');
@@ -14,18 +27,7 @@ function theme() {
         else {
             setTheme('light');
         }
-    })
-
-    if (!$.cookie("theme")) {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            setTheme('dark');
-        }
-        else {
-            setTheme('light');
-        }
-    } else {
-        setTheme($.cookie("theme"));
-    }
+    });
 }
 
 function setTheme(theme) {
@@ -36,5 +38,6 @@ function setTheme(theme) {
         $('html').attr('data-bs-theme', 'light');
         $('.themeText').html('Светлая');
     }
-    $.cookie("theme", theme)
+
+    localStorage.setItem('theme', theme);
 }

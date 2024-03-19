@@ -37,7 +37,7 @@
                     <div class="row py-1">
                         @foreach ($menu as $item)
                             <div class="col">
-                                <a href="{{ $item->link }}" class="btn btn-text border-0 p-0">
+                                <a href="{{ $item->link }}" class="btn btn-text border-0 p-0 position-relative">
                                     <div>
                                         <i class="bi {{ $item->icon }}"></i>
                                     </div>

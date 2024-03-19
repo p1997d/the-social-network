@@ -38,7 +38,8 @@ class AudiosController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'audios' => 'required|mimes:mp3|max:204800',
+            // 'audios' => 'required|mimes:mp3|max:204800',
+            'audios' => 'required|max:204800',
         ]);
 
         $user = User::find(Auth::id());

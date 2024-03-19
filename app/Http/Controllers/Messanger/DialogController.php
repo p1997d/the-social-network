@@ -25,7 +25,7 @@ class DialogController extends Controller
     private function getData($request)
     {
         $sender = User::find(Auth::id());
-        $senderAvatar = $sender->avatar;
+        $senderAvatar = $sender->avatar();
 
         $decryptContent = $request->content;
         $content = Crypt::encrypt($decryptContent);
