@@ -1,5 +1,5 @@
 @auth
-    @if ($user_profile->id != auth()->user()->id && $listCommonFriends->count() > 0)
+    @if ($user_profile->id !== auth()->user()->id && $listCommonFriends->count() > 0)
         <div class="card mb-3 shadow">
             <div class="card-header">
                 <a href="{{ route('friends', ['id' => $user_profile->id, 'section' => 'common']) }}"

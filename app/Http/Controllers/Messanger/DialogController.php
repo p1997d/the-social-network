@@ -25,7 +25,7 @@ class DialogController extends Controller
     private function getData($request)
     {
         $sender = User::find(Auth::id());
-        $senderAvatar = $sender->avatar();
+        $senderAvatar = $sender->avatar;
 
         $decryptContent = $request->content;
         $content = Crypt::encrypt($decryptContent);
@@ -146,7 +146,7 @@ class DialogController extends Controller
 
     public function allDelete($id)
     {
-        $sender = Auth::user();
+        $sender = User::find(Auth::id());
         $recipient = User::find($id);
 
         $messages = DialogService::getMessages($sender, $recipient)->get();

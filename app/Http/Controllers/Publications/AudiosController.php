@@ -86,7 +86,7 @@ class AudiosController extends Controller
 
     public function clearPlaylist()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $user->currentPlaylist->delete();
     }
 }

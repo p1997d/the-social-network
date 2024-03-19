@@ -23,7 +23,7 @@
             </p>
         </div>
     @else
-        <div class="list-group-item list-group-item-action list-group-item-message gap-2 message justify-content-center rounded border-0 @if ($message->senderUser->id != auth()->user()->id && !$message->viewed_at) unread @endif rounded-0"
+        <div class="list-group-item list-group-item-action list-group-item-message gap-2 message justify-content-center rounded border-0 @if ($message->senderUser->id !== auth()->user()->id && !$message->viewed_at) unread @endif rounded-0"
             id="{{ $message->id }}">
             <div>
                 <a href="{{ route('profile', $message->senderUser->id) }}" class="profileImageLink">
@@ -64,7 +64,7 @@
                 <div class="m-0 text-break content">
                     {{ Crypt::decrypt($message->content) }}
 
-                    @if ($message->changed_at && $message->sent_at != $message->changed_at)
+                    @if ($message->changed_at && $message->sent_at !== $message->changed_at)
                         <span class="text-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip"
                             data-bs-title="изменено {{ Carbon::parse($message->changed_at)->diffForHumans() }}">(ред.)</span>

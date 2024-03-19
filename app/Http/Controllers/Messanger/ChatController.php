@@ -26,7 +26,7 @@ class ChatController extends Controller
     private function getData($request)
     {
         $sender = User::find(Auth::id());
-        $senderAvatar = $sender->avatar();
+        $senderAvatar = $sender->avatar;
 
         $decryptContent = $request->content;
         $content = Crypt::encrypt($decryptContent);
@@ -39,7 +39,7 @@ class ChatController extends Controller
 
     public function createChat(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         $request->validate([
             'title' => 'required|max:200',

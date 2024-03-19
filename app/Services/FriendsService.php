@@ -140,7 +140,7 @@ class FriendsService
             return null;
         }
 
-        $user2 = Auth::user();
+        $user2 = User::find(Auth::id());
 
         $friend = Friends::where([['user1', $user1->id], ['user2', $user2->id]])
             ->orWhere([['user1', $user2->id], ['user2', $user1->id]])->get();

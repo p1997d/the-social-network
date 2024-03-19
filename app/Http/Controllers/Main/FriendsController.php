@@ -70,7 +70,7 @@ class FriendsController extends Controller
     public function addFriend($id)
     {
 
-        $auth_user = Auth::user();
+        $auth_user = User::find(Auth::id());
         $user_profile = User::find($id);
 
         $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) {
@@ -90,7 +90,7 @@ class FriendsController extends Controller
 
     public function cancelAddFriend($id)
     {
-        $auth_user = Auth::user();
+        $auth_user = User::find(Auth::id());
         $user_profile = User::find($id);
 
         $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) use ($auth_user) {
@@ -110,7 +110,7 @@ class FriendsController extends Controller
 
     public function approveAddFriend($id)
     {
-        $auth_user = Auth::user();
+        $auth_user = User::find(Auth::id());
         $user_profile = User::find($id);
 
         $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) use ($auth_user) {
@@ -130,7 +130,7 @@ class FriendsController extends Controller
 
     public function rejectAddFriend($id)
     {
-        $auth_user = Auth::user();
+        $auth_user = User::find(Auth::id());
         $user_profile = User::find($id);
 
         $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) use ($auth_user) {
@@ -150,7 +150,7 @@ class FriendsController extends Controller
 
     public function unfriend($id)
     {
-        $auth_user = Auth::user();
+        $auth_user = User::find(Auth::id());
         $user_profile = User::find($id);
 
         $models = FriendsService::getFriendsModels($user_profile)->filter(function ($item) {

@@ -45,7 +45,7 @@ class GeneralService
         $user = User::find(Auth::id());
         $title = "Мои " . mb_strtolower($type);
 
-        if ($id && $id != $user->id) {
+        if ($id && $id !== $user->id) {
             $user = User::find($id);
             $genitiveName = UserService::getGenitiveName($user);
             $title = $type . " " . $genitiveName;

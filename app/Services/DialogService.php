@@ -10,7 +10,7 @@ class DialogService
 {
     public static function getDialogs()
     {
-        $sender = Auth::user();
+        $sender = User::find(Auth::id());
         $messages = Dialog::where([['sender', $sender->id], ['delete_for_sender', '!=', 1]])
             ->orWhere([['recipient', $sender->id], ['delete_for_recipient', '!=', 1]])
             ->get();

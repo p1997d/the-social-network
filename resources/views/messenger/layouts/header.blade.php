@@ -8,13 +8,13 @@
         <div class="text-center fs-7 d-flex flex-column justify-content-center">
             @if (class_basename($recipient) == 'User')
                 <a href="{{ route('profile', $recipient->id) }}" class="link-body-emphasis">
-                    @if ($recipient->id != auth()->id())
+                    @if ($recipient->id !== auth()->id())
                         {{ $recipient->firstname }} {{ $recipient->surname }}
                     @else
                         Избранное
                     @endif
                 </a>
-                @if ($recipient->id != auth()->id())
+                @if ($recipient->id !== auth()->id())
                     <p class="m-0 text-secondary">{{ $recipient->online()['online'] }}</p>
                 @endif
             @else

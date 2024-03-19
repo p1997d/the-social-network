@@ -30,7 +30,7 @@ class IndexController extends Controller
 
         $title = 'Сообщения';
 
-        $sender = Auth::user();
+        $sender = User::find(Auth::id());
 
         $to = $request->query('to');
         $chat = $request->query('chat');
@@ -100,7 +100,7 @@ class IndexController extends Controller
 
     public function getMessage(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         if ($request->typeRecipient == 'to'){
             $message = Dialog::find($request->id);
         }
@@ -109,7 +109,7 @@ class IndexController extends Controller
         }
 
 
-        if ($message->sender != $user->id) {
+        if ($message->sender !== $user->id) {
             abort(403);
         }
 

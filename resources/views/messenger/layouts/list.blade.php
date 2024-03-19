@@ -42,7 +42,7 @@
                 </div>
                 <div class="d-flex justify-content-between w-100">
                     <div class="m-0 d-flex gap-2">
-                        @if (class_basename($chatlog->lastMessage()) != 'ChatSystemMessage' &&
+                        @if (class_basename($chatlog->lastMessage()) !== 'ChatSystemMessage' &&
                                 $chatlog->lastMessage()->senderUser->id == auth()->user()->id)
                             <div>
                                 @include('layouts.avatar', [

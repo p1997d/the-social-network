@@ -256,7 +256,7 @@ function getPhotoInfo(photo, currentPhoto = null) {
                 .append(`${currentPhoto} из ${photosLength}`)
                 .addClass('text-secondary');
 
-            if (userId != data.photo.author) {
+            if (userId !== data.photo.author) {
                 $('.photoDeleteButton').remove();
             }
         }

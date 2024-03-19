@@ -37,7 +37,7 @@ class FileService
     public static function delete($photo) {
         $file = File::find($photo);
 
-        if ($file->author != Auth::id()) {
+        if ($file->author !== Auth::id()) {
             abort(403);
         }
 

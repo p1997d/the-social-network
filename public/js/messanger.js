@@ -393,7 +393,7 @@ function removeFile(removeIndex) {
     for (let i = 0; i < fileInput.files.length; i++) {
         let file = fileInput.files[i];
 
-        if (i != removeIndex) {
+        if (i !== removeIndex) {
             dt.items.add(file);
         }
     };

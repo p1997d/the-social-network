@@ -19,7 +19,7 @@ class AudioService
         $ffprobe = FFProbe::create();
         $info = $ffprobe->format(storage_path("app/public/files/$file->path"));
         $duration = $info->get('duration');
-        $formatDuration[] = gmdate("H", $duration) != '00' ? gmdate("H", $duration) : null;
+        $formatDuration[] = gmdate("H", $duration) !== '00' ? gmdate("H", $duration) : null;
         $formatDuration[] = gmdate("i:s", $duration);
         $formatDuration = implode(':', array_filter($formatDuration));
 
@@ -46,14 +46,14 @@ class AudioService
 
     public static function getAudio($id, $playlist)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         $audio = Audio::find($id);
         $audioFile = $audio->audiofile;
 
         $data = compact('audio', 'audioFile');
 
-        if ($playlist != null) {
+        if ($playlist !== null) {
             $findedPlaylist = Playlist::find($playlist);
             $playlist = $findedPlaylist->audios->pluck("id");
 
@@ -159,7 +159,7 @@ class AudioService
 
     public static function getLastAudio()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         if (!$user->currentPlaylist || !$user->currentPlaylist->getlastaudio) {
             return null;
@@ -175,7 +175,7 @@ class AudioService
 
     public static function getPlaylist($playlist)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         switch ($playlist) {
             case 'myPlaylist':

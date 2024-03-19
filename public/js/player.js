@@ -26,7 +26,7 @@ function initializationPlayers() {
         players.forEach(function (instance) {
             instance.on('play', function () {
                 players.forEach(function (instance1) {
-                    if (instance != instance1) {
+                    if (instance !== instance1) {
                         instance1.pause();
                     }
                 });
@@ -78,7 +78,7 @@ function initializationPlayerButton() {
 
         let currentTrack = getCurrentTrack();
 
-        if (button.attr('data-id') != currentTrack) {
+        if (button.attr('data-id') !== currentTrack) {
             let id = button.attr('data-id');
             let playlist = button.attr('data-playlist');
 
@@ -246,7 +246,7 @@ function playAudio(id, playlist = null) {
 function forwardAudio() {
     let currentTrack = getCurrentTrack();
 
-    if (currentPlaylist.indexOf(Number(currentTrack)) != -1) {
+    if (currentPlaylist.indexOf(Number(currentTrack)) !== -1) {
         if (currentPlaylist.indexOf(Number(currentTrack)) + 1 < currentPlaylist.length) {
             let id = currentPlaylist[currentPlaylist.indexOf(Number(currentTrack)) + 1];
             playAudio(id);
@@ -260,7 +260,7 @@ function forwardAudio() {
 function backwardAudio() {
     let currentTrack = getCurrentTrack();
 
-    if (currentPlaylist.indexOf(Number(currentTrack)) != -1) {
+    if (currentPlaylist.indexOf(Number(currentTrack)) !== -1) {
         if (currentPlaylist.indexOf(Number(currentTrack)) - 1 >= 0) {
             let id = currentPlaylist[currentPlaylist.indexOf(Number(currentTrack)) - 1];
             playAudio(id);
@@ -347,7 +347,7 @@ function setAudioData(data) {
 
     let fullTitle = `${artist} - ${title}`;
 
-    if (id != currentTrack) {
+    if (id !== currentTrack) {
         mainPlayer.source = {
             type: 'audio',
             title: fullTitle,

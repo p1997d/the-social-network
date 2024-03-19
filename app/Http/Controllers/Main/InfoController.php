@@ -26,7 +26,7 @@ class InfoController extends Controller
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         $avatar = FileService::create($user, 'profile', time(), $request->avatar);
 
@@ -40,7 +40,7 @@ class InfoController extends Controller
 
     public function deleteAvatar()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         if (optional($user->info)->avatar) {
             $model = $user->info;
             $model->update([
@@ -72,7 +72,7 @@ class InfoController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = User::find(Auth::id());
 
         $location = null;
         $locationArray = array_filter([$request->region1, $request->region2, $request->region3]);
