@@ -35,6 +35,10 @@ $(document).ready(function () {
     });
 
 });
+$(document).on('pjax:clicked', function () {
+    $.pjax.reload({ container: "#pjax-container", async: false });
+    $.pjax.reload({ container: "#header-title-pjax", async: false });
+});
 
 $(document).on('pjax:end', function () {
     $('.modal').modal('hide')
@@ -42,6 +46,7 @@ $(document).on('pjax:end', function () {
 
     onResizeWindow();
     initializePageInteractions();
+    $(document).scrollTop(0);
 });
 
 function initializePageInteractions() {
@@ -79,4 +84,16 @@ function notification(event) {
 function playNotificationAudio() {
     const audio = new Audio('../mp3/notification.mp3');
     audio.play();
+}
+
+function showMessage(data) {
+    $('.generalEmptyToast')
+        .clone()
+        .appendTo('.toast-container')
+        .removeClass('generalEmptyToast')
+        .addClass(`text-bg-${data.color}`)
+        .find('.toast-body')
+        .text(data.message)
+        .end()
+        .toast('show');
 }

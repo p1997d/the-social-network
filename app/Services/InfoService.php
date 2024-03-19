@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class InfoService
 {
+    public $title, $icon, $description;
+
+    public function __construct($title, $icon, $description)
+    {
+        $this->title = $title;
+        $this->icon = $icon;
+        $this->description = $description;
+    }
     public static function getLocation()
     {
         $user = User::find(Auth::id());

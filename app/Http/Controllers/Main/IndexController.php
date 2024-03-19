@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use App\Models\User;
+
 use App\Services\FriendsService;
 use App\Services\UserService;
-use App\Services\PublicationsService;
+use App\Services\PhotoService;
+use App\Services\AudioService;
 
 class IndexController extends Controller
 {
@@ -17,16 +21,15 @@ class IndexController extends Controller
         if (!Auth::guest()) {
             return redirect()->route('profile', Auth::id());
         }
-        return view('auth.signin');
+        return view('auth.signin', ['title' => 'Вход']);
     }
 
     public function profile(Request $request, $id)
     {
-        $title = 'Главная';
         $user_profile = User::find($id);
 
         if (!$user_profile) {
-            return view('main.info', ['info' => 'Страница удалена либо ещё не создана.']);
+            return view('main.info', ['title' => 'Информация', 'info' => 'Страница удалена либо ещё не создана.']);
         }
 
         $listFriends = FriendsService::listFriends($user_profile);
@@ -37,7 +40,12 @@ class IndexController extends Controller
 
         list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user_profile);
 
-        $photos = PublicationsService::getPhotos($user_profile);
+        $photos = PhotoService::getPhotos($user_profile);
+
+        $playlist = $user_profile->playlist;
+        $audios = AudioService::getAudios($playlist);
+
+        $title = "$user_profile->firstname $user_profile->surname";
 
         return view(
             'profile.index',
@@ -52,16 +60,38 @@ class IndexController extends Controller
                 'listOnline',
                 'friendForm',
                 'photos',
+                'audios',
+                'playlist',
             )
         );
     }
 
     public function signup()
     {
-        return view('auth.signup');
+        return view('auth.signup', ['title' => 'Регистрация']);
     }
     public function signin()
     {
-        return view('auth.signin');
+        return view('auth.signin', ['title' => 'Вход']);
+    }
+
+    public function feed()
+    {
+        $title = 'Новости';
+
+        if (Auth::guest()) {
+            return redirect()->route('auth.signin');
+        }
+        return view('main.feed', compact('title'));
+    }
+
+    public function groups()
+    {
+        $title = 'Группы';
+
+        if (Auth::guest()) {
+            return redirect()->route('auth.signin');
+        }
+        return view('main.groups', compact('title'));
     }
 }

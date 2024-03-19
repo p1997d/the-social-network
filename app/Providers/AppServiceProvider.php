@@ -5,10 +5,10 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Classes\Sidebar;
-use App\Services\PublicationsService;
-use App\Services\MessagesService;
-use App\Services\FriendsService;
+use App\Services\MenuService;
+use App\Services\PhotoService;
+use App\Services\AudioService;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,23 +28,14 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('*', function ($view) {
             $request = app(Request::class);
 
-            $unreadMessagesCount = MessagesService::getUnreadMessagesCount();
-            $incomingCount = FriendsService::listIncoming()->count();
+            $counter = MenuService::getCounters();
+            $sidebar = MenuService::getSidebar();
+            $menu = MenuService::getNavbar();
 
-            $sidebar = [
-                new Sidebar('Моя страница', 'bi-house-door-fill', route('index')),
-                new Sidebar('Новости', 'bi-newspaper', '#'),
-                new Sidebar('Сообщения', 'bi-chat-fill', route('messages'), $unreadMessagesCount),
-                new Sidebar('Друзья', 'bi-person-fill', route('friends'), $incomingCount),
-                new Sidebar('Группы', 'bi-people-fill', '#'),
-                new Sidebar('Фотографии', 'bi-camera-fill', route('photos')),
-                new Sidebar('Аудиозаписи', 'bi-music-note-beamed', route('audios')),
-                new Sidebar('Видеозаписи', 'bi-film', route('videos')),
-            ];
-
-            $data = compact('unreadMessagesCount', 'incomingCount', 'sidebar');
+            $data = array_merge($counter, compact('sidebar', 'menu'));
 
             $queryContent = $request->query('content');
+
             if ($queryContent) {
                 $contentArray = explode('_', $queryContent);
                 $user = User::find($contentArray[3]);
@@ -54,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
                 $to = $request->query('to');
                 $chat = $request->query('chat');
 
-                $content = PublicationsService::getPhotos($user, $typeContent, $to, $chat);
+                $content = PhotoService::getPhotos($user, $typeContent, $to, $chat);
                 $activeContent = $contentArray[1];
 
                 $data = array_merge($data, compact('content', 'activeContent', 'typeContent'));

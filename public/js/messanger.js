@@ -1,7 +1,6 @@
 let url, recipient, typeRecipient;
 
 var page;
-var players = [];
 
 $(document).ready(function () {
     getURL();
@@ -13,20 +12,6 @@ $(document).ready(function () {
         name: typeRecipient,
         value: recipient
     }).prependTo('.searchForm .input-group');
-
-    players = Plyr.setup('.player');
-
-    if (players) {
-        players.forEach(function (instance) {
-            instance.on('play', function () {
-                players.forEach(function (instance1) {
-                    if (instance != instance1) {
-                        instance1.pause();
-                    }
-                });
-            });
-        });
-    }
 
     resetPage();
 });
@@ -262,12 +247,16 @@ function isVisible(tag) {
 }
 
 function resetPage() {
-    page = 2;
-    url.searchParams.set('page', page);
-    if ($('.unread').length) {
-        $(document).scrollTop($('.unread:last').offset().top - $('.messages-list-group').offset().top);
-    } else {
-        $(document).scrollTop($(document).height());
+    url = new URL(window.location.href);
+
+    if (window.location.pathname === '/messages' && (url.searchParams.has('to') || url.searchParams.has('chat'))) {
+        page = 2;
+        url.searchParams.set('page', page);
+        if ($('.unread').length) {
+            $(document).scrollTop($('.unread:last').offset().top - $('.messages-list-group').offset().top);
+        } else {
+            $(document).scrollTop($(document).height());
+        }
     }
 }
 

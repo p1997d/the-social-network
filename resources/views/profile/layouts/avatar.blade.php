@@ -25,7 +25,7 @@
             @include('layouts.avatar', [
                 'model' => $user_profile,
                 'width' => '350px',
-                'class' => 'rounded object-fit-cover',
+                'class' => 'rounded object-fit-cover mw-100',
                 'modal' => true
             ])
         </div>

@@ -4,11 +4,20 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Friends;
-use App\Classes\FriendsForm;
 use Illuminate\Support\Facades\Auth;
 
 class FriendsService
 {
+    public $title, $icon, $link, $color;
+
+    public function __construct($title, $icon, $link, $color)
+    {
+        $this->title = $title;
+        $this->icon = $icon;
+        $this->link = $link;
+        $this->color = $color;
+    }
+
     public static function listFriends($user)
     {
         $friends = Friends::where([['user1', $user->id], ['status', 1]])
@@ -142,22 +151,22 @@ class FriendsService
                 return $item->status == 0 && $item->user2 == $user1->id;
             })->isNotEmpty()
         ) {
-            $forms[] = new FriendsForm('Отменить заявку', 'bi-ban', route('friends.canceladdfriend', ['user' => $user1->id]), 'btn-secondary');
+            $forms[] = new self('Отменить заявку', 'bi-ban', route('friends.canceladdfriend', ['user' => $user1->id]), 'btn-secondary');
         } elseif (
             $friend->filter(function ($item) use ($user1) {
                 return $item->status == 0 && $item->user1 == $user1->id;
             })->isNotEmpty()
         ) {
-            $forms[] = new FriendsForm('Добавить в друзья', 'bi-person-fill-add', route('friends.approveaddfriend', ['user' => $user1->id]), 'btn-primary');
-            $forms[] = new FriendsForm('Отклонить заявку', 'bi-ban', route('friends.rejectaddfriend', ['user' => $user1->id]), 'btn-secondary');
+            $forms[] = new self('Добавить в друзья', 'bi-person-fill-add', route('friends.approveaddfriend', ['user' => $user1->id]), 'btn-primary');
+            $forms[] = new self('Отклонить заявку', 'bi-ban', route('friends.rejectaddfriend', ['user' => $user1->id]), 'btn-secondary');
         } elseif (
             $friend->filter(function ($item) {
                 return $item->status == 1;
             })->isNotEmpty()
         ) {
-            $forms[] = new FriendsForm('Убрать из друзей', 'bi-ban', route('friends.unfriend', ['user' => $user1->id]), 'btn-secondary');
+            $forms[] = new self('Убрать из друзей', 'bi-ban', route('friends.unfriend', ['user' => $user1->id]), 'btn-secondary');
         } else {
-            $forms[] = new FriendsForm('Добавить в друзья', 'bi-person-fill-add', route('friends.addfriend', ['user' => $user1->id]), 'btn-primary');
+            $forms[] = new self('Добавить в друзья', 'bi-person-fill-add', route('friends.addfriend', ['user' => $user1->id]), 'btn-primary');
         }
 
         return $forms;

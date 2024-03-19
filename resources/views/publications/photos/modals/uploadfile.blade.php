@@ -1,5 +1,5 @@
 <div class="modal fade" id="uploadphoto" tabindex="-1" aria-hidden="true">
-    <form method="POST" action="{{ route('photos.upload') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('photos.upload') }}" id="formPhotoUpload" enctype="multipart/form-data">
         @csrf
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -9,7 +9,7 @@
                 </div>
                 <div class="modal-body">
                     <div>
-                        <input class="form-control" type="file" id="photos" name="photos" accept="image/*">
+                        <input class="form-control" type="file" id="photosIpnut" name="photos" accept="image/*" required>
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">

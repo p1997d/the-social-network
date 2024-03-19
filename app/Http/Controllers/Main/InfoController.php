@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use App\Models\User;
 use App\Models\Info;
 use App\Models\Location;
+
 use App\Services\InfoService;
 use App\Services\FileService;
+
 use App\Enums\Education;
 use App\Enums\FamilyStatus;
 
@@ -24,7 +28,7 @@ class InfoController extends Controller
 
         $user = Auth::user();
 
-        $avatar = FileService::create($user, 'avatars', time(), request()->avatar);
+        $avatar = FileService::create($user, 'profile', time(), $request->avatar);
 
         Info::updateOrCreate(
             ['user' => $user->id],
@@ -61,7 +65,9 @@ class InfoController extends Controller
 
         $userinfo = optional($user->info);
 
-        return view('main.editprofile', compact('familyStatus', 'education', 'location', 'userinfo'));
+        $title = 'Редактирование профиля';
+
+        return view('main.editprofile', compact('familyStatus', 'education', 'location', 'userinfo', 'title'));
     }
 
     public function updateProfile(Request $request)

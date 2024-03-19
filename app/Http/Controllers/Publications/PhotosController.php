@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Publications;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use App\Models\File;
 use App\Models\User;
+
 use App\Services\FileService;
 use App\Services\GeneralService;
-use App\Services\PublicationsService;
+use App\Services\PhotoService;
 
 class PhotosController extends Controller
 {
@@ -17,21 +20,25 @@ class PhotosController extends Controller
     {
         $id = $request->query('id');
 
-        list($title, $user) = GeneralService::getTitleAndUser($id, 'Фотографии');
+        list($title, $user) = GeneralService::getTitleAndUser($id, "Фотографии");
 
         $type = $request->query('type');
 
-        $photos = PublicationsService::getPhotos($user, $type);
+        $photos = PhotoService::getPhotos($user, $type);
 
         return view('publications.photos.index', compact('title', 'user', 'photos', 'type'));
     }
 
     public function upload(Request $request)
     {
-        $user = User::find(Auth::id());
-        FileService::create($user, 'photos', time(), $request->photos);
+        $request->validate([
+            'photos' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-        return back();
+        $user = User::find(Auth::id());
+        FileService::create($user, 'uploaded', time(), $request->photos);
+
+        return ['color' => 'success', 'message' => 'Фотография успешно загружена'];;
     }
 
     public function delete(Request $request)

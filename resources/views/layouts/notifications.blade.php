@@ -4,7 +4,7 @@
             <strong class="title me-auto"></strong>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
-        <div class="toast-body ">
+        <div class="toast-body">
             <a href="#"
                 class="link link-body-emphasis link-underline-opacity-0 link-underline-opacity-0-hover link-opacity-100-hover d-flex gap-2 align-items-baseline">
                 <div class="my-auto">

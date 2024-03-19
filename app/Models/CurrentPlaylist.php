@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class CurrentPlaylist extends Model
+{
+    use HasFactory;
+    protected $table = 'current_playlists';
+    protected $quarde = false;
+    protected $guarded = [];
+
+    public function getplaylist()
+    {
+        return $this->belongsTo(Playlist::class, 'playlist');
+    }
+    public function getlastaudio()
+    {
+        return $this->belongsTo(Audio::class, 'last_audio');
+    }
+}

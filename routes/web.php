@@ -9,9 +9,8 @@ Route::group(['namespace' => 'Index'], function () {
     Route::get('/signup', [App\Http\Controllers\Main\IndexController::class, 'signup'])->name('auth.signup');
     Route::get('/signin', [App\Http\Controllers\Main\IndexController::class, 'signin'])->name('auth.signin');
 
-    // Route::get('/mypage', function () {
-    //     return redirect()->route('profile', Auth::id());
-    // })->name('mypage');
+    Route::get('/feed', [App\Http\Controllers\Main\IndexController::class, 'feed'])->name('feed');
+    Route::get('/groups', [App\Http\Controllers\Main\IndexController::class, 'groups'])->name('groups');
 });
 
 Route::group(['namespace' => 'Info'], function () {
@@ -56,7 +55,7 @@ Route::group(['namespace' => 'Messenger'], function () {
 Route::group(['namespace' => 'Publications'], function () {
     Route::group(['namespace' => 'Photos'], function () {
         Route::get('/photos', [App\Http\Controllers\Publications\PhotosController::class, 'index'])->name('photos');
-        Route::get('/publications/getPhoto', [App\Http\Controllers\Publications\PhotosController::class, 'getPhoto'])->name('getPhoto');
+        Route::get('/photos/getPhoto', [App\Http\Controllers\Publications\PhotosController::class, 'getPhoto'])->name('getPhoto');
 
         Route::post('/photos/upload', [App\Http\Controllers\Publications\PhotosController::class, 'upload'])->name('photos.upload');
         Route::post('/photos/delete', [App\Http\Controllers\Publications\PhotosController::class, 'delete'])->name('photos.delete');
@@ -64,9 +63,16 @@ Route::group(['namespace' => 'Publications'], function () {
 
     Route::group(['namespace' => 'Audios'], function () {
         Route::get('/audios', [App\Http\Controllers\Publications\AudiosController::class, 'index'])->name('audios');
+        Route::get('/audios/getAudio', [App\Http\Controllers\Publications\AudiosController::class, 'getAudio'])->name('getAudio');
+        Route::get('/audios/getPlaylist', [App\Http\Controllers\Publications\AudiosController::class, 'getPlaylist'])->name('getPlaylist');
+        Route::get('/audios/getLastAudio', [App\Http\Controllers\Publications\AudiosController::class, 'getLastAudio'])->name('getLastAudio');
 
+        Route::post('/audios/add', [App\Http\Controllers\Publications\AudiosController::class, 'add'])->name('audios.add');
         Route::post('/audios/upload', [App\Http\Controllers\Publications\AudiosController::class, 'upload'])->name('audios.upload');
+        Route::post('/audios/download', [App\Http\Controllers\Publications\AudiosController::class, 'download'])->name('audios.download');
         Route::post('/audios/delete', [App\Http\Controllers\Publications\AudiosController::class, 'delete'])->name('audios.delete');
+
+        Route::post('/audios/clearPlaylist', [App\Http\Controllers\Publications\AudiosController::class, 'clearPlaylist'])->name('audios.clearPlaylist');
     });
 
     Route::group(['namespace' => 'Videos'], function () {

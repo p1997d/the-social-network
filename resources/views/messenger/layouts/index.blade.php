@@ -1,7 +1,5 @@
 @extends('layouts.index')
 
-@section('title', 'Сообщения')
-
 @section('content')
     <div class="row h-100">
         <div class="col-lg-8">

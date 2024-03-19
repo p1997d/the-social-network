@@ -40,6 +40,7 @@ class FileService
         if ($file->author != Auth::id()) {
             abort(403);
         }
+
         if (!$file->deleted_at) {
             $file->update([
                 'deleted_at' => now(),

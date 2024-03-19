@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title')</title>
+    <title>{{ $title }}</title>
 
     @section('css')
         <!-- Bootstrap -->
@@ -56,10 +56,11 @@
         </script>
 
         <script src="{{ asset('js/app.js') }}"></script>
-        <script src="{{ asset('js/friends.js') }}"></script>
         <script src="{{ asset('js/theme.js') }}"></script>
+        <script src="{{ asset('js/player.js') }}"></script>
+        <script src="{{ asset('js/friends.js') }}"></script>
         <script src="{{ asset('js/messanger.js') }}"></script>
-        <script src="{{ asset('js/modalImage.js') }}"></script>
+        <script src="{{ asset('js/photos.js') }}"></script>
 
         @vite('resources/js/echo.js')
     @show
@@ -67,13 +68,14 @@
 
 <body class="d-flex flex-column">
     <main class="flex-grow-1 mb-3 container pb-5">
+        @include('layouts.header')
+
         @section('main')
             <div class="row gx-3 h-100">
                 <div class="col-auto p-0 d-none d-lg-block" id="sidebar">
                     @include('layouts.sidebar')
                 </div>
                 <div class="col" id="pjax-container">
-                    @include('layouts.header')
                     @yield('content')
                 </div>
             </div>
@@ -82,8 +84,8 @@
         @include('layouts.modals.image')
         @include('layouts.offcanvasMenu')
         @include('layouts.notifications')
+        @include('layouts.toasts')
     </main>
-
     @yield('footer')
 </body>
 

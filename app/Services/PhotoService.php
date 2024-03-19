@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Audio;
 use App\Models\File;
 use App\Models\User;
 use App\Services\DialogService;
@@ -9,7 +10,7 @@ use App\Services\ChatService;
 use App\Services\MessagesService;
 use Illuminate\Support\Facades\Auth;
 
-class PublicationsService
+class PhotoService
 {
     public static function getPhotos($user, $type = null, $to = null, $chat = null)
     {
@@ -17,7 +18,7 @@ class PublicationsService
             case 'profile':
                 $photos = File::where([
                     ['author', $user->id],
-                    ['group', 'avatars'],
+                    ['group', 'profile'],
                     ['type', 'like', 'image/%'],
                     ['deleted_at', null]
                 ]);
@@ -26,7 +27,7 @@ class PublicationsService
             case 'uploaded':
                 $photos = File::where([
                     ['author', $user->id],
-                    ['group', 'photos'],
+                    ['group', 'uploaded'],
                     ['type', 'like', 'image/%'],
                     ['deleted_at', null]
                 ]);
@@ -57,12 +58,12 @@ class PublicationsService
             default:
                 $photos = File::where([
                     ['author', $user->id],
-                    ['group', 'avatars'],
+                    ['group', 'profile'],
                     ['type', 'like', 'image/%'],
                     ['deleted_at', null]
                 ])->orWhere([
                             ['author', $user->id],
-                            ['group', 'photos'],
+                            ['group', 'uploaded'],
                             ['type', 'like', 'image/%'],
                             ['deleted_at', null]
                         ]);

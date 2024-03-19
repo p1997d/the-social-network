@@ -77,6 +77,31 @@ function initializeImageInteractions() {
             })
         });
 
+    $('#formPhotoUpload')
+        .off('submit')
+        .on('submit', function (event) {
+            event.preventDefault();
+
+            let formData = new FormData(this);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    $('#uploadphoto').modal('hide');
+                },
+                success: function (data) {
+                    $.pjax.reload({ container: "#pjax-container", async: false });
+                    showMessage(data);
+                }
+            });
+
+            $(this)[0].reset();
+        });
+
     showModal();
 }
 
@@ -87,7 +112,7 @@ function showModal() {
     if (content) {
         const photo = content.split('_')[1];
         $.ajax({
-            url: '/publications/getPhoto',
+            url: '/photos/getPhoto',
             type: 'GET',
             data: {
                 id: photo,
@@ -143,7 +168,7 @@ function showAccessError() {
 
 function getPhotoInfo(photo, currentPhoto = null) {
     $.ajax({
-        url: '/publications/getPhoto',
+        url: '/photos/getPhoto',
         type: 'GET',
         data: {
             id: photo,
@@ -195,11 +220,11 @@ function getPhotoInfo(photo, currentPhoto = null) {
                 .append(body);
 
             let typeContent = {
-                avatars: {
+                profile: {
                     description: 'Фото профиля',
                     url: `photos?id=${data.author.id}&type=profile`
                 },
-                photos: {
+                uploaded: {
                     description: 'Загруженные фото',
                     url: `photos?id=${data.author.id}&type=uploaded`
                 },

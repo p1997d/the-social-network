@@ -15,6 +15,7 @@ use App\Services\UserService;
 use App\Services\FriendsService;
 use App\Services\DialogService;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 Carbon::setLocale('ru');
 
@@ -109,5 +110,15 @@ class User extends Authenticatable
     public function avatarFile()
     {
         return $this->hasOneThrough(File::class, Info::class, 'user', 'id', 'id', 'avatar');
+    }
+
+    public function playlist(): MorphOne
+    {
+        return $this->morphOne(Playlist::class, 'playlistable');
+    }
+
+    public function currentPlaylist()
+    {
+        return $this->hasOne(CurrentPlaylist::class, 'user', 'id');
     }
 }

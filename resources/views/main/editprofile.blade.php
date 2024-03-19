@@ -1,7 +1,5 @@
 @extends('layouts.index')
 
-@section('title', 'Редактирование профиля')
-
 @php
     use Carbon\Carbon;
     Carbon::setLocale('ru');
@@ -28,11 +26,8 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header">
-                    <span class="fs-4">Профиль</span>
-                </div>
+                @include('layouts.cardHeader')
                 <div class="card-body addcolon">
-                    @include('layouts.alerts')
                     <form method="POST" action="{{ route('info.updateprofile') }}">
                         @csrf
                         <div class="row mb-3">

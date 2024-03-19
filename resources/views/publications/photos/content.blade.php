@@ -1,0 +1,33 @@
+@php
+    use Carbon\Carbon;
+    use Carbon\CarbonInterface;
+    Carbon::setLocale('ru');
+@endphp
+<div class="d-flex justify-content-start flex-wrap gap-2">
+    @forelse ($photos as $i => $photo)
+        @if (
+            $loop->first ||
+                (isset($photos[$i + 1]) &&
+                    !Carbon::parse($photos[$i + 1]->created_at)->isSameDay(Carbon::parse($photo->created_at))))
+            <div class="w-100 pt-3 pb-1 text-secondary">
+                <p class="m-0 p-0">{{ $photo->date() }}</p>
+            </div>
+        @endif
+
+        <div class="openImageModal" data-user="{{ $photo->author }}" data-photo="{{ $photo->id }}"
+            data-type="{{ $type ?: 'all' }}" tabindex="0">
+            <img src="{{ asset("storage/files/$photo->path") }}" class="photos rounded" />
+        </div>
+    @empty
+        <div class="w-100 text-center">
+            @if (auth()->user()->id == $user->id)
+                <p>Вы ещё не загружали фото</p>
+            @else
+                <p>{{ $user->firstname }} ещё не
+                    добавил{{ $user->sex == 'female' ? 'а' : '' }}
+                    фотографии
+                </p>
+            @endif
+        </div>
+    @endforelse
+</div>

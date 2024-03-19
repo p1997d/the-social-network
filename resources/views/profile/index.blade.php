@@ -1,12 +1,8 @@
 @extends('layouts.index')
 
-@section('title')
-    {{ $user_profile->firstname }} {{ $user_profile->surname }}
-@endsection
-
 @section('content')
     <div class="row">
-        <div class="col-lg-auto">
+        <div class="col-lg-4">
             <div class="card mb-3 shadow">
                 <div class="card-body">
                     @include('profile.layouts.avatar')
@@ -20,8 +16,9 @@
 
             @include('profile.layouts.friends')
             @include('profile.layouts.groups')
+            @include('profile.layouts.audios')
         </div>
-        <div class="col-lg">
+        <div class="col-lg-8">
 
             <div class="d-none d-lg-block">
                 @include('profile.layouts.info')

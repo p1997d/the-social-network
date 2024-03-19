@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use App\Models\Friends;
 use App\Models\User;
+
 use App\Events\FriendsWebSocket;
+
 use App\Services\GeneralService;
 use App\Services\FriendsService;
 
@@ -48,7 +52,7 @@ class FriendsController extends Controller
 
 
         return view(
-            'main.friends',
+            'friends.index',
             compact(
                 'section',
                 'title',
