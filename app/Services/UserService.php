@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use morphos\Russian;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use App\Services\InfoService;
 use App\Models\Location;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use morphos\Russian\Cases;
+use function morphos\Russian\inflectName;
 
 Carbon::setLocale('ru');
 
@@ -56,7 +57,8 @@ class UserService
 
     public static function getGenitiveName($user)
     {
-        $name = Russian\inflectName($user->firstname, 'родительный') . " " . Russian\inflectName($user->surname, 'родительный');
+        $name = inflectName("$user->surname $user->firstname", Cases::RODIT, $user->sex[0] ?? null);
+        $name = implode(' ', array_reverse(explode(' ', $name)));
         return $name;
     }
 }

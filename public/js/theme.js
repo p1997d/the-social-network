@@ -1,4 +1,3 @@
-
 if (!localStorage.getItem('theme')) {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         setTheme('dark');

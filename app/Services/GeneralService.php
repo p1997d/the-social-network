@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use morphos\Russian;
+use function morphos\Russian\pluralize;
 
 Carbon::setLocale('ru');
 
@@ -37,7 +37,7 @@ class GeneralService
     }
 
     public static function getPluralize($count, $text){
-        return Russian\pluralize($count, $text);
+        return pluralize($count, $text);
     }
 
     public static function getTitleAndUser($id, $type)
