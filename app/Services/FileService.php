@@ -19,12 +19,13 @@ class FileService
 
     public static function create($user, $group, $name, $file)
     {
-        $fileName = $name . '.' . $file->getClientOriginalExtension();
-        $fileFolder = $user->id . '/' . $group . '/';
-
-        $filePath = $fileFolder . $fileName;
+        $filePath = $user->id . '/' . $group . '/' . $name . '.' . $file->getClientOriginalExtension();
 
         $file->storeAs('files', $filePath, 'public');
+
+        if (explode("/", $file->getMimeType())[0] == 'image') {
+            self::createThumbnails($file, $filePath);
+        }
 
         $model = new File();
 
@@ -40,17 +41,13 @@ class FileService
         return $model;
     }
 
-    public static function createThumbnails($user, $group, $name, $file)
+    public static function createThumbnails($file, $filePath)
     {
-        $fileName = $name . '.' . $file->getClientOriginalExtension();
-        $fileFolder = $user->id . '/' . $group . '/';
-
-        $filePath = 'public/thumbnails/' . $fileFolder . $fileName;
-
         $image = Image::read($file);
-        $image->scale(width: 200);
+        $image->scale(width: 300);
         $imagedata = (string) $image->toJpeg();
-        Storage::put($filePath, $imagedata);
+
+        Storage::put('public/thumbnails/' . $filePath, $imagedata);
     }
 
     public static function delete($photo)

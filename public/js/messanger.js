@@ -339,13 +339,20 @@ function getAttachments(data) {
         switch (item.type.split('/')[0]) {
             case 'image':
                 $col = $('<div>').addClass('col').appendTo($row);
+
                 $div = $('<div>')
-                    .attr('data-bs-toggle', 'modal')
-                    .attr('data-bs-target', '#imageModal')
-                    .attr('data-bs-image', `storage/files/${item.path}`)
-                    .attr('data-bs-id', `${item.id}`)
+                    .addClass('openImageModal')
+                    .attr('data-user', item.author)
+                    .attr('data-photo', item.id)
+                    .attr('data-type', 'messages')
+                    .attr('tabindex', '0')
                     .appendTo($col);
-                $img = $('<img>').attr('src', `storage/files/${item.path}`).addClass('message_image').appendTo($div);
+
+                $img = $('<img>')
+                    .attr('src', `storage/thumbnails/${item.path}`)
+                    .addClass('photos rounded')
+                    .appendTo($div);
+
                 break;
 
             case 'audio':

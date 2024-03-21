@@ -7,12 +7,8 @@ $(document).ready(function () {
         controls: false,
     });
 
-
-    mainPlayer.on('ready', (event) => {
-        initializationPlayers();
-        initializationPlayerButton();
-        getLastAudio();
-    });
+    initializationPlayers();
+    initializationPlayerButton();
 });
 
 $(document).on('pjax:end', function () {
@@ -23,6 +19,10 @@ $(document).on('pjax:end', function () {
 
 function initializationPlayers() {
     players = Plyr.setup('.player');
+
+    if (players === null) {
+        players = [];
+    }
 
     if (players) {
         players.forEach(function (instance) {
@@ -40,6 +40,11 @@ function initializationPlayers() {
             });
         });
     }
+
+    mainPlayer.on('ready', () => {
+        $('#playerVolumeRange').val(mainPlayer.volume * 100);
+        getLastAudio();
+    });
 
     mainPlayer.on('play pause', () => {
         let currentTrack = getCurrentTrack();
@@ -66,8 +71,6 @@ function initializationPlayers() {
 
         $('.playerCurrentAudioProgressBar').css('width', seekPercentage + '%');
     });
-
-    $('#playerVolumeRange').val(mainPlayer.volume * 100)
 
     mainPlayer.on('ended', () => {
         forwardAudio();
