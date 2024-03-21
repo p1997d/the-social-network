@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
-use FFMpeg\FFProbe;
-
 use App\Models\User;
 use App\Models\Audio;
 use App\Models\Playlist;
 use App\Models\PlaylistAudio;
 use App\Models\CurrentPlaylist;
 
+use FFMpeg\FFProbe;
 use Illuminate\Support\Facades\Auth;
 
 class AudioService

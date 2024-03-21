@@ -37,14 +37,14 @@ class PhotosController extends Controller
 
         $user = User::find(Auth::id());
         FileService::create($user, 'uploaded', time(), $request->photos);
+        FileService::createThumbnails($user, 'uploaded', time(), $request->photos);
 
-        return ['color' => 'success', 'message' => 'Фотография успешно загружена'];;
+        return ['color' => 'success', 'message' => 'Фотография успешно загружена'];
     }
 
     public function delete(Request $request)
     {
-        $data = FileService::delete($request->photo);
-        return $data;
+        return FileService::delete($request->photo);
     }
 
     public function getPhoto(Request $request)

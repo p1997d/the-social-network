@@ -5,7 +5,7 @@
 @section('main')
     <div class="row h-100">
         <div class="col d-flex align-items-center justify-content-center">
-            <div class="card" style="width: 35rem;">
+            <div class="card shadow" style="width: 35rem;">
                 <div class="card-header">
                     <h4 class="m-0">Вход</h4>
                 </div>

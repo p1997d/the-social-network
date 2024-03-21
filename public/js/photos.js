@@ -93,6 +93,12 @@ function initializeImageInteractions() {
                 beforeSend: function () {
                     $('#uploadphoto').modal('hide');
                 },
+                error: function(data) {
+                    showMessage({
+                        color: "danger",
+                        message: data.responseJSON.message
+                    });
+                },
                 success: function (data) {
                     $.pjax.reload({ container: "#pjax-container", async: false });
                     showMessage(data);

@@ -1,6 +1,7 @@
 $(document).ready(function () {
-    $(document).pjax('a', '#pjax-container');
-
+    if (userId) {
+        $(document).pjax('a', '#pjax-container');
+    }
     menu = new bootstrap.Offcanvas("#menu");
 
     $(window).resize(function () {
@@ -14,25 +15,27 @@ $(document).ready(function () {
     onResizeWindow();
     initializePageInteractions();
 
-    window.Echo.private(`Messages.${userId}`).listen('.message', (event) => {
-        if ($('.messages-body').length) {
-            changeMessagesBlock(event.data);
-        }
-        $.pjax.reload({ container: ".sidebar", async: false });
-        $.pjax.reload({ container: ".header-pjax", async: false });
-        notification(event);
-    });
+    if (userId) {
+        window.Echo.private(`Messages.${userId}`).listen('.message', (event) => {
+            if ($('.messages-body').length) {
+                changeMessagesBlock(event.data);
+            }
+            $.pjax.reload({ container: ".sidebar", async: false });
+            $.pjax.reload({ container: ".header-pjax", async: false });
+            notification(event);
+        });
 
-    window.Echo.private(`Friends.${userId}`).listen('.friend', (event) => {
-        if ($('.friends-pjax').length) {
-            $.pjax.reload({ container: ".friends-pjax", async: false });
-        }
-        if ($('.buttons-pjax').length) {
-            $.pjax.reload({ container: ".buttons-pjax", async: false });
-        }
-        $.pjax.reload({ container: ".sidebar", async: false });
-        notification(event);
-    });
+        window.Echo.private(`Friends.${userId}`).listen('.friend', (event) => {
+            if ($('.friends-pjax').length) {
+                $.pjax.reload({ container: ".friends-pjax", async: false });
+            }
+            if ($('.buttons-pjax').length) {
+                $.pjax.reload({ container: ".buttons-pjax", async: false });
+            }
+            $.pjax.reload({ container: ".sidebar", async: false });
+            notification(event);
+        });
+    }
 
 });
 $(document).on('pjax:clicked', function () {

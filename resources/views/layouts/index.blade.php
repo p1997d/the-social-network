@@ -52,7 +52,7 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
         <script>
-            const userId = {{ auth()->check() ? auth()->user()->id : null }};
+            const userId = {{ auth()->check() ? auth()->user()->id : "null" }};
         </script>
 
         <script src="{{ asset('js/theme.js') }}"></script>

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\File;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
 
 class FileService
 {
@@ -17,7 +19,11 @@ class FileService
 
     public static function create($user, $group, $name, $file)
     {
-        $filePath = $user->id . '/' . $group . '/' . $name . '.' . $file->getClientOriginalExtension();
+        $fileName = $name . '.' . $file->getClientOriginalExtension();
+        $fileFolder = $user->id . '/' . $group . '/';
+
+        $filePath = $fileFolder . $fileName;
+
         $file->storeAs('files', $filePath, 'public');
 
         $model = new File();
@@ -34,7 +40,21 @@ class FileService
         return $model;
     }
 
-    public static function delete($photo) {
+    public static function createThumbnails($user, $group, $name, $file)
+    {
+        $fileName = $name . '.' . $file->getClientOriginalExtension();
+        $fileFolder = $user->id . '/' . $group . '/';
+
+        $filePath = 'public/thumbnails/' . $fileFolder . $fileName;
+
+        $image = Image::read($file);
+        $image->scale(width: 200);
+        $imagedata = (string) $image->toJpeg();
+        Storage::put($filePath, $imagedata);
+    }
+
+    public static function delete($photo)
+    {
         $file = File::find($photo);
 
         if ($file->author !== Auth::id()) {

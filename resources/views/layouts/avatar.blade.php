@@ -1,4 +1,4 @@
-@if ($model->avatarFile && !$model->avatarFile->deleted_at)
+@if ($model->avatarFile && !$model->avatarFile->deleted_at && file_exists(asset('storage/files/' . $model->avatarFile->path)))
     @if ($modal)
         <div class="openImageModal" data-user="{{ $model->id }}" data-photo="{{ $model->avatarFile->id }}"
             data-type="profile" tabindex="0">

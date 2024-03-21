@@ -7,10 +7,12 @@ $(document).ready(function () {
         controls: false,
     });
 
-    initializationPlayers();
-    initializationPlayerButton();
 
-    getLastAudio();
+    mainPlayer.on('ready', (event) => {
+        initializationPlayers();
+        initializationPlayerButton();
+        getLastAudio();
+    });
 });
 
 $(document).on('pjax:end', function () {
@@ -198,6 +200,12 @@ function initializationPlayerButton() {
             processData: false,
             beforeSend: function () {
                 $('#uploadaudio').modal('hide');
+            },
+            error: function (data) {
+                showMessage({
+                    color: "danger",
+                    message: data.responseJSON.message
+                });
             },
             success: function (data) {
                 $.pjax.reload({ container: "#pjax-container", async: false });

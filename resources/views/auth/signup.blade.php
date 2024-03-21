@@ -34,7 +34,7 @@
                                 <label for="InputFirstname" class="form-label">{{ __('Имя') }}</label>
                                 <input id="InputFirstname" type="text"
                                     class="form-control @error('firstname') is-invalid @enderror" name="firstname"
-                                    value="{{ old('firstname') }}" required autocomplete="name" autofocus>
+                                    value="{{ old('firstname') }}" required autocomplete="off" autofocus>
 
                                 @error('firstname')
                                     <span class="invalid-feedback" role="alert">
@@ -46,7 +46,7 @@
                                 <label for="InputSurname" class="form-label">{{ __('Фамилия') }}</label>
                                 <input id="InputSurname" type="text"
                                     class="form-control @error('surname') is-invalid @enderror" name="surname"
-                                    value="{{ old('surname') }}" required autocomplete="name" autofocus>
+                                    value="{{ old('surname') }}" required autocomplete="off" autofocus>
 
                                 @error('surname')
                                     <span class="invalid-feedback" role="alert">
@@ -154,7 +154,8 @@
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 my-2">{{ __('Зарегистрироваться') }}</button>
-                        <a href="{{route('auth.signin')}}" class="btn btn-secondary w-100 my-2">{{ __('У меня уже есть аккаунт') }}</a>
+                        <a href="{{ route('auth.signin') }}"
+                            class="btn btn-secondary w-100 my-2">{{ __('У меня уже есть аккаунт') }}</a>
                     </form>
                 </div>
             </div>
