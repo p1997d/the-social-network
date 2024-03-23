@@ -15,6 +15,12 @@ Carbon::setLocale('ru');
 
 class UserService
 {
+    /**
+     * Получает статус пользователя
+     *
+     * @param int $id
+     * @return array
+     */
     public static function isOnline($id)
     {
         $user = User::find($id);
@@ -26,6 +32,12 @@ class UserService
         return compact('status', 'online', 'mobile');
     }
 
+    /**
+     * Получает информацию о пользователе
+     *
+     * @param \App\Models\User $user
+     * @return array
+     */
     public static function getInfo($user)
     {
         $info = [];
@@ -55,6 +67,12 @@ class UserService
         return $info;
     }
 
+    /**
+     * Получает имя пользователя в родительном падеже
+     *
+     * @param \App\Models\User $user
+     * @return string
+     */
     public static function getGenitiveName($user)
     {
         $name = inflectName("$user->surname $user->firstname", Cases::RODIT, $user->sex[0] ?? null);

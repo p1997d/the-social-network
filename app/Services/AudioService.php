@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Auth;
 
 class AudioService
 {
+    /**
+     * Преобразует длительность аудиозаписи из секунд в удобочитаемый формат
+     *
+     * @param \App\Models\File $file
+     * @return string
+     */
     public static function getDuration($file)
     {
         $ffprobe = FFProbe::create();
@@ -25,6 +31,12 @@ class AudioService
         return $formatDuration;
     }
 
+    /**
+     * Получает или создает плейлист
+     *
+     * @param \App\Models\Playlist $playlist
+     * @return \App\Models\Playlist
+     */
     public static function getOrCreatePlaylist($playlist)
     {
         $user = User::find(Auth::id());
@@ -43,29 +55,42 @@ class AudioService
         return $playlist;
     }
 
+    /**
+     * Получает файл и данные о аудиозаписи
+     *
+     * @param int $id
+     * @param \App\Models\Playlist $playlist
+     * @return array
+     */
     public static function getAudio($id, $playlist)
     {
         $user = User::find(Auth::id());
 
         $audio = Audio::find($id);
-        $audioFile = $audio->audiofile;
+        $audioFile = $audio->audioFile;
 
         $data = compact('audio', 'audioFile');
 
         if ($playlist !== null) {
-            $findedPlaylist = Playlist::find($playlist);
-            $playlist = $findedPlaylist->audios->pluck("id");
+            $foundPlaylist = Playlist::find($playlist);
+            $playlist = $foundPlaylist->audios->pluck("id");
 
             $data = array_merge($data, compact('playlist'));
         } else {
-            $findedPlaylist = $user->playlist;
+            $foundPlaylist = $user->playlist;
         }
 
-        self::setCuttentPlaylist($findedPlaylist, $audio);
+        self::setCurrentPlaylist($foundPlaylist, $audio);
 
         return $data;
     }
 
+    /**
+     * Получает список аудиозаписей из плейлиста
+     *
+     * @param \App\Models\Playlist $playlist
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public static function getAudios($playlist)
     {
         if ($playlist == null) {
@@ -79,6 +104,15 @@ class AudioService
         return $audios;
     }
 
+    /**
+     * Загружает новую аудиозапись
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\File $file
+     * @param string $title
+     * @param string $artist
+     * @return array
+     */
     public static function create($user, $file, $title, $artist)
     {
         $playlist = self::getOrCreatePlaylist($user->playlist);
@@ -104,6 +138,12 @@ class AudioService
         return ['color' => 'success', 'message' => 'Аудиозапись успешно загружена'];
     }
 
+    /**
+     * Удаляет аудиозапись
+     *
+     * @param int $id
+     * @return array
+     */
     public static function delete($id)
     {
         $user = User::find(Auth::id());
@@ -114,6 +154,12 @@ class AudioService
         return ['color' => 'success', 'message' => 'Аудиозапись успешно удалена'];
     }
 
+    /**
+     * Добавляет аудиозапись в плейлист пользователя
+     *
+     * @param int $id
+     * @return array
+     */
     public static function add($id)
     {
         $user = User::find(Auth::id());
@@ -143,7 +189,14 @@ class AudioService
         return ['color' => 'success', 'message' => 'Аудиозапись успешно добавлена'];
     }
 
-    public static function setCuttentPlaylist($playlist, $audio)
+    /**
+     * Сохраняет текущий плейлист
+     *
+     * @param \App\Models\Playlist $playlist
+     * @param \App\Models\Audio $audio
+     * @return void
+     */
+    public static function setCurrentPlaylist($playlist, $audio)
     {
         $user = User::find(Auth::id());
 
@@ -156,22 +209,33 @@ class AudioService
         );
     }
 
+    /**
+     * Получает файл и данные о последней воспроизведенной аудиозаписи
+     *
+     * @return array|null
+     */
     public static function getLastAudio()
     {
         $user = User::find(Auth::id());
 
-        if (!$user->currentPlaylist || !$user->currentPlaylist->getlastaudio) {
+        if (!$user->currentPlaylist || !$user->currentPlaylist->getLastAudio) {
             return null;
         }
 
-        $audio = $user->currentPlaylist->getlastaudio;
-        $audioFile = $audio->audiofile;
-        $findedPlaylist = $user->currentPlaylist->getplaylist;
-        $playlist = $findedPlaylist->audios->pluck("id");
+        $audio = $user->currentPlaylist->getLastAudio;
+        $audioFile = $audio->audioFile;
+        $foundPlaylist = $user->currentPlaylist->getPlaylist;
+        $playlist = $foundPlaylist->audios->pluck("id");
 
         return compact('audio', 'audioFile', 'playlist');
     }
 
+    /**
+     * Получает аудиозаписи из плейлиста
+     *
+     * @param \App\Models\Playlist $playlist
+     * @return array|null
+     */
     public static function getPlaylist($playlist)
     {
         $user = User::find(Auth::id());
@@ -185,11 +249,11 @@ class AudioService
                 return $user->playlist->audios;
 
             case 'currentPlaylist':
-                if (!$user->currentPlaylist || !$user->currentPlaylist->getplaylist) {
+                if (!$user->currentPlaylist || !$user->currentPlaylist->getPlaylist) {
                     return null;
                 }
 
-                return $user->currentPlaylist->getplaylist->audios;
+                return $user->currentPlaylist->getPlaylist->audios;
         }
     }
 }

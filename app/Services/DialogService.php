@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class DialogService
 {
+    /**
+     * Получает список диалогов
+     *
+     * @return \App\Models\User[]
+     */
     public static function getDialogs()
     {
         $sender = User::find(Auth::id());
@@ -30,6 +35,13 @@ class DialogService
         return $users;
     }
 
+    /**
+     * Получает список сообщений диалога
+     *
+     * @param \App\Models\User $user1
+     * @param \App\Models\User $user2
+     * @return \App\Models\Dialog
+     */
     public static function getMessages($user1, $user2)
     {
         $messages = Dialog::where([
@@ -46,6 +58,12 @@ class DialogService
         return $messages;
     }
 
+    /**
+     *  Получает количество непрочитанных сообщений
+     *
+     * @param int $id
+     * @return int|null
+     */
     public static function getUnreadMessagesCount($id)
     {
         if (Auth::guest()) {

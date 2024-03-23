@@ -23,6 +23,11 @@ Carbon::setLocale('ru');
 
 class ChatController extends Controller
 {
+    /**
+     * Получить общие данные для всех страниц.
+     *
+     * @return array
+     */
     private function getData($request)
     {
         $sender = User::find(Auth::id());
@@ -37,6 +42,12 @@ class ChatController extends Controller
         return array($sender, $senderAvatar, $decryptContent, $content, $time, $timeFormat);
     }
 
+    /**
+     * Создает новый чат
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function createChat(Request $request)
     {
         $user = User::find(Auth::id());
@@ -92,6 +103,13 @@ class ChatController extends Controller
         return back();
     }
 
+    /**
+     * Отправляет сообщение в чат
+     *
+     * @param Request $request
+     * @param int $id
+     * @return array
+     */
     public function create(Request $request, $id)
     {
         $type = __FUNCTION__;
@@ -119,7 +137,7 @@ class ChatController extends Controller
             foreach (request()->attachments as $i => $file) {
                 $group = 'messages';
 
-                $name =  time() . '_' . $i;
+                $name = time() . '_' . $i;
 
                 $model = FileService::create($sender, $group, $name, $file);
 
@@ -128,7 +146,7 @@ class ChatController extends Controller
             }
         }
 
-        $message->attachments = empty($attachments) ? null : json_encode($attachments);
+        $message->attachments = empty ($attachments) ? null : json_encode($attachments);
 
         $message->save();
 
@@ -141,6 +159,13 @@ class ChatController extends Controller
         return $data;
     }
 
+    /**
+     * Редактирует сообщение в чате
+     *
+     * @param Request $request
+     * @param int $id
+     * @return array
+     */
     public function update(Request $request, $id)
     {
         $type = __FUNCTION__;
@@ -166,6 +191,13 @@ class ChatController extends Controller
         return $data;
     }
 
+    /**
+     * Удаляет сообщение из чата
+     *
+     * @param Request $request
+     * @param int $id
+     * @return array
+     */
     public function delete(Request $request, $id)
     {
         $type = __FUNCTION__;
@@ -177,7 +209,7 @@ class ChatController extends Controller
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'decryptContent');
 
         if ($message->sender == auth()->user()->id) {
-            $deleteForAll = isset($request->deleteForAll);
+            $deleteForAll = isset ($request->deleteForAll);
             if ($deleteForAll) {
                 $message->update([
                     'delete_for_all' => 1,

@@ -22,7 +22,7 @@ function regionPicker() {
         $('#selectRegion2, #selectRegion3').empty();
 
         $.ajax({
-            url: '/nextlocation',
+            url: '/nextLocation',
             type: "GET",
             dataType: "json",
             data: { region: this.value },
@@ -40,7 +40,7 @@ function regionPicker() {
         $('#selectRegion3').empty();
 
         $.ajax({
-            url: '/nextlocation',
+            url: '/nextLocation',
             type: "GET",
             dataType: "json",
             data: { region: this.value },

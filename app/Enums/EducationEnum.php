@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum Education: int
+enum EducationEnum: int
 {
     case PRESCHOOL = 1;
     case ELEMENTARY = 2;

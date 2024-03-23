@@ -28,7 +28,7 @@
             <div class="card">
                 @include('layouts.cardHeader')
                 <div class="card-body addcolon">
-                    <form method="POST" action="{{ route('info.updateprofile') }}">
+                    <form method="POST" action="{{ route('info.updateProfile') }}">
                         @csrf
                         <div class="row mb-3">
                             <label for="colFormLabelSm" class="col-sm-3 col-form-label">Имя</label>

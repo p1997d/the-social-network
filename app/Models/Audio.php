@@ -12,7 +12,7 @@ class Audio extends Model
     protected $quarde = false;
     protected $guarded = [];
 
-    public function audiofile()
+    public function audioFile()
     {
         return $this->belongsTo(File::class, 'file');
     }

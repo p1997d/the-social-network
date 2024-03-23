@@ -10,6 +10,14 @@ class MenuService
 {
     public $title, $icon, $link, $counter;
 
+    /**
+     * Создает новый экземпляр контроллера.
+     *
+     * @param string $title
+     * @param string $icon
+     * @param string $link
+     * @param int $counter
+     */
     public function __construct($title, $icon, $link, $counter = null)
     {
         $this->title = $title;
@@ -18,6 +26,11 @@ class MenuService
         $this->counter = $counter;
     }
 
+    /**
+     * Получает счетчики непрочитанных сообщений и входящих заявок в друзья
+     *
+     * @return array
+     */
     public static function getCounters()
     {
         $unreadMessagesCount = MessagesService::getUnreadMessagesCount();
@@ -26,6 +39,11 @@ class MenuService
         return compact('unreadMessagesCount', 'incomingCount');
     }
 
+    /**
+     * Получает список кнопок боковой панели
+     *
+     * @return array
+     */
     public static function getSidebar()
     {
         $data = self::getCounters();
@@ -44,6 +62,11 @@ class MenuService
         return $sidebar;
     }
 
+    /**
+     * Получает список кнопок панели навигации
+     *
+     * @return array
+     */
     public static function getNavbar()
     {
         $data = self::getCounters();

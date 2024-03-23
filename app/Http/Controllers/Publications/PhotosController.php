@@ -16,11 +16,17 @@ use App\Services\PhotoService;
 
 class PhotosController extends Controller
 {
+    /**
+     * Отображает страницу фотографий пользователя
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function index(Request $request)
     {
-        $id = $request->query('id');
+        $user = User::find($request->query('id'));
 
-        list($title, $user) = GeneralService::getTitleAndUser($id, "Фотографии");
+        $title = GeneralService::getTitle($user, "Фотографии");
 
         $type = $request->query('type');
 
@@ -29,6 +35,12 @@ class PhotosController extends Controller
         return view('publications.photos.index', compact('title', 'user', 'photos', 'type'));
     }
 
+    /**
+     * Загружает новую фотографию
+     *
+     * @param Request $request
+     * @return array
+     */
     public function upload(Request $request)
     {
         $request->validate([
@@ -41,11 +53,23 @@ class PhotosController extends Controller
         return ['color' => 'success', 'message' => 'Фотография успешно загружена'];
     }
 
+    /**
+     * Удаляет фотографию
+     *
+     * @param Request $request
+     * @return array
+     */
     public function delete(Request $request)
     {
         return FileService::delete($request->photo);
     }
 
+    /**
+     * Получает фотографию и данные о ее владельце
+     *
+     * @param Request $request
+     * @return array
+     */
     public function getPhoto(Request $request)
     {
         $id = $request->id;

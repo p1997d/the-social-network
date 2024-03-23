@@ -11,17 +11,26 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatService
 {
+    /**
+     * Получает список чатов
+     *
+     * @return \App\Models\Chat[]
+     */
     public static function getChats()
     {
         $user = Auth::user();
 
         $chatIds = ChatMember::where('user', $user->id)->pluck('chat');
 
-        $chats = Chat::whereIn('id', $chatIds)->get();
-
-        return $chats;
+        return Chat::whereIn('id', $chatIds)->get();
     }
 
+    /**
+     * Получает список сообщений чата
+     *
+     * @param int $chat
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public static function getMessages($chat)
     {
         $userMessages = ChatMessage::where([['chat', $chat], ['delete_for_all', '!=', 1]])->get()->filter(function ($item) {
@@ -32,11 +41,15 @@ class ChatService
         });
         $systemMessages = ChatSystemMessage::where('chat', $chat)->get();
 
-        $messages = collect([])->merge($userMessages)->merge($systemMessages)->sortByDesc('sent_at');
-
-        return $messages;
+        return collect([])->merge($userMessages)->merge($systemMessages)->sortByDesc('sent_at');
     }
 
+    /**
+     * Получает количество непрочитанных сообщений
+     *
+     * @param int $id
+     * @return int|null
+     */
     public static function getUnreadMessagesCount($id)
     {
         if (Auth::guest()) {

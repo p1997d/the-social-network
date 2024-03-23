@@ -1,5 +1,5 @@
-<div class="modal fade" id="updateavatar" tabindex="-1" aria-hidden="true">
-    <form method="POST" action="{{ route('info.updateavatar') }}" enctype="multipart/form-data">
+<div class="modal fade" id="updateAvatar" tabindex="-1" aria-hidden="true">
+    <form method="POST" action="{{ route('info.updateAvatar') }}" enctype="multipart/form-data">
         @csrf
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">

@@ -22,6 +22,11 @@ Carbon::setLocale('ru');
 
 class DialogController extends Controller
 {
+    /**
+     * Получить общие данные для всех страниц.
+     *
+     * @return array
+     */
     private function getData($request)
     {
         $sender = User::find(Auth::id());
@@ -36,6 +41,13 @@ class DialogController extends Controller
         return array($sender, $senderAvatar, $decryptContent, $content, $time, $timeFormat);
     }
 
+    /**
+     * Отправляет сообщение пользователю
+     *
+     * @param Request $request
+     * @param int $id
+     * @return array
+     */
     public function create(Request $request, $id)
     {
         $type = __FUNCTION__;
@@ -61,7 +73,7 @@ class DialogController extends Controller
 
         if (request()->attachments) {
             foreach (request()->attachments as $i => $file) {
-                $name =  time() . '_' . $i;
+                $name = time() . '_' . $i;
                 $model = FileService::create($sender, 'messages', $name, $file);
 
                 $attachments[] = $model->id;
@@ -69,7 +81,7 @@ class DialogController extends Controller
             }
         }
 
-        $message->attachments = empty($attachments) ? null : json_encode($attachments);
+        $message->attachments = empty ($attachments) ? null : json_encode($attachments);
 
         $message->save();
 
@@ -82,6 +94,13 @@ class DialogController extends Controller
         return $data;
     }
 
+    /**
+     * Редактирует сообщение в диалоге
+     *
+     * @param Request $request
+     * @param int $id
+     * @return array
+     */
     public function update(Request $request, $id)
     {
         $type = __FUNCTION__;
@@ -109,6 +128,13 @@ class DialogController extends Controller
         return $data;
     }
 
+    /**
+     * Удаляет сообщение пользователя
+     *
+     * @param Request $request
+     * @param int $id
+     * @return array
+     */
     public function delete(Request $request, $id)
     {
         $type = __FUNCTION__;
@@ -122,7 +148,7 @@ class DialogController extends Controller
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent');
 
         if ($message->sender == $sender->id) {
-            $deleteForAll = isset($request->deleteForAll);
+            $deleteForAll = isset ($request->deleteForAll);
             if ($deleteForAll) {
                 $message->update([
                     'delete_for_sender' => 1,
@@ -144,6 +170,12 @@ class DialogController extends Controller
         return $data;
     }
 
+    /**
+     * Очищает диалог
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function allDelete($id)
     {
         $sender = User::find(Auth::id());
@@ -162,6 +194,11 @@ class DialogController extends Controller
         return back();
     }
 
+    /**
+     * Отмечает сообщения прочитанными
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function checkRead()
     {
         $message = Dialog::find(request()->id);

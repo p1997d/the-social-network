@@ -22,10 +22,16 @@ use App\Services\DialogService;
 
 class IndexController extends Controller
 {
+    /**
+     * Отображает страницу сообщений пользователя
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function messages(Request $request)
     {
         if (Auth::guest()) {
-            return redirect()->route('auth.signin');
+            return redirect()->route('auth.signIn');
         }
 
         $title = 'Сообщения';
@@ -82,29 +88,34 @@ class IndexController extends Controller
             $dialogs = DialogService::getDialogs();
             $chats = ChatService::getChats();
 
-            $chatlogs = [];
+            $chatLogs = [];
 
             foreach ($dialogs as $dialog) {
-                $chatlogs[] = $dialog;
+                $chatLogs[] = $dialog;
             }
 
             foreach ($chats as $chat) {
-                $chatlogs[] = $chat;
+                $chatLogs[] = $chat;
             }
 
             $friends = FriendsService::listFriends($user_profile)->get();
 
-            return view('messenger.list', compact('title', 'chatlogs', 'friends'));
+            return view('messenger.list', compact('title', 'chatLogs', 'friends'));
         }
     }
 
+    /**
+     * Получить содержимое сообщения
+     *
+     * @param Request $request
+     * @return array
+     */
     public function getMessage(Request $request)
     {
         $user = User::find(Auth::id());
-        if ($request->typeRecipient == 'to'){
+        if ($request->typeRecipient == 'to') {
             $message = Dialog::find($request->id);
-        }
-        elseif ($request->typeRecipient == 'chat'){
+        } elseif ($request->typeRecipient == 'chat') {
             $message = ChatMessage::find($request->id);
         }
 

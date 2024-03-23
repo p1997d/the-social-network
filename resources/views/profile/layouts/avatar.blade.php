@@ -5,11 +5,11 @@
                 <div class="collapse position-absolute w-100" id="avatarSetting">
                     <div class="list-group bg-body bg-opacity-50">
                         <button type="button" class="list-group-item list-group-item-action bg-transparent"
-                            data-bs-toggle="modal" data-bs-target="#updateavatar">
+                            data-bs-toggle="modal" data-bs-target="#updateAvatar">
                             <i class="bi bi-pencil"></i>
                             Обновить фотографию
                         </button>
-                        <form method="POST" action="{{ route('info.deleteavatar') }}">
+                        <form method="POST" action="{{ route('info.deleteAvatar') }}">
                             @csrf
                             <button class="list-group-item list-group-item-action bg-transparent rounded-bottom"
                                 type="submit"><i class="bi bi-trash text-danger"></i>

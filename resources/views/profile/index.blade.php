@@ -28,6 +28,6 @@
             @include('profile.layouts.blog')
         </div>
 
-        @include('profile.modals.updateavatar')
+        @include('profile.modals.updateAvatar')
     </div>
 @endsection

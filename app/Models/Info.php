@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\Education;
-use App\Enums\FamilyStatus;
+use App\Enums\EducationEnum;
+use App\Enums\FamilyStatusEnum;
 
 class Info extends Model
 {
@@ -16,8 +16,8 @@ class Info extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'education' => Education::class,
-        'family_status' => FamilyStatus::class,
+        'education' => EducationEnum::class,
+        'family_status' => FamilyStatusEnum::class,
     ];
 
     public function user()

@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Auth;
 
 class MessagesService
 {
+    /**
+     * Получает список вложений в сообщении
+     *
+     * @param string $attachmentsArray
+     * @param string $type
+     * @return array
+     */
     public static function getAttachments($attachmentsArray, $type = null)
     {
         if (!$attachmentsArray) {
@@ -29,6 +36,11 @@ class MessagesService
         return $attachments;
     }
 
+    /**
+     * Получает счетчик непрочитанных сообщений
+     *
+     * @return int|null
+     */
     public static function getUnreadMessagesCount()
     {
         if (Auth::guest()) {

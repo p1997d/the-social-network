@@ -12,11 +12,11 @@ class CurrentPlaylist extends Model
     protected $quarde = false;
     protected $guarded = [];
 
-    public function getplaylist()
+    public function getPlaylist()
     {
         return $this->belongsTo(Playlist::class, 'playlist');
     }
-    public function getlastaudio()
+    public function getLastAudio()
     {
         return $this->belongsTo(Audio::class, 'last_audio');
     }

@@ -1,7 +1,7 @@
 <div class="modal" tabindex="-1" id="allDeleteModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="POST" action="{{route('messages.alldelete', $recipient->id)}}" class="messageForm">
+            <form method="POST" action="{{route('messages.allDelete', $recipient->id)}}" class="messageForm">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Удалить все сообщения</h5>

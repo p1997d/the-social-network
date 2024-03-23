@@ -10,12 +10,25 @@ class InfoService
 {
     public $title, $icon, $description;
 
+    /**
+     * Создает новый экземпляр контроллера.
+     *
+     * @param string $title
+     * @param string $icon
+     * @param string $description
+     */
     public function __construct($title, $icon, $description)
     {
         $this->title = $title;
         $this->icon = $icon;
         $this->description = $description;
     }
+
+    /**
+     * Получает локацию пользователя
+     *
+     * @return array
+     */
     public static function getLocation()
     {
         $user = User::find(Auth::id());
@@ -27,11 +40,11 @@ class InfoService
             return $location;
         }
 
-        if (isset($userLocation[0])) {
+        if (isset ($userLocation[0])) {
             $location[] = Location::where('parent_id', $userLocation[0])->get()->sortBy('name')->values();
         }
 
-        if (isset($userLocation[1])) {
+        if (isset ($userLocation[1])) {
             $location[] = Location::where('parent_id', $userLocation[1])->get()->sortBy('name')->values();
         }
 

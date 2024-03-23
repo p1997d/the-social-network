@@ -1,7 +1,7 @@
 <div class="d-flex flex-column gap-3 buttons-pjax">
     @auth
         @if ($user_profile->id == auth()->user()->id)
-            <a href="{{ route('info.editprofile') }}" class="btn btn-primary w-100">Редактировать</a>
+            <a href="{{ route('info.editProfile') }}" class="btn btn-primary w-100">Редактировать</a>
         @else
             <a href="{{ route('messages', ['to' => $user_profile->id]) }}" class="btn btn-primary">Отправить сообщение</a>
             @foreach ($friendForm as $form)

@@ -19,15 +19,21 @@ use function PHPUnit\Framework\returnSelf;
 
 class AudiosController extends Controller
 {
+    /**
+     * Отображает страницу аудиозаписей пользователя
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function index(Request $request)
     {
         if (Auth::guest()) {
             return redirect()->route('auth.signin');
         }
 
-        $id = $request->query('id');
+        $user = User::find($request->query('id'));
 
-        list($title, $user) = GeneralService::getTitleAndUser($id, "Аудиозаписи");
+        $title = GeneralService::getTitle($user, "Аудиозаписи");
 
         $playlist = $user->playlist;
         $audios = AudioService::getAudios($playlist);
@@ -35,6 +41,12 @@ class AudiosController extends Controller
         return view('publications.audios.index', compact('title', 'user', 'audios', 'playlist'));
     }
 
+    /**
+     * Загружает новую аудиозапись
+     *
+     * @param Request $request
+     * @return array
+     */
     public function upload(Request $request)
     {
         $request->validate([
@@ -48,11 +60,23 @@ class AudiosController extends Controller
         return $data;
     }
 
+    /**
+     * Удаляет аудиозапись
+     *
+     * @param Request $request
+     * @return array
+     */
     public function delete(Request $request)
     {
         return AudioService::delete($request->audio);
     }
 
+    /**
+     * Скачивает аудиозапись
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function download(Request $request)
     {
         $path = storage_path("app/public/files/{$request->file}");
@@ -64,26 +88,54 @@ class AudiosController extends Controller
         }
     }
 
+    /**
+     * Добавляет аудиозапись в плейлист пользователя
+     *
+     * @param Request $request
+     * @return array
+     */
     public function add(Request $request)
     {
         return AudioService::add($request->audio);
     }
 
+    /**
+     * Получает файл и данные о аудиозаписи
+     *
+     * @param Request $request
+     * @return array
+     */
     public function getAudio(Request $request)
     {
         return AudioService::getAudio($request->id, $request->playlist);
     }
 
+    /**
+     * Получает аудиозаписи из плейлиста
+     *
+     * @param Request $request
+     * @return array
+     */
     public function getPlaylist(Request $request)
     {
         return AudioService::getPlaylist($request->playlist);
     }
 
+    /**
+     * Получает файл и данные о последней воспроизведенной аудиозаписи
+     *
+     * @return array
+     */
     public function getLastAudio()
     {
         return AudioService::getLastAudio();
     }
 
+    /**
+     * Очищает плейлист
+     *
+     * @return void
+     */
     public function clearPlaylist()
     {
         $user = User::find(Auth::id());

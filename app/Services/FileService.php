@@ -3,12 +3,17 @@
 namespace App\Services;
 
 use App\Models\File;
+use App\Services\PhotoService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 
 class FileService
 {
+    /**
+     * Преобразует размер файла из байтов в удобочитаемый формат
+     *
+     * @param int $size
+     * @return string
+     */
     public static function getSize($size)
     {
         $base = log($size, 1024);
@@ -17,6 +22,15 @@ class FileService
         return round(pow(1024, $base - floor($base)), 1) . ' ' . $suffixes[floor($base)];
     }
 
+    /**
+     * Сохраняет новый файл
+     *
+     * @param \App\Models\User $user
+     * @param string $group
+     * @param string $name
+     * @param object $file
+     * @return \App\Models\File
+     */
     public static function create($user, $group, $name, $file)
     {
         $filePath = $user->id . '/' . $group . '/' . $name . '.' . $file->getClientOriginalExtension();
@@ -24,7 +38,7 @@ class FileService
         $file->storeAs('files', $filePath, 'public');
 
         if (explode("/", $file->getMimeType())[0] == 'image') {
-            self::createThumbnails($file, $filePath);
+            PhotoService::createThumbnails($file, $filePath);
         }
 
         $model = new File();
@@ -41,15 +55,12 @@ class FileService
         return $model;
     }
 
-    public static function createThumbnails($file, $filePath)
-    {
-        $image = Image::read($file);
-        $image->scale(width: 300);
-        $imagedata = (string) $image->toJpeg();
-
-        Storage::put('public/thumbnails/' . $filePath, $imagedata);
-    }
-
+    /**
+     * Удаляет файл
+     *
+     * @param int $photo
+     * @return array
+     */
     public static function delete($photo)
     {
         $file = File::find($photo);

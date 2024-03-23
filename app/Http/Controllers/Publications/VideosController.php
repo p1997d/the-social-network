@@ -15,11 +15,17 @@ use App\Services\GeneralService;
 
 class VideosController extends Controller
 {
+    /**
+     * Отображает страницу видеозаписей пользователя
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function index(Request $request)
     {
-        $id = $request->query('id');
+        $user = User::find($request->query('id'));
 
-        list($title, $user) = GeneralService::getTitleAndUser($id, 'Видеозаписи');
+        $title = GeneralService::getTitle($user, 'Видеозаписи');
 
         $videos = [];
 

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum FamilyStatus: int
+enum FamilyStatusEnum: int
 {
     case NOT_MARRIED = 1;
     case DATING = 2;

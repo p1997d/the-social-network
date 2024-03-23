@@ -14,21 +14,21 @@ Route::group(['namespace' => 'Index'], function () {
 });
 
 Route::group(['namespace' => 'Info'], function () {
-    Route::get('/edit', [App\Http\Controllers\Main\InfoController::class, 'editProfile'])->name('info.editprofile');
-    Route::get('/nextlocation', [App\Http\Controllers\Main\InfoController::class, 'nextLocation'])->name('info.nextlocation');
+    Route::get('/edit', [App\Http\Controllers\Main\InfoController::class, 'editProfile'])->name('info.editProfile');
+    Route::get('/nextLocation', [App\Http\Controllers\Main\InfoController::class, 'nextLocation'])->name('info.nextLocation');
 
-    Route::post('/updateavatar', [App\Http\Controllers\Main\InfoController::class, 'updateAvatar'])->name('info.updateavatar');
-    Route::post('/deleteavatar', [App\Http\Controllers\Main\InfoController::class, 'deleteAvatar'])->name('info.deleteavatar');
-    Route::post('/updateprofile', [App\Http\Controllers\Main\InfoController::class, 'updateProfile'])->name('info.updateprofile');
+    Route::post('/updateAvatar', [App\Http\Controllers\Main\InfoController::class, 'updateAvatar'])->name('info.updateAvatar');
+    Route::post('/deleteAvatar', [App\Http\Controllers\Main\InfoController::class, 'deleteAvatar'])->name('info.deleteAvatar');
+    Route::post('/updateProfile', [App\Http\Controllers\Main\InfoController::class, 'updateProfile'])->name('info.updateProfile');
 });
 
 Route::group(['namespace' => 'Friends'], function () {
     Route::get('/friends', [App\Http\Controllers\Main\FriendsController::class, 'friends'])->name('friends');
 
-    Route::post('/{user}/addfriend', [App\Http\Controllers\Main\FriendsController::class, 'addFriend'])->name('friends.addfriend');
-    Route::post('/{user}/canceladdfriend', [App\Http\Controllers\Main\FriendsController::class, 'cancelAddFriend'])->name('friends.canceladdfriend');
-    Route::post('/{user}/approveaddfriend', [App\Http\Controllers\Main\FriendsController::class, 'approveAddFriend'])->name('friends.approveaddfriend');
-    Route::post('/{user}/rejectaddfriend', [App\Http\Controllers\Main\FriendsController::class, 'rejectAddFriend'])->name('friends.rejectaddfriend');
+    Route::post('/{user}/addFriend', [App\Http\Controllers\Main\FriendsController::class, 'addFriend'])->name('friends.addFriend');
+    Route::post('/{user}/cancelAddFriend', [App\Http\Controllers\Main\FriendsController::class, 'cancelAddFriend'])->name('friends.cancelAddFriend');
+    Route::post('/{user}/approveAddFriend', [App\Http\Controllers\Main\FriendsController::class, 'approveAddFriend'])->name('friends.approveAddFriend');
+    Route::post('/{user}/rejectAddFriend', [App\Http\Controllers\Main\FriendsController::class, 'rejectAddFriend'])->name('friends.rejectAddFriend');
     Route::post('/{user}/unfriend', [App\Http\Controllers\Main\FriendsController::class, 'unfriend'])->name('friends.unfriend');
 });
 
@@ -39,7 +39,7 @@ Route::group(['namespace' => 'Messenger'], function () {
     Route::group(['namespace' => 'Dialog'], function () {
         Route::post('/messages/send/{id}', [App\Http\Controllers\Messanger\DialogController::class, 'create'])->name('messages.send');
         Route::post('/messages/delete/{id}', [App\Http\Controllers\Messanger\DialogController::class, 'delete'])->name('messages.delete');
-        Route::post('/messages/alldelete/{id}', [App\Http\Controllers\Messanger\DialogController::class, 'allDelete'])->name('messages.alldelete');
+        Route::post('/messages/allDelete/{id}', [App\Http\Controllers\Messanger\DialogController::class, 'allDelete'])->name('messages.allDelete');
         Route::post('/messages/update/{id}', [App\Http\Controllers\Messanger\DialogController::class, 'update'])->name('messages.update');
         Route::post('/messages/checkRead', [App\Http\Controllers\Messanger\DialogController::class, 'checkRead'])->name('messages.checkRead');
     });

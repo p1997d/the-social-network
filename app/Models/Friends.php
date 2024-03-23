@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\FriendRequestStatusEnum;
 
 class Friends extends Model
 {
@@ -13,4 +14,7 @@ class Friends extends Model
     protected $quarde = false;
     protected $guarded = [];
 
+    protected $casts = [
+        'status' => FriendRequestStatusEnum::class,
+    ];
 }

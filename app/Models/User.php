@@ -79,7 +79,7 @@ class User extends Authenticatable
 
     public function lastMessage()
     {
-        return DialogService::getMessages(Auth::user(), $this)->get()->first();
+        return DialogService::getMessages(self::find(Auth::id()), $this)->get()->first();
     }
 
     public function unreadMessagesCount()
