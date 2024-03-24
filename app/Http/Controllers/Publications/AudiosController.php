@@ -31,7 +31,7 @@ class AudiosController extends Controller
             return redirect()->route('auth.signin');
         }
 
-        $user = User::find($request->query('id'));
+        $user = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
 
         $title = GeneralService::getTitle($user, "Аудиозаписи");
 

@@ -26,7 +26,7 @@ class FriendsController extends Controller
      */
     public function friends(Request $request)
     {
-        $user_profile = User::find($request->query('id'));
+        $user_profile = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
 
         $section = $request->query('section');
 

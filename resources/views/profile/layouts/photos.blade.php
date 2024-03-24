@@ -1,5 +1,5 @@
 @auth
-    <div class="card mb-3 shadow">
+    <div class="card shadow">
         <div class="card-header">
             <a href="{{ route('photos', ['id' => $user_profile->id]) }}" class="link-body-emphasis">Фотографии</a>
             <span class="text-secondary">{{ $photos->count() }}</span>

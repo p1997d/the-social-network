@@ -1,6 +1,6 @@
 @auth
     @if ($audios->count() > 0)
-        <div class="card mb-3 shadow">
+        <div class="card shadow">
             <div class="card-header">
                 <a href="{{ route('audios', ['id' => $user_profile->id]) }}" class="link-body-emphasis">Аудиозаписи</a>
                 <span class="text-secondary">{{ $audios->count() }}</span>

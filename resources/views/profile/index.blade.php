@@ -1,33 +1,18 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="card mb-3 shadow">
-                <div class="card-body">
-                    @include('profile.layouts.avatar')
-                    @include('profile.layouts.buttons')
-                </div>
-            </div>
-
-            <div class="d-lg-none d-block">
-                @include('profile.layouts.info')
-            </div>
-
-            @include('profile.layouts.friends')
-            @include('profile.layouts.groups')
-            @include('profile.layouts.audios')
+    <div class="row flex-column flex-lg-row g-3 my-3">
+        <div class="col-lg-4 d-contents d-lg-block">
+            <div class="order-1 mb-3"> @include('profile.layouts.avatar') </div>
+            <div class="order-3 mb-3"> @include('profile.layouts.friends') </div>
+            <div class="order-5 mb-3"> @include('profile.layouts.groups') </div>
+            <div class="order-5 mb-3"> @include('profile.layouts.audios') </div>
         </div>
-        <div class="col-lg-8">
-
-            <div class="d-none d-lg-block">
-                @include('profile.layouts.info')
-            </div>
-
-            @include('profile.layouts.photos')
-            @include('profile.layouts.blog')
+        <div class="col-lg-8 d-contents d-lg-block">
+            <div class="order-2 mb-3"> @include('profile.layouts.info') </div>
+            <div class="order-4 mb-3"> @include('profile.layouts.photos') </div>
+            <div class="order-5 mb-3"> @include('profile.layouts.blog') </div>
         </div>
-
-        @include('profile.modals.updateAvatar')
     </div>
+    @include('profile.modals.updateAvatar')
 @endsection

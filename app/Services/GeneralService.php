@@ -77,7 +77,7 @@ class GeneralService
      */
     public static function getTitle($user, $type)
     {
-        if ($user->id != Auth::id()) {
+        if ($user->id == Auth::id()) {
             return "Мои " . mb_strtolower($type);
         }
 

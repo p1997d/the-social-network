@@ -41,10 +41,8 @@ function initializationPlayers() {
         });
     }
 
-    mainPlayer.on('ready', () => {
-        $('#playerVolumeRange').val(mainPlayer.volume * 100);
-        getLastAudio();
-    });
+    $('#playerVolumeRange').val(mainPlayer.volume * 100);
+    getLastAudio();
 
     mainPlayer.on('play pause', () => {
         let currentTrack = getCurrentTrack();

@@ -1,21 +1,24 @@
-if (!localStorage.getItem('theme')) {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setTheme('dark');
+function startSetTheme() {
+    if (!localStorage.getItem('theme')) {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark');
+        }
+        else {
+            setTheme('light');
+        }
+    } else {
+        setTheme(localStorage.getItem('theme'));
     }
-    else {
-        setTheme('light');
-    }
-} else {
-    setTheme(localStorage.getItem('theme'));
 }
-
 
 $(document).ready(function () {
     initializationThemeButton();
+    startSetTheme();
 });
 
 $(document).on('pjax:end', function () {
     initializationThemeButton();
+    startSetTheme();
 });
 
 function initializationThemeButton() {
@@ -40,3 +43,5 @@ function setTheme(theme) {
 
     localStorage.setItem('theme', theme);
 }
+
+startSetTheme();
