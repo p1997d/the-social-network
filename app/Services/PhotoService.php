@@ -7,9 +7,9 @@ use App\Models\User;
 use App\Services\DialogService;
 use App\Services\ChatService;
 use App\Services\MessagesService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
-use Illuminate\Support\Facades\Auth;
 
 class PhotoService
 {

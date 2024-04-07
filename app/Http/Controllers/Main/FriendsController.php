@@ -38,26 +38,14 @@ class FriendsController extends Controller
 
         list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user_profile);
 
-        switch ($section) {
-            case '':
-                $friends = $listFriends->get();
-                break;
-            case 'common':
-                $friends = $listCommonFriends->get();
-                break;
-            case 'outgoing':
-                $friends = $listOutgoing->get();
-                break;
-            case 'incoming':
-                $friends = $listIncoming->get();
-                break;
-            case 'online':
-                $friends = $listOnline->get();
-                break;
-            default:
-                $friends = null;
-        }
-
+        $friends = match ($section) {
+            null => $listFriends->get(),
+            'common' => $listCommonFriends->get(),
+            'outgoing' => $listOutgoing->get(),
+            'incoming' => $listIncoming->get(),
+            'online' => $listOnline->get(),
+            default => null,
+        };
 
         return view(
             'friends.index',

@@ -1,6 +1,5 @@
 @php
     use Carbon\Carbon;
-    use Carbon\CarbonInterface;
     Carbon::setLocale('ru');
 @endphp
 
@@ -21,12 +20,12 @@
                     <div class="photoImage h-inherit row g-0">
                         <div id="carouselIndicators" class="carousel slide h-inherit d-flex flex-column col-12 col-lg-8">
                             <div class="carousel-inner h-inherit">
-                                @if (isset($content))
+                                @if (isset($content) && $typeContent == 'photo')
                                     @foreach ($content as $item)
                                         <div class="carousel-item h-inherit
                                                     {{ $item->id == $activeContent ? 'active' : '' }}"
                                             data-photo="{{ $item->id }}" data-user="{{ $item->author }}"
-                                            data-type="{{ $typeContent }}">
+                                            data-group="{{ $groupContent }}">
                                             <div class="w-100 h-100 d-flex justify-content-center align-items-center">
                                                 <img src="storage/files/{{ $item->path }}"
                                                     class="d-block mw-100 mh-100 mx-auto rounded displayedImage">

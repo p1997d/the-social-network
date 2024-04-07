@@ -20,7 +20,10 @@ function initializeImageInteractions() {
     $('.openImageModal')
         .off('click keypress')
         .on('click keypress', function () {
-            setUrl(this);
+
+            const [file, user, group] = getDataFromFile(this, 'photo');
+            setUrl('photo', file, user, group);
+
             $('#imageModal').modal('show');
             $.pjax.reload({ container: "#imageModal", async: false });
         });
@@ -42,7 +45,9 @@ function initializeImageInteractions() {
     $('#carouselIndicators')
         .off('slide.bs.carousel')
         .on('slide.bs.carousel', (event) => {
-            const photo = setUrl(event.relatedTarget);
+
+            const [file, user, group] = getDataFromFile(event.relatedTarget, 'photo');
+            const photo = setUrl('photo', file, user, group);
 
             getPhotoInfo(photo, event.to + 1);
         });
@@ -111,65 +116,12 @@ function initializeImageInteractions() {
     showModal();
 }
 
-function showModal() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const content = urlParams.get('content');
-
-    if (content) {
-        const photo = content.split('_')[1];
-        $.ajax({
-            url: '/photos/getPhoto',
-            type: 'GET',
-            data: {
-                id: photo,
-            },
-            success: function (data) {
-                if (!data.photo.deleted_at && $(`#carouselIndicators .carousel-item[data-photo='${data.photo.id}']`).length) {
-                    $('#imageModal').modal('show');
-                } else {
-                    clearUrl();
-                    showAccessError()
-                }
-            }
-
-        });
-    }
-}
-
-function setUrl(item) {
-    const photo = $(item).attr('data-photo');
-    const user = $(item).attr('data-user');
-    const type = $(item).attr('data-type');
-
-    const url = new URL(window.location);
-    url.searchParams.set('content', `photo_${photo}_${type}_${user}`);
-    window.history.pushState({}, '', url);
-
-    return photo;
-}
-
-function clearUrl() {
-    const url = new URL(window.location);
-    url.searchParams.delete('content');
-    window.history.pushState({}, '', url);
-}
-
 function getPhotoIdFromUrl() {
     const url = new URL(window.location);
     const content = url.searchParams.get('content');
-    const photo = content.split('_')[1];
+    const photo = content.split('_')[2];
 
     return photo;
-}
-
-function showAccessError() {
-    $('.emptyToast')
-        .clone()
-        .appendTo('.toast-container')
-        .removeClass('emptyToast')
-        .find('.title').text("Ошибка доступа").end()
-        .find('.toast-body').remove().end()
-        .toast('show')
 }
 
 function getPhotoInfo(photo, currentPhoto = null) {
@@ -198,7 +150,8 @@ function getPhotoInfo(photo, currentPhoto = null) {
                     .attr('src', data.avatar)
             ).appendTo(header);
 
-            let div = $('<div>').appendTo(header)
+            let div = $('<div>').appendTo(header);
+
             let name = $('<div>').append(
                 $('<a>')
                     .addClass('link-body-emphasis')
@@ -225,7 +178,7 @@ function getPhotoInfo(photo, currentPhoto = null) {
                 .append(header)
                 .append(body);
 
-            let typeContent = {
+            let groupContent = {
                 profile: {
                     description: 'Фото профиля',
                     url: `photos?id=${data.author.id}&type=profile`
@@ -251,10 +204,9 @@ function getPhotoInfo(photo, currentPhoto = null) {
             }
 
             let typeLink = $('<a>')
-                .attr('href', typeContent[data.photo.group].url)
-                .html(typeContent[data.photo.group].description)
+                .attr('href', groupContent[data.photo.group].url)
+                .html(groupContent[data.photo.group].description)
                 .addClass('link-body-emphasis');
-
 
             $('.photoCounter')
                 .html('')
@@ -266,5 +218,24 @@ function getPhotoInfo(photo, currentPhoto = null) {
                 $('.photoDeleteButton').remove();
             }
         }
+    });
+}
+
+function getPhoto(file){
+    $.ajax({
+        url: '/photos/getPhoto',
+        type: 'GET',
+        data: {
+            id: file,
+        },
+        success: function (data) {
+            if (!data.photo.deleted_at && $(`#carouselIndicators .carousel-item[data-photo='${data.photo.id}']`).length) {
+                $('#imageModal').modal('show');
+            } else {
+                clearUrl();
+                showAccessError()
+            }
+        }
+
     });
 }

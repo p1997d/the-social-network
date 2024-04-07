@@ -19,8 +19,14 @@
         <!-- Plyr -->
         <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
+        <!-- Select2 -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <link href="{{ asset('css/bootstrapAddons.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
     @show
 
     @section('js')
@@ -51,16 +57,22 @@
             integrity="sha512-eAT5Hvi9/Yx33YvSUPOpAYEA3HnUt5oKCSyPGRQwNgqD7K/90JRpFnkaL1M6ROZtLkckQKJ4WYh9cS7Urr4YjA=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+        <!-- Select2 -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/ru.js"></script>
+
         <script>
-            const userId = {{ auth()->check() ? auth()->user()->id : "null" }};
+            const userId = {{ auth()->check() ? auth()->user()->id : 'null' }};
         </script>
 
         <script src="{{ asset('js/theme.js') }}"></script>
         <script src="{{ asset('js/app.js') }}"></script>
-        <script src="{{ asset('js/player.js') }}"></script>
+        <script src="{{ asset('js/messenger.js') }}"></script>
         <script src="{{ asset('js/friends.js') }}"></script>
-        <script src="{{ asset('js/messanger.js') }}"></script>
         <script src="{{ asset('js/photos.js') }}"></script>
+        <script src="{{ asset('js/player.js') }}"></script>
+        <script src="{{ asset('js/video.js') }}"></script>
+        <script src="{{ asset('js/editProfile.js') }}"></script>
 
         @vite('resources/js/echo.js')
     @show
@@ -82,6 +94,7 @@
         @show
 
         @include('layouts.modals.image')
+        @include('layouts.modals.video')
         @include('layouts.offcanvasMenu')
         @include('layouts.notifications')
         @include('layouts.toasts')

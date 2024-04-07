@@ -120,17 +120,44 @@ body {
 
 /* end Messages */
 
-.openPlayerButton{
+.openPlayerButton {
     max-width: 400px;
 }
 
-#imageModal .modal-dialog{
-    padding: 3rem!important;
+#imageModal .modal-dialog, #videoModal .modal-dialog {
+    padding: 3rem !important;
 }
 
 .carousel-control-next,
 .carousel-control-prev {
     filter: invert(100%);
+}
+
+.videoCard {
+    transition: 0.5s;
+
+    & .video-thumbnail::before {
+        font-family: 'Bootstrap-icons';
+        font-size: 50px;
+        content: "\F4F4";
+        color: rgba(255, 255, 255, .75);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 3;
+        transform: translate(-50%, -50%);
+        text-shadow: var(--bs-box-shadow) !important;
+        opacity: 0;
+        transition: 0.5s;
+    }
+
+    &:hover {
+        scale: 1.01;
+
+        & .video-thumbnail::before {
+            opacity: 1;
+        }
+    }
 }
 
 @media (max-width: 992px) {
@@ -154,19 +181,24 @@ body {
 
     .messages-body {
         padding-top: 4rem !important;
-    }
 
-    .messages-body .list-group {
-        padding-bottom: 5rem !important;
+        & .list-group {
+            padding-bottom: 5rem !important;
+        }
     }
 
     /* end Messages */
 
-    .openPlayerButton{
+    .openPlayerButton {
         max-width: 250px;
     }
 
-    #imageModal .modal-dialog{
-        padding: 0!important;
+    #imageModal .modal-dialog, #videoModal .modal-dialog {
+        padding: 0 !important;
     }
+}
+
+.plyr-w-100 .plyr--video {
+    width: 100% !important;
+    height: fit-content;
 }

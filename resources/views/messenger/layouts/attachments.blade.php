@@ -8,7 +8,7 @@
                         @if (!$attachment->deleted_at)
                             <div class="col">
                                 <div class="openImageModal" data-user="{{ $attachment->author }}"
-                                    data-photo="{{ $attachment->id }}" data-type="messages" tabindex="0">
+                                    data-photo="{{ $attachment->id }}" data-group="messages" tabindex="0">
                                     <img src="{{ asset("storage/thumbnails/$attachment->path") }}" class="photos rounded" />
                                 </div>
                             </div>

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 
+use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -83,5 +85,36 @@ class GeneralService
 
         $genitiveName = UserService::getGenitiveName($user);
         return $type . " " . $genitiveName;
+    }
+
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return array
+     */
+    public static function openPublicationModal($request)
+    {
+        $queryContent = $request->query('content');
+        $contentArray = explode('_', $queryContent);
+
+        if (!$queryContent) {
+            return [];
+        }
+        $typeContent = $contentArray[0];
+        $user = User::find($contentArray[1]);
+        $to = $request->query('to');
+        $chat = $request->query('chat');
+        $activeContent = $contentArray[2];
+        $groupContent = array_key_exists(3, $contentArray) ? $contentArray[3] : null;
+
+        $content = match ($contentArray[0]) {
+            'photo' => PhotoService::getPhotos($user, $groupContent, $to, $chat),
+            'video' => VideoService::getVideos($user),
+            default => [],
+        };
+
+        return compact('content', 'typeContent', 'activeContent', 'groupContent');
     }
 }

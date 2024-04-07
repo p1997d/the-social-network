@@ -343,8 +343,8 @@ function getAttachments(data) {
                 $div = $('<div>')
                     .addClass('openImageModal')
                     .attr('data-user', item.author)
-                    .attr('data-photo', item.id)
-                    .attr('data-type', 'messages')
+                    .attr('data-file', item.id)
+                    .attr('data-group', 'messages')
                     .attr('tabindex', '0')
                     .appendTo($col);
 

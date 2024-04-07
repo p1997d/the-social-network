@@ -215,7 +215,36 @@ function initializationPlayerButton() {
         });
 
         $(this)[0].reset();
-    })
+    });
+
+    $('#formVideoUpload').off('submit').on('submit', function (event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: formData,
+            contentType: false,
+            processData: false,
+            beforeSend: function () {
+                $('#uploadvideo').modal('hide');
+            },
+            error: function (data) {
+                showMessage({
+                    color: "danger",
+                    message: data.responseJSON.message
+                });
+            },
+            success: function (data) {
+                $.pjax.reload({ container: "#pjax-container", async: false });
+                showMessage(data);
+            }
+        });
+
+        $(this)[0].reset();
+    });
 }
 
 function togglePlayPauseClasses(element, state) {

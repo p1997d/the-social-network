@@ -4,11 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Services\GeneralService;
 use App\Services\MenuService;
-use App\Services\PhotoService;
-use App\Services\AudioService;
-use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,22 +31,9 @@ class AppServiceProvider extends ServiceProvider
 
             $data = array_merge($counter, compact('sidebar', 'menu'));
 
-            $queryContent = $request->query('content');
+            $dataPublication = GeneralService::openPublicationModal($request);
 
-            if ($queryContent) {
-                $contentArray = explode('_', $queryContent);
-                $user = User::find($contentArray[3]);
-
-                $typeContent = $contentArray[2];
-
-                $to = $request->query('to');
-                $chat = $request->query('chat');
-
-                $content = PhotoService::getPhotos($user, $typeContent, $to, $chat);
-                $activeContent = $contentArray[1];
-
-                $data = array_merge($data, compact('content', 'activeContent', 'typeContent'));
-            }
+            $data = array_merge($data, $dataPublication);
 
             $view->with($data);
         });

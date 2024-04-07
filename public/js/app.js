@@ -100,3 +100,59 @@ function showMessage(data) {
         .end()
         .toast('show');
 }
+
+function getDataFromFile(item, type) {
+    const file = $(item).attr(`data-${type}`);
+    const user = $(item).attr('data-user');
+    const group = $(item).attr('data-group');
+
+    return [file, user, group];
+}
+
+function setUrl(type, file, user, group = null) {
+    const url = new URL(window.location);
+    if (group) {
+        url.searchParams.set('content', `${type}_${user}_${file}_${group}`);
+    } else {
+        url.searchParams.set('content', `${type}_${user}_${file}`);
+    }
+    window.history.pushState({}, '', url);
+
+    return file;
+}
+
+function showModal() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const content = urlParams.get('content');
+
+    if (content) {
+        const type = content.split('_')[0];
+        const user = content.split('_')[1];
+        const file = content.split('_')[2];
+
+        switch (type) {
+            case 'photo':
+                getPhoto(file);
+                break;
+            case 'video':
+                getVideo(file, user);
+                break;
+        }
+    }
+}
+
+function showAccessError() {
+    $('.emptyToast')
+        .clone()
+        .appendTo('.toast-container')
+        .removeClass('emptyToast')
+        .find('.title').text("Ошибка доступа").end()
+        .find('.toast-body').remove().end()
+        .toast('show')
+}
+
+function clearUrl() {
+    const url = new URL(window.location);
+    url.searchParams.delete('content');
+    window.history.pushState({}, '', url);
+}

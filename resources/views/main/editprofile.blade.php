@@ -5,23 +5,6 @@
     Carbon::setLocale('ru');
 @endphp
 
-@section('css')
-    @parent
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-
-    <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
-@endsection
-
-@section('js')
-    @parent
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/ru.js"></script>
-
-    <script src="{{ asset('js/regionPicker.js') }}"></script>
-@endsection
-
 @section('content')
     <div class="row">
         <div class="col">
@@ -31,23 +14,23 @@
                     <form method="POST" action="{{ route('info.updateProfile') }}">
                         @csrf
                         <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-3 col-form-label">Имя</label>
+                            <label for="colFormLabelSm" class="col-sm-3 col-form-label text-secondary">Имя</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="colFormLabelSm" name="firstname"
                                     value="{{ auth()->user()->firstname }}" required>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-3 col-form-label">Фамилия</label>
+                            <label for="colFormLabelSm" class="col-sm-3 col-form-label text-secondary">Фамилия</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="colFormLabelSm" name="surname"
                                     value="{{ auth()->user()->surname }}" required>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-3 col-form-label">Пол</label>
+                            <label for="colFormLabelSm" class="col-sm-3 col-form-label text-secondary">Пол</label>
                             <div class="col-sm-9">
-                                <select class="form-select" name="sex">
+                                <select class="form-select" name="sex" id="selectSex">
                                     <option selected disabled>Не выбрано</option>
                                     <option value="male" {{ auth()->user()->sex == 'male' ? 'selected' : '' }}>Мужской
                                     </option>
@@ -57,7 +40,7 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="InputBirth" class="col-sm-3 col-form-label">День рождения</label>
+                            <label for="InputBirth" class="col-sm-3 col-form-label text-secondary">День рождения</label>
                             <div class="col-sm-9 d-flex justify-content-between gap-2" id="InputBirth">
                                 <div class="w-100">
                                     <select class="form-select" id="InputDay" name="birthDay" required autofocus>
@@ -95,9 +78,9 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-3 col-form-label">Семейное положение</label>
+                            <label for="colFormLabelSm" class="col-sm-3 col-form-label text-secondary">Семейное положение</label>
                             <div class="col-sm-9">
-                                <select class="form-select" name="family_status">
+                                <select class="form-select" name="family_status" id="selectFamilyStatus">
                                     <option selected value="">Не выбрано</option>
                                     @foreach ($familyStatus as $item)
                                         <option value="{{ $item }}"
@@ -109,9 +92,9 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-3 col-form-label">Образование</label>
+                            <label for="colFormLabelSm" class="col-sm-3 col-form-label text-secondary">Образование</label>
                             <div class="col-sm-9">
-                                <select class="form-select" name="education">
+                                <select class="form-select" name="education" id="selectEducation">
                                     <option selected value="">Не выбрано</option>
                                     @foreach ($education as $item)
                                         <option value="{{ $item }}"
@@ -123,7 +106,7 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-3 col-form-label">Местоположение</label>
+                            <label for="colFormLabelSm" class="col-sm-3 col-form-label text-secondary">Местоположение</label>
                             <div class="col-sm-9 row pe-0">
                                 <div class="col-4 pe-0" id="forSelectRegion1">
                                     <select class="form-select" id="selectRegion1" name="region1">

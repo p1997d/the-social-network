@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use FFMpeg\FFProbe;
 use App\Models\File;
 use App\Services\PhotoService;
 use Illuminate\Support\Facades\Auth;
@@ -84,5 +85,23 @@ class FileService
         }
 
         return compact('file', 'button');
+    }
+
+    /**
+     * Преобразует длительность аудиозаписи или видеозаписи из секунд в удобочитаемый формат
+     *
+     * @param \App\Models\File $file
+     * @return string
+     */
+    public static function getDuration($file)
+    {
+        $ffprobe = FFProbe::create();
+        $info = $ffprobe->format(storage_path("app/public/files/$file->path"));
+        $duration = $info->get('duration');
+        $formatDuration[] = gmdate("H", $duration) !== '00' ? gmdate("H", $duration) : null;
+        $formatDuration[] = gmdate("i:s", $duration);
+        $formatDuration = implode(':', array_filter($formatDuration));
+
+        return $formatDuration;
     }
 }

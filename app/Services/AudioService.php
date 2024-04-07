@@ -8,29 +8,12 @@ use App\Models\Playlist;
 use App\Models\PlaylistAudio;
 use App\Models\CurrentPlaylist;
 
-use FFMpeg\FFProbe;
+use App\Services\FileService;
+
 use Illuminate\Support\Facades\Auth;
 
 class AudioService
 {
-    /**
-     * Преобразует длительность аудиозаписи из секунд в удобочитаемый формат
-     *
-     * @param \App\Models\File $file
-     * @return string
-     */
-    public static function getDuration($file)
-    {
-        $ffprobe = FFProbe::create();
-        $info = $ffprobe->format(storage_path("app/public/files/$file->path"));
-        $duration = $info->get('duration');
-        $formatDuration[] = gmdate("H", $duration) !== '00' ? gmdate("H", $duration) : null;
-        $formatDuration[] = gmdate("i:s", $duration);
-        $formatDuration = implode(':', array_filter($formatDuration));
-
-        return $formatDuration;
-    }
-
     /**
      * Получает или создает плейлист
      *
@@ -117,7 +100,7 @@ class AudioService
     {
         $playlist = self::getOrCreatePlaylist($user->playlist);
 
-        $duration = self::getDuration($file);
+        $duration = FileService::getDuration($file);
 
         $audio = new Audio();
 

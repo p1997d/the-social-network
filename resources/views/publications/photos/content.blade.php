@@ -15,7 +15,7 @@
         @endif
 
         <div class="openImageModal" data-user="{{ $photo->author }}" data-photo="{{ $photo->id }}"
-            data-type="{{ $type ?: 'all' }}" tabindex="0">
+            data-group="{{ $type ?: 'all' }}" tabindex="0">
             <img src="{{ asset("storage/thumbnails/$photo->path") }}" class="photos rounded" />
         </div>
     @empty

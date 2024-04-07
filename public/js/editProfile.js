@@ -1,22 +1,26 @@
 $(document).ready(async function () {
     regionPicker();
+    select2Initialization();
 });
 
 $(document).on('pjax:end', function () {
     regionPicker();
+    select2Initialization();
 });
 
 function regionPicker() {
+    $('#selectRegion1, #selectRegion2').off("change");
+
     let options = {
         language: "ru",
-        theme: 'bootstrap-5'
+        theme: 'bootstrap-5',
     };
 
     $('#selectRegion1').select2(options);
     $('#selectRegion2').select2(options);
     $('#selectRegion3').select2(options);
 
-    let disabledOption = '<option selected value="0">Не выбрано</option>';
+    let disabledOption = '<option value="0">Не выбрано</option>';
 
     $('#selectRegion1').on("change", function () {
         $('#selectRegion2, #selectRegion3').empty();
@@ -52,4 +56,14 @@ function regionPicker() {
             }
         });
     });
+}
+
+function select2Initialization() {
+    let options = {
+        language: "ru",
+        theme: 'bootstrap-5',
+        minimumResultsForSearch: -1
+    };
+
+    $('#selectSex, #selectFamilyStatus, #selectEducation, #InputDay, #InputMonth, #InputYear').select2(options);
 }

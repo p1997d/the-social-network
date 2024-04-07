@@ -19,7 +19,7 @@
             <tbody>
                 @foreach ($allInfo as $info)
                     <tr>
-                        <th scope="row" class="text-secondary">
+                        <th scope="row" class="text-secondary col-4">
                             <i class="bi {{ $info->icon }}"></i>
                             {{ $info->title }}:
                         </th>
