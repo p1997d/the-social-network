@@ -1,6 +1,5 @@
 @php
     use Carbon\Carbon;
-    Carbon::setLocale('ru');
 @endphp
 
 <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">

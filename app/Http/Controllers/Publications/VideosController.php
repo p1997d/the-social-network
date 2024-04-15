@@ -15,7 +15,6 @@ use App\Services\FileService;
 use App\Services\VideoService;
 
 use Carbon\Carbon;
-Carbon::setLocale('ru');
 
 class VideosController extends Controller
 {

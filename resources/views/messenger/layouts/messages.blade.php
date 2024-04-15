@@ -1,7 +1,6 @@
 @php
     use Carbon\Carbon;
     use Carbon\CarbonInterface;
-    Carbon::setLocale('ru');
 @endphp
 
 @foreach ($messages as $i => $message)

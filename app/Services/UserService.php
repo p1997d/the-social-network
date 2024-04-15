@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Cache;
 use morphos\Russian\Cases;
 use function morphos\Russian\inflectName;
 
-Carbon::setLocale('ru');
-
 class UserService
 {
     /**

@@ -1,6 +1,5 @@
 @php
     use Carbon\Carbon;
-    Carbon::setLocale('ru');
 @endphp
 
 <div class="list-group list-group-flush w-100 h-100">

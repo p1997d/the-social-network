@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use function morphos\Russian\pluralize;
 
-Carbon::setLocale('ru');
-
 class GeneralService
 {
     /**

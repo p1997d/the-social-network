@@ -18,8 +18,6 @@ use App\Services\FileService;
 
 use Carbon\Carbon;
 
-Carbon::setLocale('ru');
-
 class DialogController extends Controller
 {
     /**

@@ -5,7 +5,6 @@
 @php
     use Carbon\Carbon;
     use Carbon\CarbonInterface;
-    Carbon::setLocale('ru');
 @endphp
 
 @section('main')

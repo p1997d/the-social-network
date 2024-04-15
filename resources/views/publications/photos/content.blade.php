@@ -1,7 +1,6 @@
 @php
     use Carbon\Carbon;
     use Carbon\CarbonInterface;
-    Carbon::setLocale('ru');
 @endphp
 <div class="d-flex justify-content-start flex-wrap gap-2">
     @forelse ($photos as $i => $photo)

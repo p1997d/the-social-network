@@ -2,7 +2,6 @@
 
 @php
     use Carbon\Carbon;
-    Carbon::setLocale('ru');
 @endphp
 
 @section('content')

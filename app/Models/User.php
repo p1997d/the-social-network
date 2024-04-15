@@ -17,8 +17,6 @@ use App\Services\DialogService;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-Carbon::setLocale('ru');
-
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;

@@ -19,8 +19,6 @@ use Carbon\Carbon;
 use App\Services\FileService;
 use App\Events\MessagesWebSocket;
 
-Carbon::setLocale('ru');
-
 class ChatController extends Controller
 {
     /**
