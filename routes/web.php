@@ -14,6 +14,7 @@ use App\Http\Controllers\Messenger\ChatController as MessengerChatController;
 use App\Http\Controllers\Publications\PhotosController as PublicationsPhotosController;
 use App\Http\Controllers\Publications\AudiosController as PublicationsAudiosController;
 use App\Http\Controllers\Publications\VideosController as PublicationsVideosController;
+use App\Http\Controllers\Publications\FilesController as PublicationsFilesController;
 
 Route::group(['namespace' => 'Index'], function () {
     Route::get('/', [MainIndexController::class, 'index'])->name('index');
@@ -78,10 +79,10 @@ Route::group(['namespace' => 'Publications'], function () {
         Route::get('/audios/getAudio', [PublicationsAudiosController::class, 'getAudio'])->name('getAudio');
         Route::get('/audios/getPlaylist', [PublicationsAudiosController::class, 'getPlaylist'])->name('getPlaylist');
         Route::get('/audios/getLastAudio', [PublicationsAudiosController::class, 'getLastAudio'])->name('getLastAudio');
+        Route::get('/audios/download/{id}', [PublicationsAudiosController::class, 'download'])->name('audios.download');
 
         Route::post('/audios/add', [PublicationsAudiosController::class, 'add'])->name('audios.add');
         Route::post('/audios/upload', [PublicationsAudiosController::class, 'upload'])->name('audios.upload');
-        Route::post('/audios/download', [PublicationsAudiosController::class, 'download'])->name('audios.download');
         Route::post('/audios/delete', [PublicationsAudiosController::class, 'delete'])->name('audios.delete');
 
         Route::post('/audios/clearPlaylist', [PublicationsAudiosController::class, 'clearPlaylist'])->name('audios.clearPlaylist');
@@ -94,6 +95,10 @@ Route::group(['namespace' => 'Publications'], function () {
         Route::post('/videos/addView', [PublicationsVideosController::class, 'addView'])->name('videos.addView');
         Route::post('/videos/upload', [PublicationsVideosController::class, 'upload'])->name('videos.upload');
         Route::post('/videos/delete', [PublicationsVideosController::class, 'delete'])->name('videos.delete');
+    });
+
+    Route::group(['namespace' => 'Files'], function () {
+        Route::get('/files/download/{id}', [PublicationsFilesController::class, 'download'])->name('files.download');
     });
 });
 

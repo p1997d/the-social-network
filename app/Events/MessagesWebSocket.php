@@ -28,7 +28,7 @@ class MessagesWebSocket implements ShouldBroadcast
             $this->title = 'Новое сообщение';
             $this->subtitle = $data['sender']['firstname'] . ' ' . $data['sender']['surname'];
             $this->image = $data['senderAvatar'];
-            $this->description = $data['decryptContent'] ? $data['decryptContent'] : 'Файлов: ' . $data['attachments']->count();
+            $this->description = $data['decryptContent'] ? $data['decryptContent'] : 'Файлов: ' . count($data['attachments']);
             $this->link = route('messages', ['to' => $data['sender']['id']]);
         }
         $this->data = $data;

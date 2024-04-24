@@ -60,24 +60,9 @@ class User extends Authenticatable
         return $this->hasOne(Info::class, 'user', 'id');
     }
 
-    public function messages_sender()
-    {
-        return $this->hasMany(Dialog::class, 'sender', 'id');
-    }
-
-    public function messages_recipient()
-    {
-        return $this->hasMany(Dialog::class, 'recipient', 'id');
-    }
-
     public function online()
     {
         return UserService::isOnline($this->id);
-    }
-
-    public function lastMessage()
-    {
-        return DialogService::getMessages(self::find(Auth::id()), $this)->get()->first();
     }
 
     public function unreadMessagesCount()
@@ -107,7 +92,7 @@ class User extends Authenticatable
 
     public function avatarFile()
     {
-        return $this->hasOneThrough(File::class, Info::class, 'user', 'id', 'id', 'avatar');
+        return $this->hasOneThrough(Photo::class, UserAvatar::class, 'user', 'id', 'id', 'avatar')->latest();
     }
 
     public function playlist(): MorphOne
@@ -118,5 +103,37 @@ class User extends Authenticatable
     public function currentPlaylist()
     {
         return $this->hasOne(CurrentPlaylist::class, 'user', 'id');
+    }
+
+    public function senderDialogs()
+    {
+        return $this->hasMany(Dialog::class, 'sender');
+    }
+
+    public function recipientDialogs()
+    {
+        return $this->hasMany(Dialog::class, 'recipient');
+    }
+
+    public function dialogs()
+    {
+        return $this->senderDialogs->merge($this->recipientDialogs);
+    }
+
+    public function chats()
+    {
+        return $this->belongsToMany(Chat::class, 'chat_members', 'user', 'chat')->get();
+    }
+
+    public function allDialogsAndChats()
+    {
+        return $this->dialogs()->push(...$this->chats());
+    }
+
+    public function dialogsAndChatsWithMessages()
+    {
+        return $this->allDialogsAndChats()->filter(function ($item) {
+            return $item->messages()->count() > 0;
+        });
     }
 }

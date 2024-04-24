@@ -23,15 +23,17 @@
                             <span class="separator text-secondary fs-7">•</span>
                             <span class="text-secondary fs-7 createdAtModalVideo"></span>
                         </div>
+                        <div class="comments">
+                        </div>
                     </div>
                     <div class="col-3 d-flex flex-column gap-2">
                         @if (isset($content) && $typeContent == 'video')
                             @foreach ($content as $video)
                                 <button class="btn btn-text m-0 p-0 videoCard openVideo"
-                                    data-user="{{ $video->videoFile->author }}" data-video="{{ $video->id }}">
+                                    data-user="{{ $video->author }}" data-video="{{ $video->id }}">
                                     <div class="card shadow">
                                         <div class="video-thumbnail position-relative">
-                                            <img src="{{ asset("storage/thumbnails/$video->thumbnail") }}"
+                                            <img src="{{ $video->thumbnailPath }}"
                                                 class="card-img-top" alt="preview">
                                             <div class="position-absolute bottom-0 end-0">
                                                 <span

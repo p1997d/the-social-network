@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 
+use App\Services\PhotoService;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage;
@@ -18,19 +20,25 @@ class GeneralService
      * Получает аватар
      *
      * @param object $model
-     * @return string
+     * @return object
      */
     public static function getAvatar($model)
     {
         $file = $model->avatarFile;
 
-        if ($file && Storage::exists("public/files/" . $file->path)) {
-            return Storage::url("public/files/" . $file->path);
+        if ($file && $file->deleted_at === null) {
+            return (object) collect([
+                'path' => $file->path,
+                'thumbnailPath' => $file->thumbnailPath,
+                'default' => false,
+            ])->all();
         }
 
-        $name = class_basename($model) == "User" ? "$model->firstname+$model->surname" : $model->title;
-
-        return "https://ui-avatars.com/api/?name=$name&background=random&size=150";
+        return (object) collect([
+            'path' => $model->avatarDefault(),
+            'thumbnailPath' => $model->avatarDefault(),
+            'default' => true,
+        ])->all();
     }
 
     /**

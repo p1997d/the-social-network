@@ -3,59 +3,22 @@
 namespace App\Services;
 
 use App\Models\Dialog;
+use App\Models\DialogMessage;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class DialogService
 {
     /**
-     * Получает список диалогов
-     *
-     * @return \App\Models\User[]
-     */
-    public static function getDialogs()
-    {
-        $sender = User::find(Auth::id());
-        $messages = Dialog::where([['sender', $sender->id], ['delete_for_sender', '!=', 1]])
-            ->orWhere([['recipient', $sender->id], ['delete_for_recipient', '!=', 1]])
-            ->get();
-
-        $userIds = $messages->pluck('sender')
-            ->merge($messages->pluck('recipient'))
-            ->diff([$sender->id])
-            ->unique()
-            ->toArray();
-
-        $users = User::whereIn('id', $userIds)->get();
-
-        // $users = $users->sortBy(function ($user) {
-        //     return optional($user->getLastMessage())->sent_at;
-        // }, SORT_REGULAR, true);
-
-        return $users;
-    }
-
-    /**
      * Получает список сообщений диалога
      *
-     * @param \App\Models\User $user1
-     * @param \App\Models\User $user2
-     * @return \App\Models\Dialog
+     * @param \App\Models\Dialog $dialog
+     * @return \App\Models\Message
      */
-    public static function getMessages($user1, $user2)
+    public static function getMessages($dialog)
     {
-        $messages = Dialog::where([
-            ['sender', $user1->id],
-            ['recipient', $user2->id],
-            ['delete_for_sender', '!=', 1]
-        ])->orWhere([
-                    ['sender', $user2->id],
-                    ['recipient', $user1->id],
-                    ['delete_for_recipient', '!=', 1]
-                ])
-            ->orderBy('sent_at', 'desc');
-
-        return $messages;
+        return Message::whereIn('id', $dialog->messages()->pluck('id'));
     }
 
     /**
@@ -70,11 +33,62 @@ class DialogService
             return null;
         }
 
-        return Dialog::where([
-            ['sender', $id],
-            ['recipient', Auth::id()],
-            ['viewed_at', null],
-            ['delete_for_recipient', 0],
-        ])->count();
+        return Dialog::find($id)->messages()->where('author', '!=', Auth::id())->whereNull('viewed_at')->count();
+    }
+
+    /**
+     * Получает диалог
+     *
+     * @param int $sender_id
+     * @param int $recipient_id
+     * @return \App\Models\Dialog
+     */
+    public static function getOrCreateDialog($sender_id, $recipient_id)
+    {
+        $dialog = Dialog::where([
+            ['sender', $sender_id],
+            ['recipient', $recipient_id],
+        ])->orWhere([
+                    ['sender', $recipient_id],
+                    ['recipient', $sender_id],
+                ]);
+
+        if ($dialog->doesntExist()) {
+            $dialog = new Dialog();
+            $dialog->sender = $sender_id;
+            $dialog->recipient = $recipient_id;
+            $dialog->save();
+        } else {
+            $dialog = $dialog->first();
+        }
+
+        return $dialog;
+    }
+
+    public static function createMessage($content, $sender, $sentAt, $dialog)
+    {
+        $message = MessagesService::create($content, $sender, $sentAt);
+
+        $dm = new DialogMessage();
+        $dm->dialog = $dialog->id;
+        $dm->message = $message->id;
+        $dm->save();
+
+        return $message;
+    }
+
+    public static function getDialog($to, $sender, $title)
+    {
+        $recipient = User::find($to);
+
+        if (!$recipient) {
+            return view('main.info', ['info' => 'Страница удалена либо ещё не создана.']);
+        }
+
+        $dialog = DialogService::getOrCreateDialog($sender->id, $recipient->id);
+
+        $messages = DialogService::getMessages($dialog)->orderBy('created_at', 'DESC')->paginate(25)->appends(['to' => $to])->onEachSide(1);
+
+        return compact('messages', 'recipient', 'title');
     }
 }

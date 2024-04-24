@@ -6,16 +6,13 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
-use App\Models\User;
 use App\Models\Audio;
-use App\Models\Playlist;
-
-use App\Services\FileService;
+use App\Models\User;
 use App\Services\AudioService;
+use App\Services\FileService;
 use App\Services\GeneralService;
-
-use function PHPUnit\Framework\returnSelf;
 
 class AudiosController extends Controller
 {
@@ -54,10 +51,16 @@ class AudiosController extends Controller
         ]);
 
         $user = User::find(Auth::id());
-        $file = FileService::create($user, 'uploaded', time(), $request->audios);
-        $data = AudioService::create($user, $file, $request->title, $request->artist);
+        $data = (object) collect(['title' => $request->title, 'artist' => $request->artist])->all();
+        $audio = FileService::create($request->audios, $data);
 
-        return $data;
+        AudioService::saveToPlaylist($audio);
+
+        if (!$audio) {
+            return ['color' => 'danger', 'message' => 'Загрузка аудиозаписи завершилась с ошибкой'];
+        }
+
+        return ['color' => 'success', 'message' => 'Аудиозапись успешно загружена'];
     }
 
     /**
@@ -68,7 +71,9 @@ class AudiosController extends Controller
      */
     public function delete(Request $request)
     {
-        return AudioService::delete($request->audio);
+        $file = Audio::find($request->audio);
+        FileService::delete($file);
+        return ['color' => 'success', 'message' => 'Аудиозапись успешно удалена'];
     }
 
     /**
@@ -77,12 +82,12 @@ class AudiosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function download(Request $request)
+    public function download(Request $request, $id)
     {
-        $path = storage_path("app/public/files/{$request->file}");
+        $file = Audio::find($id);
 
-        if (file_exists($path)) {
-            return response()->download($path);
+        if (Storage::exists($file->path)) {
+            return response()->download(storage_path('app/' . $file->path));
         } else {
             abort(404, 'File not found');
         }

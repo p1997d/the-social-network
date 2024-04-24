@@ -22,7 +22,7 @@
             </p>
         </div>
     @else
-        <div class="list-group-item list-group-item-action list-group-item-message gap-2 message justify-content-center rounded border-0 @if ($message->senderUser->id !== auth()->user()->id && !$message->viewed_at) unread @endif rounded-0"
+        <div class="list-group-item list-group-item-action list-group-item-message gap-2 message justify-content-center rounded border-0 rounded-0 @if ($message->senderUser->id !== auth()->user()->id && !$message->viewed_at) unread @endif"
             id="{{ $message->id }}">
             <div>
                 <a href="{{ route('profile', $message->senderUser->id) }}" class="profileImageLink">

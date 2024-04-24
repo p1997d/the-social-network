@@ -21,6 +21,6 @@ class Playlist extends Model
 
     public function audios()
     {
-        return $this->belongsToMany(Audio::class, 'playlist_audio', 'playlist', 'audio');
+        return $this->belongsToMany(Audio::class, 'playlist_audio', 'playlist', 'audio')->where('deleted_at', null);
     }
 }

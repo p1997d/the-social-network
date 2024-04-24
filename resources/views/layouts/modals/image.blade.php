@@ -23,10 +23,9 @@
                                     @foreach ($content as $item)
                                         <div class="carousel-item h-inherit
                                                     {{ $item->id == $activeContent ? 'active' : '' }}"
-                                            data-photo="{{ $item->id }}" data-user="{{ $item->author }}"
-                                            data-group="{{ $groupContent }}">
+                                            data-photo="{{ $item->id }}" data-user="{{ $item->author }}">
                                             <div class="w-100 h-100 d-flex justify-content-center align-items-center">
-                                                <img src="storage/files/{{ $item->path }}"
+                                                <img src="{{ $item->path }}"
                                                     class="d-block mw-100 mh-100 mx-auto rounded displayedImage">
                                             </div>
                                         </div>

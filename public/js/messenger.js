@@ -267,11 +267,11 @@ function changeMessagesBlock(data) {
 
             $(".list-group-item-empty").clone()
                 .removeClass('list-group-item-empty')
-                .addClass('list-group-item-message d-flex')
+                .addClass('list-group-item-message')
                 .addClass(userId === data.sender.id ? '' : 'unread')
                 .attr('id', data.message.id)
                 .find('.profileImageLink').attr('href', `/id${data.sender.id}`)
-                .children('img').attr('src', data.senderAvatar).end()
+                .children('img').attr('src', data.senderAvatar.thumbnailPath).end()
                 .end()
                 .find('.profileNameLink').text(data.sender.firstname).attr('href', `/id${data.sender.id}`).end()
                 .find('.sent-at').text(data.sentAtFormat).end()
@@ -333,7 +333,7 @@ function viewFileList(fileInput) {
 }
 
 function getAttachments(data) {
-    let $row = $('<div>').addClass(`row row-cols-${data.attachments.length < 5 ? data.attachments.length : 5} g-2 my-2`);
+    let $row = $('<div>').addClass(`row row-cols-5 g-2 my-2`);
 
     data.attachments.forEach(item => {
         switch (item.type.split('/')[0]) {
@@ -343,13 +343,13 @@ function getAttachments(data) {
                 $div = $('<div>')
                     .addClass('openImageModal')
                     .attr('data-user', item.author)
-                    .attr('data-file', item.id)
+                    .attr('data-photo', item.id)
                     .attr('data-group', 'messages')
                     .attr('tabindex', '0')
                     .appendTo($col);
 
                 $img = $('<img>')
-                    .attr('src', `storage/thumbnails/${item.path}`)
+                    .attr('src', item.thumbnailPath)
                     .addClass('photos rounded')
                     .appendTo($div);
 
@@ -358,7 +358,7 @@ function getAttachments(data) {
             case 'audio':
                 $col = $('<div>').addClass('col-12').appendTo($row);
                 $audio = $('<audio>').addClass('player').attr('controls', true).appendTo($col);
-                $source = $('<source>').attr('src', `storage/files/${item.path}`).attr('type', item.type).appendTo($audio);
+                $source = $('<source>').attr('src', item.path).attr('type', item.type).appendTo($audio);
 
                 players.push(new Plyr($audio));
                 break;
@@ -366,7 +366,7 @@ function getAttachments(data) {
             case 'video':
                 $col = $('<div>').addClass('col-12').appendTo($row);
                 $video = $('<video>').addClass('player').attr('controls', true).appendTo($col);
-                $source = $('<source>').attr('src', `storage/files/${item.path}`).attr('type', item.type).appendTo($video);
+                $source = $('<source>').attr('src', item.path).attr('type', item.type).appendTo($video);
 
                 players.push(new Plyr($video));
                 break;
@@ -374,7 +374,7 @@ function getAttachments(data) {
             default:
                 $col = $('<div>').addClass('col').appendTo($row);
                 $a = $('<a>')
-                    .attr('href', `storage/files/${item.path}`)
+                    .attr('href',item.path)
                     .attr('target', '_blank')
                     .addClass('link-underline link-underline-opacity-0')
                     .appendTo($col);
@@ -382,7 +382,8 @@ function getAttachments(data) {
                 $cardBody = $('<div>')
                     .addClass('card-body d-flex justify content-start gap-2')
                     .append('<i class="bi bi-file-earmark"></i>')
-                    .append(`<div> ${item.name} </div>`)
+                    // .append(`<div> ${item.name} </div>`)
+                    .append(`<div> Файл </div>`)
                     .append(`<div class="text-secondary"> ${getSize(item.size)} </div>`)
                     .appendTo($card);
                 break;

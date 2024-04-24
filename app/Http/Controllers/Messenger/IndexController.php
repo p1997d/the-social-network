@@ -3,22 +3,20 @@
 namespace App\Http\Controllers\Messenger;
 
 use App\Http\Controllers\Controller;
+use App\Services\MessagesService;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
 use App\Models\User;
-use App\Models\Dialog;
 use App\Models\Chat;
 use App\Models\ChatMember;
-use App\Models\ChatMessage;
-
+use App\Models\Message;
+use App\Services\ChatService;
 use App\Services\GeneralService;
 use App\Services\FriendsService;
-use App\Services\ChatService;
 use App\Services\DialogService;
-
 
 class IndexController extends Controller
 {
@@ -31,7 +29,7 @@ class IndexController extends Controller
     public function messages(Request $request)
     {
         if (Auth::guest()) {
-            return redirect()->route('auth.signIn');
+            return redirect()->route('auth.signin');
         }
 
         $title = 'Сообщения';
@@ -43,63 +41,18 @@ class IndexController extends Controller
         $query = $request->query('query');
 
         if ($query) {
-            if ($to) {
-                $dialog = Dialog::where([['sender', $sender->id], ['recipient', $to], ['delete_for_sender', 0]])->orWhere([['sender', $to], ['recipient', $sender->id], ['delete_for_recipient', 0]]);
-            } else {
-                $dialog = Dialog::where([['sender', $sender->id], ['delete_for_sender', 0]])->orWhere([['recipient', $sender->id], ['delete_for_recipient', 0]]);
-            }
-            $messages = $dialog->get()->filter(function ($item) use ($query) {
-                return str_contains(Crypt::decrypt($item->content), $query);
-            })->values();
-
+            $messages = MessagesService::search($query, $to, $chat, $sender);
             return view('messenger.search', compact('title', 'messages', 'query'));
         }
 
         if ($to) {
-            $type = 'dialog';
-            $recipient = User::find($to);
-
-            if (!$recipient) {
-                return view('main.info', ['info' => 'Страница удалена либо ещё не создана.']);
-            }
-
-            $messages = DialogService::getMessages($sender, $recipient)->paginate(25)->appends(['to' => $to])->onEachSide(1);
-
-            return view('messenger.chat', compact('type', 'title', 'recipient', 'messages'));
+            return view('messenger.chat', DialogService::getDialog($to, $sender, $title));
         } else if ($chat) {
-            $type = 'chat';
             $page = $request->page ?? 1;
-
-            $recipient = Chat::find($chat);
-            $members = ChatMember::where('chat', $chat);
-
-            if (!$recipient) {
-                return redirect()->route('messages');
-            }
-
-            $countMembers = GeneralService::getPluralize($members->count(), 'участник');
-
-            $messages = ChatService::getMessages($chat)->forPage($page, 25)->values();
-
-            return view('messenger.chat', compact('type', 'title', 'messages', 'recipient', 'countMembers'));
+            return view('messenger.chat', ChatService::getChat($page, $chat, $title));
         } else {
-            $user_profile = User::find(Auth::id());
-
-            $dialogs = DialogService::getDialogs();
-            $chats = ChatService::getChats();
-
-            $chatLogs = [];
-
-            foreach ($dialogs as $dialog) {
-                $chatLogs[] = $dialog;
-            }
-
-            foreach ($chats as $chat) {
-                $chatLogs[] = $chat;
-            }
-
-            $friends = FriendsService::listFriends($user_profile)->get();
-
+            $chatLogs = $sender->dialogsAndChatsWithMessages();
+            $friends = FriendsService::listFriends($sender)->get();
             return view('messenger.list', compact('title', 'chatLogs', 'friends'));
         }
     }
@@ -113,19 +66,15 @@ class IndexController extends Controller
     public function getMessage(Request $request)
     {
         $user = User::find(Auth::id());
-        if ($request->typeRecipient == 'to') {
-            $message = Dialog::find($request->id);
-        } elseif ($request->typeRecipient == 'chat') {
-            $message = ChatMessage::find($request->id);
-        }
+        $message = Message::find($request->id);
 
-
-        if ($message->sender !== $user->id) {
+        if ($message->author !== $user->id) {
             abort(403);
         }
 
         $content = Crypt::decrypt($message->content);
-        $attachments = $message->attachments();
+        // $attachments = $message->attachments();
+        $attachments = [];
 
         return compact('content', 'attachments');
     }

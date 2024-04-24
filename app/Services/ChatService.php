@@ -7,43 +7,11 @@ use App\Models\ChatMember;
 use App\Models\ChatMessage;
 use App\Models\ChatMessageDelete;
 use App\Models\ChatSystemMessage;
+use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 
 class ChatService
 {
-    /**
-     * Получает список чатов
-     *
-     * @return \App\Models\Chat[]
-     */
-    public static function getChats()
-    {
-        $user = Auth::user();
-
-        $chatIds = ChatMember::where('user', $user->id)->pluck('chat');
-
-        return Chat::whereIn('id', $chatIds)->get();
-    }
-
-    /**
-     * Получает список сообщений чата
-     *
-     * @param int $chat
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public static function getMessages($chat)
-    {
-        $userMessages = ChatMessage::where([['chat', $chat], ['delete_for_all', '!=', 1]])->get()->filter(function ($item) {
-            return ChatMessageDelete::where([
-                ['message', $item->id],
-                ['user', auth()->user()->id]
-            ])->doesntExist();
-        });
-        $systemMessages = ChatSystemMessage::where('chat', $chat)->get();
-
-        return collect([])->merge($userMessages)->merge($systemMessages)->sortByDesc('sent_at');
-    }
-
     /**
      * Получает количество непрочитанных сообщений
      *
@@ -56,13 +24,104 @@ class ChatService
             return null;
         }
 
-        return ChatMessage::where([
-            ['chat', $id],
-            ['sender', '!=', Auth::id()],
-            ['viewed_at', null],
-            ['delete_for_all', 0]
-        ])->get()->filter(function ($item) {
-            return ChatMessageDelete::where([['message', $item->id], ['user', Auth::id()]])->doesntExist();
+        return Chat::find($id)->messages()->where('author', '!=', auth()->user()->id)->whereNull('viewed_at')->filter(function ($item) {
+            return class_basename($item) !== 'ChatSystemMessage';
         })->count();
+    }
+
+    public static function create($title, $user)
+    {
+        $chat = new Chat();
+
+        $chat->title = $title;
+        $chat->author = $user->id;
+        $chat->save();
+
+        return $chat;
+    }
+
+    public static function createSystemMessage($user, $chat, $content)
+    {
+        $message = new ChatSystemMessage();
+
+        $message->sender = $user->id;
+        $message->recipient = null;
+        $message->content = $content;
+        $message->sent_at = now();
+
+        $message->save();
+
+        self::saveMessage($chat, $message);
+
+        return $message;
+    }
+
+    public static function addMember($user, $chat)
+    {
+        $member = new ChatMember();
+
+        $count = ChatMember::where('user', $user->id)->count();
+
+        $member->user = $user->id;
+        $member->chat = $chat->id;
+        $member->id_for_user = $count + 1;
+        $member->admin = true;
+        $member->joined_at = now();
+
+        $member->save();
+
+        return $member;
+    }
+    public static function addMembers($users, $chat)
+    {
+        $usersData = [];
+        foreach ($users as $userId) {
+            $count = ChatMember::where('user', $userId)->count();
+
+            $usersData[] = [
+                'user' => $userId,
+                'chat' => $chat->id,
+                'id_for_user' => $count + 1,
+                'admin' => false,
+                'joined_at' => now(),
+            ];
+        }
+        ChatMember::insert($usersData);
+    }
+
+    public static function createMessage($content, $sender, $sentAt, $chat)
+    {
+        $message = MessagesService::create($content, $sender, $sentAt);
+
+        self::saveMessage($chat, $message);
+
+        return $message;
+    }
+
+    public static function saveMessage($chat, $message)
+    {
+        $cm = new ChatMessage();
+        $cm->chat = $chat->id;
+        $cm->message_id = $message->id;
+        $cm->message_type = $message->getMorphClass();
+        $cm->save();
+
+        return $cm;
+    }
+
+    public static function getChat($page, $chat, $title)
+    {
+        $recipient = Chat::find($chat);
+        $members = ChatMember::where('chat', $chat);
+
+        if (!$recipient) {
+            return redirect()->route('messages');
+        }
+
+        $countMembers = GeneralService::getPluralize($members->count(), 'участник');
+
+        $messages = $recipient->messages()->sortByDesc('sent_at')->forPage($page, 25)->values();
+
+        return compact('messages', 'recipient', 'countMembers', 'title');
     }
 }

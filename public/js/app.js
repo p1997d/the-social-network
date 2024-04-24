@@ -77,7 +77,7 @@ function notification(event) {
             .find('.subtitle').text(event.subtitle).end()
             .find('.description').text(event.description).end()
             .find('.link').attr('href', event.link).end()
-            .find('.image').attr("src", event.image).end()
+            .find('.image').attr("src", event.image.thumbnailPath).end()
             .toast('show')
 
         playNotificationAudio();

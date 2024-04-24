@@ -67,15 +67,16 @@ function initializeImageInteractions() {
                     photo,
                 },
                 success: function (data) {
-                    $('.photoDeleteButton').html(data.button);
 
-                    if (data.button == "Восстановить") {
+                    if (data.button == "restore") {
+                        $('.photoDeleteButton').text('Восстановить');
                         let div = $('<div>')
-                            .addClass('shadow py-3 px-4 z-3 d-flex justify-content-between photoRestore')
-                            .append('<div>Фотография удалена.</div>')
+                        .addClass('shadow py-3 px-4 z-3 d-flex justify-content-between photoRestore')
+                        .append('<div>Фотография удалена.</div>')
 
                         $('#carouselIndicators').prepend(div)
                     } else {
+                        $('.photoDeleteButton').text('Удалить');
                         $('.photoRestore').remove();
                     }
                 }
@@ -98,7 +99,7 @@ function initializeImageInteractions() {
                 beforeSend: function () {
                     $('#uploadphoto').modal('hide');
                 },
-                error: function(data) {
+                error: function (data) {
                     showMessage({
                         color: "danger",
                         message: data.responseJSON.message
@@ -139,15 +140,14 @@ function getPhotoInfo(photo, currentPhoto = null) {
             $('.photoCounter').html(`<div class="spinner-border spinner-border-sm" role="status"></div>`)
         },
         success: function (data) {
-            let header = $('<div>')
-                .addClass('card-header d-flex align-items-center gap-1');
+            let header = $('<div>').addClass('card-header d-flex align-items-center gap-1');
 
             let avatar = $('<div>').append(
                 $('<img>')
                     .addClass('rounded-circle object-fit-cover')
                     .attr('width', '40px')
                     .attr('height', '40px')
-                    .attr('src', data.avatar)
+                    .attr('src', data.avatar.path)
             ).appendTo(header);
 
             let div = $('<div>').appendTo(header);
@@ -203,14 +203,14 @@ function getPhotoInfo(photo, currentPhoto = null) {
                 $('#carouselIndicators .carousel-control-prev, #carouselIndicators .carousel-control-next').hide();
             }
 
-            let typeLink = $('<a>')
-                .attr('href', groupContent[data.photo.group].url)
-                .html(groupContent[data.photo.group].description)
-                .addClass('link-body-emphasis');
+            // let typeLink = $('<a>')
+            //     .attr('href', groupContent[data.photo.group].url)
+            //     .html(groupContent[data.photo.group].description)
+            //     .addClass('link-body-emphasis');
 
             $('.photoCounter')
                 .html('')
-                .append(typeLink)
+                // .append(typeLink)
                 .append(`${currentPhoto} из ${photosLength}`)
                 .addClass('text-secondary');
 
@@ -221,7 +221,7 @@ function getPhotoInfo(photo, currentPhoto = null) {
     });
 }
 
-function getPhoto(file){
+function getPhoto(file) {
     $.ajax({
         url: '/photos/getPhoto',
         type: 'GET',

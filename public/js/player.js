@@ -9,11 +9,13 @@ $(document).ready(function () {
 
     initializationPlayers();
     initializationPlayerButton();
+    getLastAudio();
 });
 
 $(document).on('pjax:end', function () {
     initializationPlayers();
     initializationPlayerButton();
+    setPlayIcon()
 });
 
 
@@ -24,7 +26,7 @@ function initializationPlayers() {
         players = [];
     }
 
-    if (players) {
+    if (players && players.length > 0) {
         players.forEach(function (instance) {
             instance.on('play', function () {
                 players.forEach(function (instance1) {
@@ -41,25 +43,11 @@ function initializationPlayers() {
         });
     }
 
+
     $('#playerVolumeRange').val(mainPlayer.volume * 100);
-    getLastAudio();
 
     mainPlayer.on('play pause', () => {
-        let currentTrack = getCurrentTrack();
-
-        if (mainPlayer.playing) {
-            togglePlayPauseClasses('.headerPlayButton', 'pause');
-            togglePlayPauseClasses('.playerPlayButton', 'pause');
-            togglePlayPauseClasses('.sidebarPlayButton', 'pause');
-
-            togglePlayPauseClasses('.playAudioButton', 'play');
-            togglePlayPauseClasses(`.playAudioButton[data-id="${currentTrack}"]`, 'pause');
-        } else {
-            togglePlayPauseClasses('.headerPlayButton', 'play');
-            togglePlayPauseClasses('.playerPlayButton', 'play');
-            togglePlayPauseClasses('.sidebarPlayButton', 'play');
-            togglePlayPauseClasses('.playAudioButton', 'play');
-        }
+        setPlayIcon();
     });
 
     mainPlayer.on('timeupdate', () => {
@@ -216,35 +204,6 @@ function initializationPlayerButton() {
 
         $(this)[0].reset();
     });
-
-    $('#formVideoUpload').off('submit').on('submit', function (event) {
-        event.preventDefault();
-
-        let formData = new FormData(this);
-
-        $.ajax({
-            url: $(this).attr('action'),
-            type: $(this).attr('method'),
-            data: formData,
-            contentType: false,
-            processData: false,
-            beforeSend: function () {
-                $('#uploadvideo').modal('hide');
-            },
-            error: function (data) {
-                showMessage({
-                    color: "danger",
-                    message: data.responseJSON.message
-                });
-            },
-            success: function (data) {
-                $.pjax.reload({ container: "#pjax-container", async: false });
-                showMessage(data);
-            }
-        });
-
-        $(this)[0].reset();
-    });
 }
 
 function togglePlayPauseClasses(element, state) {
@@ -335,9 +294,10 @@ function selectPlaylist(activePlaylist) {
             `)
         },
         success: function (data) {
+            console.log(data)
             forPlaylist.html('');
-            if (data) {
-                data.forEach(item => {
+            if (data.audios && data.audios.length > 0) {
+                data.audios.forEach(item => {
                     li = $('<li>')
                         .addClass('list-group-item d-flex align-items-center justify-content-between gap-1 px-0')
                         .appendTo(forPlaylist);
@@ -345,13 +305,22 @@ function selectPlaylist(activePlaylist) {
                     leftDiv = $('<div>').addClass('d-flex align-items-center gap-1 px-0').appendTo(li);
                     rightDiv = $('<div>').addClass('d-flex align-items-center gap-1 px-0').appendTo(li);
 
-                    button = $('<button>')
+                    playButton = $('<button>')
                         .addClass('btn btn-outline-primary btn-sm playAudioButton')
                         .attr('type', 'button')
                         .attr('data-id', item.id)
                         .attr('data-playlist', item.pivot.playlist)
                         .html(mainPlayer.playing && item.id == currentTrack ? '<i class="bi bi-pause"></i>' : '<i class="bi bi-play"></i>')
                         .appendTo(leftDiv);
+
+                    if (item.author !== userId && data.owner.id !== userId) {
+                        addButton = $('<button>')
+                            .addClass('btn btn-outline-primary btn-sm addAudioButton')
+                            .attr('type', 'button')
+                            .attr('data-audio', item.id)
+                            .html('<i class="bi bi-plus-lg"></i>')
+                            .appendTo(leftDiv);
+                    }
 
                     title = $('<div>')
                         .addClass('ms-1 text-truncate')
@@ -379,8 +348,8 @@ function setAudioData(data) {
     let duration = data.audio.duration;
     let artist = data.audio.artist;
     let title = data.audio.title;
-    let type = data.audioFile.type;
-    let src = 'storage/files/' + data.audioFile.path;
+    let type = data.type;
+    let src = data.path;
     let id = data.audio.id;
 
     let fullTitle = `${artist} - ${title}`;
@@ -427,4 +396,22 @@ function getLastAudio() {
             }
         }
     });
+}
+
+function setPlayIcon() {
+    let currentTrack = getCurrentTrack();
+
+    if (mainPlayer.playing) {
+        togglePlayPauseClasses('.headerPlayButton', 'pause');
+        togglePlayPauseClasses('.playerPlayButton', 'pause');
+        togglePlayPauseClasses('.sidebarPlayButton', 'pause');
+
+        togglePlayPauseClasses('.playAudioButton', 'play');
+        togglePlayPauseClasses(`.playAudioButton[data-id="${currentTrack}"]`, 'pause');
+    } else {
+        togglePlayPauseClasses('.headerPlayButton', 'play');
+        togglePlayPauseClasses('.playerPlayButton', 'play');
+        togglePlayPauseClasses('.sidebarPlayButton', 'play');
+        togglePlayPauseClasses('.playAudioButton', 'play');
+    }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\DialogService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\GeneralService;
-use App\Services\MessagesService;
 
 class Dialog extends Model
 {
@@ -15,18 +14,31 @@ class Dialog extends Model
     protected $quarde = false;
     protected $guarded = [];
 
-    public function senderUser()
+    public function interlocutor()
     {
-        return $this->belongsTo(User::class, 'sender');
+        if ($this->sender == auth()->user()->id) {
+            $interlocutor = $this->belongsTo(User::class, 'recipient');
+        } else {
+            $interlocutor = $this->belongsTo(User::class, 'sender');
+        }
+        return $interlocutor;
     }
 
-    public function date()
+    public function unreadMessagesCount()
     {
-        return GeneralService::getDate($this->sent_at);
+        return DialogService::getUnreadMessagesCount($this->id);
     }
 
-    public function attachments($type = null)
+    public function messages()
     {
-        return MessagesService::getAttachments($this->attachments, $type);
+        $relationship = $this->belongsToMany(Message::class, 'dialog_messages', 'dialog', 'message');
+
+        if ($this->sender == auth()->user()->id) {
+            $relationship = $relationship->wherePivot('delete_for_sender', 0);
+        } elseif ($this->recipient == auth()->user()->id) {
+            $relationship = $relationship->wherePivot('delete_for_recipient', 0);
+        }
+
+        return $relationship->get();
     }
 }

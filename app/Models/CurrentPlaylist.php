@@ -18,6 +18,6 @@ class CurrentPlaylist extends Model
     }
     public function getLastAudio()
     {
-        return $this->belongsTo(Audio::class, 'last_audio');
+        return $this->belongsTo(Audio::class, 'last_audio')->where('deleted_at', null);
     }
 }

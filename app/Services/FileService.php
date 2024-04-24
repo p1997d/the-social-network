@@ -2,13 +2,126 @@
 
 namespace App\Services;
 
-use FFMpeg\FFProbe;
+use App\Models\Photo;
+use App\Models\Audio;
+use App\Models\Video;
 use App\Models\File;
-use App\Services\PhotoService;
+use App\Models\User;
+use App\Models\UserAvatar;
+use App\Models\UserFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
+use FFMpeg\FFProbe;
 
 class FileService
 {
+    /**
+     * Сохраняет файл
+     *
+     * @param object $file
+     * @param object|null $data
+     * @return object
+     */
+    public static function create($file, $data = null)
+    {
+        $model = match (explode("/", $file->getMimeType())[0]) {
+            'image' => PhotoService::create($file),
+            'audio' => AudioService::create($file, $data),
+            'video' => VideoService::create($file, $data),
+            default => self::createFile($file),
+        };
+
+        return $model;
+    }
+
+    /**
+     * Сохраняет файл других типов
+     *
+     * @param object $file
+     * @return \App\Models\File
+     */
+    public static function createFile($file)
+    {
+        $user = User::find(Auth::id());
+        $filePath = $user->id . '/' . 'files';
+        $path = Storage::putFile('public/files/' . $filePath, $file);
+        $storagePath = Storage::url($path);
+
+        $model = new File();
+
+        $model->path = $storagePath;
+        $model->type = $file->getMimeType();
+        $model->size = $file->getSize();
+        $model->author = $user->id;
+
+        $model->save();
+
+        return $model;
+    }
+
+    /**
+     * Удаляет файл
+     *
+     * @param object $photo
+     * @return array
+     */
+    public static function delete($file)
+    {
+        if (!$file) {
+            abort(404);
+        }
+
+        if ($file->author !== Auth::id()) {
+            abort(403);
+        }
+
+        if (!$file->deleted_at) {
+            $file->update([
+                'deleted_at' => now(),
+            ]);
+
+            $button = "restore";
+        } else {
+            $file->update([
+                'deleted_at' => null,
+            ]);
+
+            $button = "delete";
+        }
+
+        return compact('file', 'button');
+    }
+
+    /**
+     * Получает файлы других типов
+     *
+     * @param \App\Models\User $user
+     * @return \App\Models\File[]
+     */
+    public static function getFiles($user)
+    {
+        return File::where([['deleted_at', null], ['author', $user->id]])->get();
+    }
+
+    /**
+     * Преобразует длительность аудиозаписи или видеозаписи из секунд в удобочитаемый формат
+     *
+     * @param string $path
+     * @return string
+     */
+    public static function getDuration($path)
+    {
+        $ffprobe = FFProbe::create();
+        $info = $ffprobe->format(public_path($path));
+        $duration = $info->get('duration');
+        $formatDuration[] = gmdate("H", $duration) !== '00' ? gmdate("H", $duration) : null;
+        $formatDuration[] = gmdate("i:s", $duration);
+        $formatDuration = implode(':', array_filter($formatDuration));
+
+        return $formatDuration;
+    }
+
     /**
      * Преобразует размер файла из байтов в удобочитаемый формат
      *
@@ -24,84 +137,27 @@ class FileService
     }
 
     /**
-     * Сохраняет новый файл
+     * Undocumented function
      *
      * @param \App\Models\User $user
-     * @param string $group
-     * @param string $name
      * @param object $file
-     * @return \App\Models\File
+     * @return void
      */
-    public static function create($user, $group, $name, $file)
+    public static function saveForUser($user, $file)
     {
-        $filePath = $user->id . '/' . $group . '/' . $name . '.' . $file->getClientOriginalExtension();
-
-        $file->storeAs('files', $filePath, 'public');
-
-        if (explode("/", $file->getMimeType())[0] == 'image') {
-            PhotoService::createThumbnails($file, $filePath);
-        }
-
-        $model = new File();
-
-        $model->name = $file->getClientOriginalName();
-        $model->path = $filePath;
-        $model->type = $file->getMimeType();
-        $model->size = $file->getSize();
-        $model->author = $user->id;
-        $model->group = $group;
+        $model = new UserFile();
+        $model->user = $user->id;
+        $model->file_id = $file->id;
+        $model->file_type = $file->getMorphClass();
 
         $model->save();
-
-        return $model;
     }
 
-    /**
-     * Удаляет файл
-     *
-     * @param int $photo
-     * @return array
-     */
-    public static function delete($photo)
+    public static function uploadFile($type, $file)
     {
-        $file = File::find($photo);
-
-        if ($file->author !== Auth::id()) {
-            abort(403);
-        }
-
-        if (!$file->deleted_at) {
-            $file->update([
-                'deleted_at' => now(),
-            ]);
-
-            $button = "Восстановить";
-        } else {
-            $file->update([
-                'deleted_at' => null,
-            ]);
-
-            $button = "Удалить";
-        }
-
-        return compact('file', 'button');
-    }
-
-    /**
-     * Преобразует длительность аудиозаписи или видеозаписи из секунд в удобочитаемый формат
-     *
-     * @param \App\Models\File $file
-     * @return string
-     */
-    public static function getDuration($file)
-    {
-        $ffprobe = FFProbe::create();
-        $info = $ffprobe->format(storage_path("app/public/files/$file->path"));
-        $duration = $info->get('duration');
-        $formatDuration[] = gmdate("H", $duration) !== '00' ? gmdate("H", $duration) : null;
-        $formatDuration[] = gmdate("i:s", $duration);
-        $formatDuration = implode(':', array_filter($formatDuration));
-
-        return $formatDuration;
+        $user = User::find(Auth::id());
+        $filePath = $user->id . '/' . $type;
+        $path = Storage::putFile('public/files/' . $filePath, $file);
+        return Storage::url($path);
     }
 }

@@ -1,6 +1,5 @@
 @php
     use Carbon\Carbon;
-    use Carbon\CarbonInterface;
 @endphp
 <div class="d-flex justify-content-start flex-wrap gap-2">
     @forelse ($photos as $i => $photo)
@@ -14,8 +13,8 @@
         @endif
 
         <div class="openImageModal" data-user="{{ $photo->author }}" data-photo="{{ $photo->id }}"
-            data-group="{{ $type ?: 'all' }}" tabindex="0">
-            <img src="{{ asset("storage/thumbnails/$photo->path") }}" class="photos rounded" />
+            data-group="{{ $type }}" tabindex="0">
+            <img src="{{ $photo->thumbnailPath }}" class="photos rounded" />
         </div>
     @empty
         <div class="w-100 text-center">

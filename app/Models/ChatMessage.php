@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\GeneralService;
-use App\Services\MessagesService;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ChatMessage extends Model
 {
@@ -15,18 +14,8 @@ class ChatMessage extends Model
     protected $quarde = false;
     protected $guarded = [];
 
-    public function senderUser()
+    public function message(): MorphTo
     {
-        return $this->belongsTo(User::class, 'sender');
-    }
-
-    public function date()
-    {
-        return GeneralService::getDate($this->sent_at);
-    }
-
-    public function attachments($type = null)
-    {
-        return MessagesService::getAttachments($this->attachments, $type);
+        return $this->morphTo();
     }
 }

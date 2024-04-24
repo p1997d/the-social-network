@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\GeneralService;
+use Illuminate\Support\Facades\Storage;
 use App\Services\FileService;
 
 class File extends Model
@@ -17,14 +17,8 @@ class File extends Model
 
     public function size()
     {
-        FileService::getSize($this->size);
+        return FileService::getSize($this->size);
     }
-
-    public function date()
-    {
-        return GeneralService::getDate($this->created_at);
-    }
-
 
     public function authorUser()
     {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Audio extends Model
 {
@@ -12,8 +13,8 @@ class Audio extends Model
     protected $quarde = false;
     protected $guarded = [];
 
-    public function audioFile()
+    public function authorUser()
     {
-        return $this->belongsTo(File::class, 'file');
+        return $this->belongsTo(User::class, 'author');
     }
 }

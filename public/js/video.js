@@ -63,6 +63,37 @@ function initializationVideo() {
             $.pjax.reload({ container: "#videoModal", async: false });
         });
 
+
+
+    $('#formVideoUpload').off('submit').on('submit', function (event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: formData,
+            contentType: false,
+            processData: false,
+            beforeSend: function () {
+                $('#uploadvideo').modal('hide');
+            },
+            error: function (data) {
+                showMessage({
+                    color: "danger",
+                    message: data.responseJSON.message
+                });
+            },
+            success: function (data) {
+                $.pjax.reload({ container: "#pjax-container", async: false });
+                showMessage(data);
+            }
+        });
+
+        $(this)[0].reset();
+    });
+
     showModal();
 }
 
@@ -75,7 +106,6 @@ function getVideo(file, user) {
             user,
         },
         success: function (data) {
-            console.log(data)
             if (!data.video.deleted_at) {
                 $('#videoModal').modal('show');
             } else {
@@ -84,8 +114,8 @@ function getVideo(file, user) {
             }
 
             let title = data.video.title;
-            let type = data.file.type;
-            let src = 'storage/files/' + data.file.path;
+            let type = data.video.type;
+            let src = data.path;
             let id = data.video.id;
 
             videoPlayer.source = {

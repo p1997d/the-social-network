@@ -7,8 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\File;
 use App\Models\User;
+use App\Models\UserFile;
+use App\Models\Photo;
 
 use App\Services\FileService;
 use App\Services\GeneralService;
@@ -48,7 +49,9 @@ class PhotosController extends Controller
         ]);
 
         $user = User::find(Auth::id());
-        FileService::create($user, 'uploaded', time(), $request->photos);
+        $photo = FileService::create($request->photos);
+
+        FileService::saveForUser($user, $photo);
 
         return ['color' => 'success', 'message' => 'Фотография успешно загружена'];
     }
@@ -61,10 +64,11 @@ class PhotosController extends Controller
      */
     public function delete(Request $request)
     {
-        return FileService::delete($request->photo);
+        $file = Photo::find($request->photo);
+        return FileService::delete($file);
     }
 
-    /**
+     /**
      * Получает фотографию и данные о ее владельце
      *
      * @param Request $request
@@ -74,7 +78,7 @@ class PhotosController extends Controller
     {
         $id = $request->id;
 
-        $photo = File::find($id);
+        $photo = Photo::find($id);
         $author = $photo->authorUser;
         $avatar = $author->avatar();
 

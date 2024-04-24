@@ -7,11 +7,11 @@
     <div class="row row-cols-4 g-3">
         @forelse ($videos as $i => $video)
             <div class="col">
-                <button class="btn btn-text m-0 p-0 videoCard openVideoModal" data-user="{{ $video->videoFile->author }}"
+                <button class="btn btn-text m-0 p-0 videoCard openVideoModal" data-user="{{ $video->author }}"
                     data-video="{{ $video->id }}">
                     <div class="card shadow">
                         <div class="video-thumbnail position-relative">
-                            <img src="{{ asset("storage/thumbnails/$video->thumbnail") }}" class="card-img-top"
+                            <img src="{{ $video->thumbnailPath }}" class="card-img-top"
                                 alt="preview">
                             <div class="position-absolute bottom-0 end-0">
                                 <span class="badge text-bg-dark bg-opacity-50 m-1">{{ $video->duration }}</span>

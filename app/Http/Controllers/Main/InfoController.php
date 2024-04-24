@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Info;
+use App\Models\UserAvatar;
 use App\Models\Location;
 
 use App\Services\InfoService;
@@ -34,12 +35,12 @@ class InfoController extends Controller
 
         $user = User::find(Auth::id());
 
-        $avatar = FileService::create($user, 'profile', time(), $request->avatar);
+        $avatar = FileService::create($request->avatar);
 
-        Info::updateOrCreate(
-            ['user' => $user->id],
-            ['avatar' => $avatar->id]
-        );
+        $model = new UserAvatar();
+        $model->user = $user->id;
+        $model->avatar = $avatar->id;
+        $model->save();
 
         return back();
     }
@@ -52,12 +53,18 @@ class InfoController extends Controller
     public function deleteAvatar()
     {
         $user = User::find(Auth::id());
-        if (optional($user->info)->avatar) {
-            $model = $user->info;
-            $model->update([
-                'avatar' => null
-            ]);
-        }
+        $avatar = $user->avatarFile;
+
+        UserAvatar::where([
+            ['user', $user->id],
+            ['avatar', $avatar->id]
+        ])->first()->update([
+            'deleted_at' => now(),
+        ]);
+
+        $avatar->update([
+            'deleted_at' => now()
+        ]);
 
         return back();
     }

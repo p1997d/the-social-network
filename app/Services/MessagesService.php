@@ -4,10 +4,14 @@ namespace App\Services;
 
 use App\Models\File;
 use App\Models\Dialog;
-use App\Models\ChatMessage;
-use App\Models\ChatMember;
-use App\Models\ChatMessageDelete;
+use App\Models\Message;
+use App\Models\MessageFile;
+use App\Models\User;
+use App\Models\Chat;
+
+
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class MessagesService
 {
@@ -47,23 +51,83 @@ class MessagesService
             return null;
         }
 
-        $unreadDialogCount = Dialog::where([
-            ['recipient', Auth::id()],
-            ['viewed_at', null],
-            ['delete_for_recipient', '!=', 1]
-        ])->get()->unique('sender')->count();
+        $user = User::find(Auth::id());
 
-        $unreadChatCount = ChatMessage::where([
-            ['sender', '!=', Auth::id()],
-            ['viewed_at', null],
-            ['delete_for_all', 0]
-        ])->get()->filter(function ($item) {
-            return ChatMember::where([['chat', $item->chat], ['user', Auth::id()]])->exists() &&
-                ChatMessageDelete::where([['message', $item->id], ['user', Auth::id()]])->doesntExist();
-        })->unique('chat')->count();
-
-        $unreadMessagesCount = $unreadDialogCount + $unreadChatCount;
+        $unreadMessagesCount = $user->dialogsAndChatsWithMessages()->filter(function ($item) {
+            return $item->messages()->where('author', '!=', auth()->user()->id)->whereNull('viewed_at')->filter(function ($item) {
+                return class_basename($item) !== 'ChatSystemMessage';
+            })->isNotEmpty();
+        })->count();
 
         return $unreadMessagesCount;
+    }
+
+    public static function create($content, $sender, $sentAt)
+    {
+        $message = new Message();
+
+        $message->content = $content;
+        $message->author = $sender->id;
+        $message->sent_at = $sentAt;
+
+        $message->save();
+
+        return $message;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param array $attachments
+     * @param \App\Models\Message $message
+     * @return array
+     */
+    public static function saveAttachments($attachments, $message)
+    {
+        $attachmentFiles = [];
+
+        if (!$attachments || count($attachments) <= 0) {
+            return $attachmentFiles;
+        }
+
+        if (count($attachments) > 10) {
+            abort(422, 'Максимальное количество загружаемых файлов - 10');
+        }
+
+        foreach ($attachments as $i => $attachment) {
+            $data = (object) collect(['title' => '', 'artist' => ''])->all();
+            $file = FileService::create($attachment, $data);
+
+            $model = new MessageFile();
+            $model->message = $message->id;
+            $model->file_id = $file->id;
+            $model->file_type = $file->getMorphClass();
+
+            $model->save();
+
+            array_push($attachmentFiles, $file);
+        }
+
+        return $attachmentFiles;
+    }
+
+    public static function search($query, $to, $chat, $sender)
+    {
+        if ($to) {
+            $messages = DialogService::getOrCreateDialog($sender->id, $to)->messages();
+        } elseif ($chat) {
+            $messages = Chat::find($chat)->userMessages;
+        } else {
+            $messages = collect();
+            foreach ($sender->dialogsAndChatsWithMessages() as $chat) {
+                $messages->push(...$chat->messages());
+            }
+            $messages = $messages->filter(function ($item) {
+                return class_basename($item) === 'Message';
+            });
+        }
+        return $messages->filter(function ($item) use ($query) {
+            return str_contains(Crypt::decrypt($item->content), $query);
+        })->values();
     }
 }

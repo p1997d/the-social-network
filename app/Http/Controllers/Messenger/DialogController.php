@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 use App\Models\Dialog;
+use App\Models\Message;
+use App\Models\DialogMessage;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -15,7 +17,7 @@ use App\Events\MessagesWebSocket;
 
 use App\Services\DialogService;
 use App\Services\FileService;
-
+use App\Services\MessagesService;
 use Carbon\Carbon;
 
 class DialogController extends Controller
@@ -60,30 +62,11 @@ class DialogController extends Controller
             'attachments' => 'required_without:content',
         ]);
 
-        $message = new Dialog();
+        $dialog = DialogService::getOrCreateDialog($sender->id, $recipient->id);
 
-        $message->sender = $sender->id;
-        $message->recipient = $recipient->id;
-        $message->content = $content;
-        $message->sent_at = $sentAt;
+        $message = DialogService::createMessage($content, $sender, $sentAt, $dialog);
 
-        $attachments = [];
-
-        if (request()->attachments) {
-            foreach (request()->attachments as $i => $file) {
-                $name = time() . '_' . $i;
-                $model = FileService::create($sender, 'messages', $name, $file);
-
-                $attachments[] = $model->id;
-                $attachmentsModels[] = $model->id;
-            }
-        }
-
-        $message->attachments = empty ($attachments) ? null : json_encode($attachments);
-
-        $message->save();
-
-        $attachments = $message->attachments();
+        $attachments = MessagesService::saveAttachments(request()->attachments, $message);
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent', 'sentAtFormat', 'attachments');
 
@@ -103,9 +86,9 @@ class DialogController extends Controller
     {
         $type = __FUNCTION__;
 
-        $message = Dialog::find($id);
+        $message = Message::find($id);
 
-        $recipient = User::find($message->recipient);
+        $recipient = $message->dialog->interlocutor;
 
         list($sender, $senderAvatar, $decryptContent, $content, $changedAt, $changedAtFormat) = $this->getData($request);
 
@@ -137,32 +120,40 @@ class DialogController extends Controller
     {
         $type = __FUNCTION__;
 
-        $message = Dialog::find($id);
+        $message = Message::find($id);
 
-        $recipient = User::find($message->recipient);
+        $recipient = $message->dialog->interlocutor;
 
         list($sender, $senderAvatar, $decryptContent, $content) = $this->getData($request);
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent');
 
-        if ($message->sender == $sender->id) {
-            $deleteForAll = isset ($request->deleteForAll);
-            if ($deleteForAll) {
-                $message->update([
-                    'delete_for_sender' => 1,
-                    'delete_for_recipient' => 1
-                ]);
+        $dm = DialogMessage::where([
+            ['message', $message->id],
+            ['dialog', $message->dialog->id],
+        ])->first();
 
-                event(new MessagesWebSocket($data));
-            } else {
-                $message->update(['delete_for_sender' => 1]);
-            }
+        $deleteForAll = false;
 
-        } elseif ($message->recipient == $sender->id) {
-            $deleteForAll = false;
-            $message->update(['delete_for_recipient' => 1]);
+        if ($message->author === auth()->user()->id) {
+            $deleteForAll = isset($request->deleteForAll);
+        }
+
+        if ($deleteForAll) {
+            $dm->update([
+                'delete_for_sender' => 1,
+                'delete_for_recipient' => 1
+            ]);
+
+            event(new MessagesWebSocket($data));
         } else {
-            abort(404);
+            if (auth()->user()->id == $message->dialog->sender) {
+                $dm->update(['delete_for_sender' => 1]);
+            } elseif (auth()->user()->id == $message->dialog->recipient) {
+                $dm->update(['delete_for_recipient' => 1]);
+            } else {
+                abort(403);
+            }
         }
 
         return $data;
@@ -179,17 +170,17 @@ class DialogController extends Controller
         $sender = User::find(Auth::id());
         $recipient = User::find($id);
 
-        $messages = DialogService::getMessages($sender, $recipient)->get();
-        foreach ($messages as $message) {
-            if ($message->sender == $sender->id) {
-                $message->update(['delete_for_sender' => 1]);
-            } elseif ($message->recipient == $sender->id) {
-                $message->update(['delete_for_recipient' => 1]);
-            } else {
-                //error
-            }
+        $dialog = DialogService::getOrCreateDialog($sender->id, $recipient->id);
+
+        $dm = DialogMessage::where('dialog', $dialog->id)->whereIn('message', $dialog->messages()->pluck('id'));
+
+        if ($dialog->sender == auth()->user()->id) {
+            $dm->update(['delete_for_sender' => 1]);
+        } elseif ($dialog->recipient == auth()->user()->id) {
+            $dm->update(['delete_for_recipient' => 1]);
         }
-        return back();
+
+        return redirect()->route('messages');
     }
 
     /**
@@ -199,16 +190,19 @@ class DialogController extends Controller
      */
     public function checkRead()
     {
-        $message = Dialog::find(request()->id);
+        $message = Message::find(request()->id);
 
-        $sender = User::find($message->sender);
-        $recipient = User::find($message->recipient);
+        $dialog = $message->dialog;
 
-        $messageIds = DialogService::getMessages($sender, $recipient)->get()->filter(function ($item) use ($message) {
-            return $item->id <= $message->id && $item->viewed_at == null;
+        $messages = DialogService::getMessages($dialog);
+
+        $messageIds = $messages->get()->filter(function ($item) use ($message) {
+            return $item->id <= $message->id &&
+                $item->viewed_at == null &&
+                $item->author !== auth()->user()->id;
         })->pluck('id');
 
-        Dialog::whereIn('id', $messageIds)->update([
+        Message::whereIn('id', $messageIds)->update([
             'viewed_at' => now()
         ]);
 

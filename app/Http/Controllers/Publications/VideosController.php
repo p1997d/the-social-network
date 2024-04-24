@@ -11,8 +11,8 @@ use App\Models\User;
 use App\Models\Video;
 
 use App\Services\GeneralService;
-use App\Services\FileService;
 use App\Services\VideoService;
+use App\Services\FileService;
 
 use Carbon\Carbon;
 
@@ -48,13 +48,16 @@ class VideosController extends Controller
         ]);
 
         $user = User::find(Auth::id());
-        $group = 'uploaded';
-        $name = time();
-        $file = FileService::create($user, $group, $name, $request->videos);
-        $thumbnailPath = VideoService::createThumbnails($user, $group, $name, $file);
-        $data = VideoService::create($file, $request->title, $thumbnailPath);
+        $data = (object) collect(['title' => $request->title])->all();
+        $video = FileService::create($request->videos, $data);
 
-        return $data;
+        FileService::saveForUser($user, $video);
+
+        if (!$video) {
+            return ['color' => 'danger', 'message' => 'Загрузка видеозаписи завершилась с ошибкой'];
+        }
+
+        return ['color' => 'success', 'message' => 'Видеозапись успешно загружена'];
     }
 
     /**
@@ -68,16 +71,21 @@ class VideosController extends Controller
         $userID = $request->user;
         $user = User::find($userID);
         $video = Video::find($request->id);
-        $file = $video->videoFile;
         $viewsWithText = $video->viewsWithText();
-        $author = $file->authorUser;
-        $avatar = $author->avatar();
+        $avatar = $video->authorUser->avatar();
         $createdAt = Carbon::parse($video->created_at)->diffForHumans();
         $playlist = VideoService::getVideos($user)->pluck("id");
+        $path = $video->path;
 
-        return compact('video', 'file', 'author', 'avatar', 'viewsWithText', 'createdAt', 'playlist', 'userID');
+        return compact('video', 'avatar', 'viewsWithText', 'createdAt', 'playlist', 'userID', 'path');
     }
 
+    /**
+     * Увеличивает счетчик просмотров
+     *
+     * @param Request $request
+     * @return void
+     */
     public function addView(Request $request)
     {
         $video = Video::find($request->id);

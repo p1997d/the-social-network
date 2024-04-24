@@ -9,8 +9,8 @@
                 @forelse ($photos->take(4) as $photo)
                     <div class="col p-2">
                         <div class="openImageModal" data-user="{{ $photo->author }}" data-photo="{{ $photo->id }}"
-                            data-group="all" tabindex="0">
-                            <img src="{{ asset("storage/thumbnails/$photo->path") }}"
+                            tabindex="0">
+                            <img src="{{ $photo->thumbnailPath }}"
                                 class="photos rounded object-fit-cover" style="aspect-ratio: 1 / 1; max-height: 160px" />
                         </div>
                     </div>

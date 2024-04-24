@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 use App\Models\Chat;
-use App\Models\ChatMember;
 use App\Models\ChatMessage;
-use App\Models\ChatSystemMessage;
+use App\Models\Message;
 use App\Models\ChatMessageDelete;
 
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +16,8 @@ use Illuminate\Support\Facades\Crypt;
 
 use Carbon\Carbon;
 use App\Services\FileService;
+use App\Services\ChatService;
+use App\Services\MessagesService;
 use App\Events\MessagesWebSocket;
 
 class ChatController extends Controller
@@ -54,48 +55,15 @@ class ChatController extends Controller
             'title' => 'required|max:200',
         ]);
 
-        $chat = new Chat();
+        $chat = ChatService::create($request->title, $user);
 
-        $chat->title = $request->title;
-        $chat->author = $user->id;
-        $chat->save();
+        $member = ChatService::addMember($user, $chat);
 
-        $member = new ChatMember();
-
-        $count = ChatMember::where('user', $user->id)->count();
-
-        $member->user = $user->id;
-        $member->chat = $chat->id;
-        $member->id_for_user = $count + 1;
-        $member->admin = true;
-        $member->joined_at = now();
-
-        $member->save();
-
-        $message = new ChatSystemMessage();
-
-        $message->sender = $user->id;
-        $message->recipient = null;
-        $message->chat = $chat->id;
-        $message->content = ($user->sex == "male" ? "создал" : "создала") . " чат «" . $chat->title . "»";
-        $message->sent_at = now();
-
-        $message->save();
+        $content = ($user->sex == "male" ? "создал" : "создала") . " чат «" . $chat->title . "»";
+        $message = ChatService::createSystemMessage($user, $chat, $content);
 
         if ($request->users) {
-            $usersData = [];
-            foreach ($request->users as $userId) {
-                $count = ChatMember::where('user', $userId)->count();
-
-                $usersData[] = [
-                    'user' => $userId,
-                    'chat' => $chat->id,
-                    'id_for_user' => $count + 1,
-                    'admin' => false,
-                    'joined_at' => now(),
-                ];
-            }
-            ChatMember::insert($usersData);
+            ChatService::addMembers($request->users, $chat);
         }
 
         return back();
@@ -122,33 +90,9 @@ class ChatController extends Controller
             'attachments' => 'required_without:content',
         ]);
 
-        $message = new ChatMessage();
+        $message = ChatService::createMessage($content, $sender, $sentAt, $chat);
 
-        $message->sender = $sender->id;
-        $message->chat = $chat->id;
-        $message->content = $content;
-        $message->sent_at = $sentAt;
-
-        $attachments = [];
-
-        if (request()->attachments) {
-            foreach (request()->attachments as $i => $file) {
-                $group = 'messages';
-
-                $name = time() . '_' . $i;
-
-                $model = FileService::create($sender, $group, $name, $file);
-
-                $attachments[] = $model->id;
-                $attachmentsModels[] = $model->id;
-            }
-        }
-
-        $message->attachments = empty ($attachments) ? null : json_encode($attachments);
-
-        $message->save();
-
-        $attachments = $message->attachments();
+        $attachments = MessagesService::saveAttachments(request()->attachments, $message);
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'chat', 'decryptContent', 'sentAtFormat', 'attachments');
 
@@ -168,7 +112,7 @@ class ChatController extends Controller
     {
         $type = __FUNCTION__;
 
-        $message = ChatMessage::find($id);
+        $message = Message::find($id);
 
         list($sender, $senderAvatar, $decryptContent, $content, $changedAt, $changedAtFormat) = $this->getData($request);
 
@@ -181,7 +125,8 @@ class ChatController extends Controller
             'changed_at' => $changedAt
         ]);
 
-        $attachments = $message->attachments();
+        // $attachments = $message->attachments();
+        $attachments = [];
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'decryptContent', 'changedAtFormat', 'attachments');
 
@@ -200,16 +145,23 @@ class ChatController extends Controller
     {
         $type = __FUNCTION__;
 
-        $message = ChatMessage::find($id);
+        $message = Message::find($id);
 
         list($sender, $senderAvatar, $decryptContent, $content) = $this->getData($request);
 
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'decryptContent');
 
-        if ($message->sender == auth()->user()->id) {
+        if ($message->author == auth()->user()->id) {
             $deleteForAll = isset ($request->deleteForAll);
             if ($deleteForAll) {
-                $message->update([
+                $cm = ChatMessage::where([
+                    ['message_id', $message->id],
+                    ['message_type', Message::class],
+                    ['chat', $message->chat->id],
+                ])->first();
+
+
+                $cm->update([
                     'delete_for_all' => 1,
                 ]);
 
