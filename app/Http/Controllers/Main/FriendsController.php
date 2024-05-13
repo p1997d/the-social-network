@@ -26,7 +26,7 @@ class FriendsController extends Controller
      */
     public function friends(Request $request)
     {
-        $user_profile = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
+        $user = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
 
         $section = $request->query('section');
 
@@ -34,9 +34,9 @@ class FriendsController extends Controller
             return redirect()->route('auth.signin');
         }
 
-        $title = GeneralService::getTitle($user_profile, 'Друзья');
+        $title = GeneralService::getTitle($user, 'Друзья');
 
-        list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user_profile);
+        list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user);
 
         $friends = match ($section) {
             null => $listFriends->get(),
@@ -52,7 +52,7 @@ class FriendsController extends Controller
             compact(
                 'section',
                 'title',
-                'user_profile',
+                'user',
                 'friends',
                 'listFriends',
                 'listCommonFriends',
@@ -72,22 +72,22 @@ class FriendsController extends Controller
     public function addFriend($id)
     {
         $auth_user = User::find(Auth::id());
-        $user_profile = User::find($id);
+        $user = User::find($id);
 
-        $models = FriendsService::getAllFriends($user_profile)->filter(function ($item) {
+        $models = FriendsService::getAllFriends($user)->filter(function ($item) {
             return $item->status == FriendRequestStatusEnum::SENT_FRIEND_REQUEST || $item->status == FriendRequestStatusEnum::APPROVED_FRIEND_REQUEST;
         });
 
         if ($models->isEmpty()) {
             $model = new Friends();
             $model->user1 = $auth_user->id;
-            $model->user2 = $user_profile->id;
+            $model->user2 = $user->id;
             $model->sented_at = now();
             $model->status = FriendRequestStatusEnum::SENT_FRIEND_REQUEST;
             $model->save();
         }
 
-        event(new FriendsWebSocket($auth_user, $user_profile, true, 'Новая заявка в друзья', 'хочет добавить Вас в друзья'));
+        event(new FriendsWebSocket($auth_user, $user, true, 'Новая заявка в друзья', 'хочет добавить Вас в друзья'));
     }
 
     /**
@@ -99,9 +99,9 @@ class FriendsController extends Controller
     public function cancelAddFriend($id)
     {
         $auth_user = User::find(Auth::id());
-        $user_profile = User::find($id);
+        $user = User::find($id);
 
-        $models = FriendsService::getAllFriends($user_profile)->filter(function ($item) use ($auth_user) {
+        $models = FriendsService::getAllFriends($user)->filter(function ($item) use ($auth_user) {
             return $item->status == FriendRequestStatusEnum::SENT_FRIEND_REQUEST && $item->user1 == $auth_user->id;
         });
 
@@ -113,7 +113,7 @@ class FriendsController extends Controller
             ]);
         }
 
-        event(new FriendsWebSocket($auth_user, $user_profile));
+        event(new FriendsWebSocket($auth_user, $user));
     }
 
     /**
@@ -125,9 +125,9 @@ class FriendsController extends Controller
     public function approveAddFriend($id)
     {
         $auth_user = User::find(Auth::id());
-        $user_profile = User::find($id);
+        $user = User::find($id);
 
-        $models = FriendsService::getAllFriends($user_profile)->filter(function ($item) use ($auth_user) {
+        $models = FriendsService::getAllFriends($user)->filter(function ($item) use ($auth_user) {
             return $item->status == FriendRequestStatusEnum::SENT_FRIEND_REQUEST && $item->user2 == $auth_user->id;
         });
 
@@ -139,7 +139,7 @@ class FriendsController extends Controller
             ]);
         }
 
-        event(new FriendsWebSocket($auth_user, $user_profile, true, 'Заявка принята', 'принял Вашу заявку в друзья'));
+        event(new FriendsWebSocket($auth_user, $user, true, 'Заявка принята', 'принял Вашу заявку в друзья'));
     }
 
     /**
@@ -151,9 +151,9 @@ class FriendsController extends Controller
     public function rejectAddFriend($id)
     {
         $auth_user = User::find(Auth::id());
-        $user_profile = User::find($id);
+        $user = User::find($id);
 
-        $models = FriendsService::getAllFriends($user_profile)->filter(function ($item) use ($auth_user) {
+        $models = FriendsService::getAllFriends($user)->filter(function ($item) use ($auth_user) {
             return $item->status == FriendRequestStatusEnum::SENT_FRIEND_REQUEST && $item->user2 == $auth_user->id;
         });
 
@@ -165,7 +165,7 @@ class FriendsController extends Controller
             ]);
         }
 
-        event(new FriendsWebSocket($auth_user, $user_profile));
+        event(new FriendsWebSocket($auth_user, $user));
     }
 
     /**
@@ -177,9 +177,9 @@ class FriendsController extends Controller
     public function unfriend($id)
     {
         $auth_user = User::find(Auth::id());
-        $user_profile = User::find($id);
+        $user = User::find($id);
 
-        $models = FriendsService::getAllFriends($user_profile)->filter(function ($item) {
+        $models = FriendsService::getAllFriends($user)->filter(function ($item) {
             return $item->status == FriendRequestStatusEnum::APPROVED_FRIEND_REQUEST;
         });
 
@@ -192,6 +192,6 @@ class FriendsController extends Controller
             ]);
         }
 
-        event(new FriendsWebSocket($auth_user, $user_profile));
+        event(new FriendsWebSocket($auth_user, $user));
     }
 }

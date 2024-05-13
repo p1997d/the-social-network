@@ -1,7 +1,3 @@
-@php
-    use Carbon\Carbon;
-@endphp
-
 <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
     <div class="position-absolute top-0 end-0 z-3 m-3 d-none d-lg-block">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

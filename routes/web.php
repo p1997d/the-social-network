@@ -16,6 +16,10 @@ use App\Http\Controllers\Publications\AudiosController as PublicationsAudiosCont
 use App\Http\Controllers\Publications\VideosController as PublicationsVideosController;
 use App\Http\Controllers\Publications\FilesController as PublicationsFilesController;
 
+use App\Http\Controllers\Posts\IndexController as PostsIndexController;
+use App\Http\Controllers\Groups\IndexController as GroupsIndexController;
+use App\Http\Controllers\Search\IndexController as SearchIndexController;
+
 Route::group(['namespace' => 'Index'], function () {
     Route::get('/', [MainIndexController::class, 'index'])->name('index');
     Route::get('/id{user}', [MainIndexController::class, 'profile'])->name('profile');
@@ -23,7 +27,15 @@ Route::group(['namespace' => 'Index'], function () {
     Route::get('/signin', [MainIndexController::class, 'signin'])->name('auth.signin');
 
     Route::get('/feed', [MainIndexController::class, 'feed'])->name('feed');
-    Route::get('/groups', [MainIndexController::class, 'groups'])->name('groups');
+});
+
+Route::group(['namespace' => 'Search'], function () {
+    Route::get('/search', [SearchIndexController::class, 'index'])->name('search.index');
+    Route::get('/search/people', [SearchIndexController::class, 'people'])->name('search.people');
+    Route::get('/search/news', [SearchIndexController::class, 'news'])->name('search.news');
+    Route::get('/search/group', [SearchIndexController::class, 'group'])->name('search.group');
+    Route::get('/search/music', [SearchIndexController::class, 'music'])->name('search.music');
+    Route::get('/search/video', [SearchIndexController::class, 'video'])->name('search.video');
 });
 
 Route::group(['namespace' => 'Info'], function () {
@@ -48,13 +60,13 @@ Route::group(['namespace' => 'Friends'], function () {
 Route::group(['namespace' => 'Messenger'], function () {
     Route::get('/messages', [MessengerIndexController::class, 'messages'])->name('messages');
     Route::get('/messages/getMessage', [MessengerIndexController::class, 'getMessage'])->name('messages.getMessage');
+    Route::post('/messages/checkRead', [MessengerIndexController::class, 'checkRead'])->name('messages.checkRead');
 
     Route::group(['namespace' => 'Dialog'], function () {
         Route::post('/messages/send/{id}', [MessengerDialogController::class, 'create'])->name('messages.send');
         Route::post('/messages/delete/{id}', [MessengerDialogController::class, 'delete'])->name('messages.delete');
         Route::post('/messages/allDelete/{id}', [MessengerDialogController::class, 'allDelete'])->name('messages.allDelete');
         Route::post('/messages/update/{id}', [MessengerDialogController::class, 'update'])->name('messages.update');
-        Route::post('/messages/checkRead', [MessengerDialogController::class, 'checkRead'])->name('messages.checkRead');
     });
 
     Route::group(['namespace' => 'Chat'], function () {
@@ -100,6 +112,25 @@ Route::group(['namespace' => 'Publications'], function () {
     Route::group(['namespace' => 'Files'], function () {
         Route::get('/files/download/{id}', [PublicationsFilesController::class, 'download'])->name('files.download');
     });
+});
+
+Route::group(['namespace' => 'Posts'], function () {
+    Route::post('/posts/create', [PostsIndexController::class, 'create'])->name('posts.create');
+    Route::post('/posts/{id}/delete', [PostsIndexController::class, 'delete'])->name('posts.delete');
+});
+
+Route::group(['namespace' => 'Group'], function () {
+    Route::get('/groups', [GroupsIndexController::class, 'list'])->name('groups.list');
+    Route::get('/group{id}', [GroupsIndexController::class, 'index'])->name('groups.index');
+    Route::get('/group{id}/settings', [GroupsIndexController::class, 'settings'])->name('groups.index.settings');
+
+    Route::post('/group/create', [GroupsIndexController::class, 'create'])->name('groups.create');
+    Route::post('/group/{id}/update', [GroupsIndexController::class, 'update'])->name('groups.update');
+    Route::post('/group/{id}/subscribe', [GroupsIndexController::class, 'subscribe'])->name('groups.subscribe');
+    Route::post('/group/{id}/unsubscribe', [GroupsIndexController::class, 'unsubscribe'])->name('groups.unsubscribe');
+
+    Route::post('/group/{id}/kick', [GroupsIndexController::class, 'kick'])->name('groups.kick');
+    Route::post('/group/{id}/switchAdmin', [GroupsIndexController::class, 'switchAdmin'])->name('groups.switchAdmin');
 });
 
 Auth::routes();

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Chat;
 use App\Models\MessageFile;
 use App\Models\Photo;
+use App\Models\PostFile;
 use App\Models\User;
 use App\Models\UserAvatar;
 use App\Models\UserFile;
@@ -76,10 +77,29 @@ class PhotoService
      */
     public static function getPhotos($user, $type = null, $to = null, $chat = null)
     {
-        $profileIds = UserAvatar::where([['user', $user->id], ['deleted_at', null]])->pluck('avatar');
-        $uploadedIds = UserFile::where([['user', $user->id], ['file_type', Photo::class]])->pluck('file_id');
-        $allIds = $profileIds->merge($uploadedIds);
+        return match (true) {
+            $type === 'profile' => self::profilePhotos($user),
+            $type === 'uploaded' => self::uploadedPhotos($user),
+            $type === 'messages' => self::messagesPhotos($user, $to, $chat),
+            str_starts_with($type, 'post') => self::postPhotos($type),
+            $type === null => self::allPhotos($user),
+        };
+    }
 
+    private static function profilePhotos($user)
+    {
+        $profileIds = UserAvatar::where([['user', $user->id], ['deleted_at', null]])->pluck('avatar');
+        return Photo::whereIn('id', $profileIds)->where('deleted_at', null)->get();
+    }
+
+    private static function uploadedPhotos($user)
+    {
+        $uploadedIds = UserFile::where([['user', $user->id], ['file_type', Photo::class]])->pluck('file_id');
+        return Photo::whereIn('id', $uploadedIds)->where('deleted_at', null)->get();
+    }
+
+    private static function messagesPhotos($user, $to, $chat)
+    {
         if ($to) {
             $dialog = DialogService::getOrCreateDialog($user->id, $to);
             $messagesIds = MessageFile::whereIn('message', $dialog->messages()->pluck('id'))->whereHasMorph('file', [Photo::class])->get()->pluck('file_id');
@@ -89,11 +109,22 @@ class PhotoService
             $messagesIds = MessageFile::whereIn('message', $chat->userMessages->pluck('id'))->whereHasMorph('file', [Photo::class])->get()->pluck('file_id');
         }
 
-        return match($type) {
-            'profile' => Photo::whereIn('id', $profileIds)->where('deleted_at', null)->get(),
-            'uploaded' => Photo::whereIn('id', $uploadedIds)->where('deleted_at', null)->get(),
-            'messages' => Photo::whereIn('id', $messagesIds)->where('deleted_at', null)->get(),
-            default => Photo::whereIn('id', $allIds)->where('deleted_at', null)->get(),
-        };
+        return Photo::whereIn('id', $messagesIds)->where('deleted_at', null)->get();
+    }
+
+    private static function postPhotos($type)
+    {
+        $post_id = str_replace('post', '', $type);
+        $postsIds = PostFile::where([['post', $post_id], ['file_type', Photo::class]])->pluck('file_id');
+        return Photo::whereIn('id', $postsIds)->where('deleted_at', null)->get();
+    }
+
+    private static function allPhotos($user)
+    {
+        $profileIds = UserAvatar::where([['user', $user->id], ['deleted_at', null]])->pluck('avatar');
+        $uploadedIds = UserFile::where([['user', $user->id], ['file_type', Photo::class]])->pluck('file_id');
+
+        $allIds = $profileIds->merge($uploadedIds);
+        return Photo::whereIn('id', $allIds)->where('deleted_at', null)->get();
     }
 }

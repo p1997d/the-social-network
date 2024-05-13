@@ -5,10 +5,10 @@
 
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <div class="fs-5">{{ $user_profile->firstname }} {{ $user_profile->surname }}</div>
+        <div class="fs-5">{{ $user->firstname }} {{ $user->surname }}</div>
         <div class="fs-7 text-secondary">
-            {{ $user_profile->online()['online'] }}
-            @if ($user_profile->online()['mobile'])
+            {{ $user->online()['online'] }}
+            @if ($user->online()['mobile'])
                 <i class="bi bi-phone"></i>
             @endif
         </div>
@@ -16,7 +16,7 @@
     <div class="card-body">
         <table class="table table-borderless">
             <tbody>
-                @foreach ($allInfo as $info)
+                @foreach ($user->allInfo() as $info)
                     <tr>
                         <th scope="row" class="text-secondary col-4">
                             <i class="bi {{ $info->icon }}"></i>

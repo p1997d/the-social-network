@@ -1,8 +1,8 @@
 @auth
-    @if ($user_profile->id !== auth()->user()->id && $listCommonFriends->count() > 0)
-        <div class="card shadow">
+    @if ($user->id !== auth()->user()->id && $listCommonFriends->count() > 0)
+        <div class="card shadow mb-3">
             <div class="card-header">
-                <a href="{{ route('friends', ['id' => $user_profile->id, 'section' => 'common']) }}"
+                <a href="{{ route('friends', ['id' => $user->id, 'section' => 'common']) }}"
                     class="link-body-emphasis">Общие друзья</a>
                 <span class="text-secondary">{{ $listCommonFriends->count() }}</span>
             </div>
@@ -42,9 +42,9 @@
         </div>
     @else
         @if ($listOnline->count() > 0)
-            <div class="card shadow">
+            <div class="card shadow mb-3">
                 <div class="card-header">
-                    <a href="{{ route('friends', ['id' => $user_profile->id, 'section' => 'online']) }}"
+                    <a href="{{ route('friends', ['id' => $user->id, 'section' => 'online']) }}"
                         class="link-body-emphasis">Друзья онлайн</a>
                     <span class="text-secondary">{{ $listOnline->count() }}</span>
                 </div>
@@ -85,10 +85,10 @@
         @endif
     @endif
 
-    @if ($listFriends->count() > 0 || auth()->user()->id == $user_profile->id)
-        <div class="card shadow">
+    @if ($listFriends->count() > 0 || auth()->user()->id == $user->id)
+        <div class="card shadow mb-3">
             <div class="card-header">
-                <a href="{{ route('friends', ['id' => $user_profile->id]) }}" class="link-body-emphasis">Друзья</a>
+                <a href="{{ route('friends', ['id' => $user->id]) }}" class="link-body-emphasis">Друзья</a>
                 <span class="text-secondary">{{ $listFriends->count() }}</span>
             </div>
             <div class="card-body container text-center">

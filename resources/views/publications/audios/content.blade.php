@@ -4,7 +4,7 @@
             class="list-group-item d-flex justify-content-between align-items-start align-items-lg-center mt-2 flex-column flex-lg-row w-100 gap-2">
             <div class="d-flex align-items-center gap-1">
                 <button type="button" class="btn btn-outline-primary btn-sm playAudioButton" data-id="{{ $audio->id }}"
-                    data-playlist="{{ $playlist->id }}">
+                    data-playlist="{{ $user->playlist->id }}">
                     <i class="bi bi-play"></i>
                 </button>
                 @if (auth()->user()->id !== $audio->author && auth()->user()->id !== $user->id)

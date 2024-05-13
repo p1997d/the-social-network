@@ -70,7 +70,10 @@
                         </span>
                     @endif
 
-                    @include('messenger.layouts.attachments')
+                    @include('layouts.attachments', [
+                        'model' => $message,
+                        'group' => 'messages'
+                    ])
                 </div>
             </div>
         </div>

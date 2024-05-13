@@ -67,4 +67,12 @@ class Chat extends Model
         $userMessages = $this->userMessages;
         return $userMessages->push(...$systemMessages)->sortBy('sent_at');
     }
+
+    public function members_count()
+    {
+        return GeneralService::getPluralize(
+            ChatMember::where('chat', $this->id)->count(),
+            'участник'
+        );
+    }
 }

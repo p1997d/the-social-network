@@ -167,10 +167,10 @@ class FriendsService
         }
 
         $auth_user_id = Auth::id();
-        $user_profile_id = $user->id;
+        $user_id = $user->id;
 
-        $friend = Friends::where([['user1', $user_profile_id], ['user2', $auth_user_id]])
-            ->orWhere([['user1', $auth_user_id], ['user2', $user_profile_id]])->get();
+        $friend = Friends::where([['user1', $user_id], ['user2', $auth_user_id]])
+            ->orWhere([['user1', $auth_user_id], ['user2', $user_id]])->get();
 
         return $friend;
     }

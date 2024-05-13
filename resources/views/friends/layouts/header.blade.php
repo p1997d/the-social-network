@@ -17,7 +17,7 @@
         <span class="text-secondary">{{ $listOnline->count() }}</span>
     </a>
 @endif
-@if ($user_profile == auth()->user())
+@if ($user == auth()->user())
     @if ($listOutgoing->count() > 0)
         <a href="{{ route('friends', ['section' => 'outgoing', 'id' => request('id')]) }}"
             class="btn btn-emphasis btn-sm @if ($section == 'outgoing') active @endif">

@@ -22,6 +22,7 @@ $(document).ready(function () {
             }
             $.pjax.reload({ container: ".sidebar", async: false });
             $.pjax.reload({ container: ".header-pjax", async: false });
+            $.pjax.reload({ container: ".messages-pjax", async: false });
             notification(event);
         });
 

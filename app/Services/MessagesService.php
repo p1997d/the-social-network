@@ -130,4 +130,19 @@ class MessagesService
             return str_contains(Crypt::decrypt($item->content), $query);
         })->values();
     }
+
+    public static function checkRead($message, $messages)
+    {
+        $messageIds = $messages->filter(function ($item) use ($message) {
+            return $item->id <= $message->id &&
+                $item->viewed_at == null &&
+                $item->author !== auth()->user()->id;
+        })->pluck('id');
+
+        Message::whereIn('id', $messageIds)->update([
+            'viewed_at' => now()
+        ]);
+
+        return $messageIds;
+    }
 }

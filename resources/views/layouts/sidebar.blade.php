@@ -1,4 +1,4 @@
-<div class="list-group position-sticky sidebar">
+<div class="list-group position-sticky sidebar w-100">
     @auth
         @foreach ($sidebar as $item)
             <a href="{{ $item->link }}"

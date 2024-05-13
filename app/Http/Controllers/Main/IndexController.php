@@ -11,8 +11,6 @@ use App\Models\User;
 
 use App\Services\FriendsService;
 use App\Services\UserService;
-use App\Services\PhotoService;
-use App\Services\AudioService;
 
 class IndexController extends Controller
 {
@@ -38,42 +36,28 @@ class IndexController extends Controller
      */
     public function profile(Request $request, $id)
     {
-        $user_profile = User::find($id);
+        $user = User::find($id);
 
-        if (!$user_profile) {
+        if (!$user) {
             return view('main.info', ['title' => 'Информация', 'info' => 'Страница удалена либо ещё не создана.']);
         }
 
-        $listFriends = FriendsService::listFriends($user_profile);
+        $title = "$user->firstname $user->surname";
+        $friendForm = FriendsService::getFriendsForms($user);
 
-        $allInfo = UserService::getInfo($user_profile);
-
-        $friendForm = FriendsService::getFriendsForms($user_profile);
-
-        list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user_profile);
-
-        $photos = PhotoService::getPhotos($user_profile);
-
-        $playlist = $user_profile->playlist;
-        $audios = AudioService::getAudios($playlist);
-
-        $title = "$user_profile->firstname $user_profile->surname";
+        list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user);
 
         return view(
             'profile.index',
             compact(
+                'user',
                 'title',
-                'user_profile',
-                'allInfo',
                 'listFriends',
                 'listCommonFriends',
                 'listOutgoing',
                 'listIncoming',
                 'listOnline',
                 'friendForm',
-                'photos',
-                'audios',
-                'playlist',
             )
         );
     }
@@ -110,21 +94,10 @@ class IndexController extends Controller
         if (Auth::guest()) {
             return redirect()->route('auth.signin');
         }
-        return view('main.feed', compact('title'));
-    }
 
-    /**
-     * Отображает список групп пользователя
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function groups()
-    {
-        $title = 'Группы';
+        $user = User::find(Auth::id());
+        $posts = UserService::getNews()->forPage(0, 25);
 
-        if (Auth::guest()) {
-            return redirect()->route('auth.signin');
-        }
-        return view('main.groups', compact('title'));
+        return view('main.feed', compact('title', 'posts', 'user'));
     }
 }

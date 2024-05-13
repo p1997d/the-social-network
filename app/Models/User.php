@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Services\AudioService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,7 +16,7 @@ use App\Services\GeneralService;
 use App\Services\UserService;
 use App\Services\FriendsService;
 use App\Services\DialogService;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Services\PhotoService;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class User extends Authenticatable
@@ -135,5 +137,30 @@ class User extends Authenticatable
         return $this->allDialogsAndChats()->filter(function ($item) {
             return $item->messages()->count() > 0;
         });
+    }
+
+    public function posts()
+    {
+        return $this->hasManyThrough(Post::class, UserPost::class, 'user', 'id', 'id', 'post')->where('deleted_at', null)->orderByDesc('created_at');
+    }
+
+    public function groups()
+    {
+        return $this->hasManyThrough(Group::class, GroupUser::class, 'user', 'id', 'id', 'group');
+    }
+
+    public function photos()
+    {
+        return PhotoService::getPhotos($this);
+    }
+
+    public function audios()
+    {
+        return AudioService::getAudios($this->playlist);
+    }
+
+    public function allInfo()
+    {
+        return UserService::getInfo($this);
     }
 }

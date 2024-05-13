@@ -1,10 +1,10 @@
 <div class="attachments">
     <div class="row row-cols-5 g-2 my-1">
-        @foreach ($message->attachmentsPhotos as $photo)
+        @foreach ($model->attachmentsPhotos as $photo)
             @if (!$photo->deleted_at)
                 <div class="col">
                     <div class="openImageModal" data-user="{{ $photo->author }}" data-photo="{{ $photo->id }}"
-                        data-group="messages" tabindex="0">
+                        data-group="{{ $group }}" tabindex="0">
                         <img src="{{ $photo->thumbnailPath }}" class="photos rounded" />
                     </div>
                 </div>
@@ -14,21 +14,21 @@
                 </div>
             @endif
         @endforeach
-        @foreach ($message->attachmentsAudios as $audio)
+        @foreach ($model->attachmentsAudios as $audio)
             <div class="col-12">
                 <audio class="player" controls>
                     <source src="{{ $audio->path }}" type="{{ $audio->type }}" />
                 </audio>
             </div>
         @endforeach
-        @foreach ($message->attachmentsVideos as $video)
+        @foreach ($model->attachmentsVideos as $video)
             <div class="col-12">
                 <video class="player" controls>
                     <source src="{{ $video->path }}" type="{{ $video->type }}" />
                 </video>
             </div>
         @endforeach
-        @foreach ($message->attachmentsFiles as $file)
+        @foreach ($model->attachmentsFiles as $file)
             <div class="col-auto">
                 <a href="{{ route('files.download', $file->id) }}" target="_blank"
                     class="link-underline link-underline-opacity-0">

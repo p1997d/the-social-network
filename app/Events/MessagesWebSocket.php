@@ -26,10 +26,10 @@ class MessagesWebSocket implements ShouldBroadcast
         $this->notification = $notification;
         if ($this->notification) {
             $this->title = 'Новое сообщение';
-            $this->subtitle = $data['sender']['firstname'] . ' ' . $data['sender']['surname'];
+            $this->subtitle = $data['subtitle'];
             $this->image = $data['senderAvatar'];
             $this->description = $data['decryptContent'] ? $data['decryptContent'] : 'Файлов: ' . count($data['attachments']);
-            $this->link = route('messages', ['to' => $data['sender']['id']]);
+            $this->link = $data['link'];
         }
         $this->data = $data;
     }
@@ -41,9 +41,13 @@ class MessagesWebSocket implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return [
-            new PrivateChannel('Messages.' . $this->data['recipient']['id']),
-        ];
+        $channels = [];
+
+        foreach ($this->data['recipients'] as $id){
+            $channels[] = new PrivateChannel('Messages.' . $id);
+        }
+
+        return $channels;
     }
 
     public function broadcastAs()

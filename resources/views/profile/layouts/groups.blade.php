@@ -1,29 +1,25 @@
-<div class="card shadow">
-    <div class="card-header">
-        Группы <span class="text-secondary">0</span>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <a class="col p-2 link-body-emphasis link-underline link-underline-opacity-0 btn btn-link-emphasis" href="#">
-                <div class="w-100"><img src="https://placehold.co/48x48" class="mx-auto d-block rounded-circle mb-1" />
-                </div>
-                <div class="title text-center ">Название</div>
-            </a>
-            <a class="col p-2 link-body-emphasis link-underline link-underline-opacity-0 btn btn-link-emphasis" href="#">
-                <div class="w-100"><img src="https://placehold.co/48x48" class="mx-auto d-block rounded-circle mb-1" />
-                </div>
-                <div class="title text-center ">Название</div>
-            </a>
-            <a class="col p-2 link-body-emphasis link-underline link-underline-opacity-0 btn btn-link-emphasis" href="#">
-                <div class="w-100"><img src="https://placehold.co/48x48" class="mx-auto d-block rounded-circle mb-1" />
-                </div>
-                <div class="title text-center ">Название</div>
-            </a>
-            <a class="col p-2 link-body-emphasis link-underline link-underline-opacity-0 btn btn-link-emphasis" href="#">
-                <div class="w-100"><img src="https://placehold.co/48x48" class="mx-auto d-block rounded-circle mb-1" />
-                </div>
-                <div class="title text-center ">Название</div>
-            </a>
+@if ($user->groups->count() > 0)
+    <div class="card shadow">
+        <div class="card-header">
+            <a href="{{ route('groups.list') }}" class="link-body-emphasis">Группы</a>
+            <span class="text-secondary">{{ $user->groups->count() }}</span>
+        </div>
+        <div class="card-body">
+            <div class="list-group list-group-flush">
+                @foreach ($user->groups->take(5) as $group)
+                    <a href="{{ route('groups.index', $group->id) }}"
+                        class="list-group-item d-flex w-100 align-items-center list-group-item-action rounded gap-2">
+                        @include('layouts.avatar', [
+                            'model' => $group,
+                            'width' => '48px',
+                            'height' => '48px',
+                            'class' => 'rounded-circle object-fit-cover',
+                            'modal' => false,
+                        ])
+                        <span>{{ $group->title }}</span>
+                    </a>
+                @endforeach
+            </div>
         </div>
     </div>
-</div>
+@endif

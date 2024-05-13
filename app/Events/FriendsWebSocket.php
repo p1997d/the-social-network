@@ -16,16 +16,16 @@ class FriendsWebSocket implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $auth_user, $user_profile, $title, $subtitle, $description, $image, $link, $notification;
+    public $auth_user, $user, $title, $subtitle, $description, $image, $link, $notification;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($auth_user, $user_profile, $notification = false, $title = "", $description = "")
+    public function __construct($auth_user, $user, $notification = false, $title = "", $description = "")
     {
         $this->notification = $notification;
         $this->auth_user = $auth_user;
-        $this->user_profile = $user_profile;
+        $this->user = $user;
         $this->title = $title;
         $this->subtitle = "";
         $this->description = $auth_user ? "$auth_user->firstname $auth_user->surname $description" : null;
@@ -41,7 +41,7 @@ class FriendsWebSocket implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('Friends.' . $this->user_profile->id),
+            new PrivateChannel('Friends.' . $this->user->id),
         ];
     }
 

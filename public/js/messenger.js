@@ -1,5 +1,4 @@
 let url, recipient, typeRecipient;
-
 var page;
 
 $(document).ready(function () {
@@ -224,7 +223,8 @@ function checkRead() {
                 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
             },
             data: {
-                id: unread.attr('id')
+                id: unread.attr('id'),
+                typeRecipient
             },
             success: function (messageIds) {
                 messageIds.forEach(item => {
@@ -235,15 +235,6 @@ function checkRead() {
             }
         });
     }
-}
-
-function isVisible(tag) {
-    let t = $(tag);
-    let w = $(window);
-    let wt = w.scrollTop();
-    let tt = t.offset().top;
-    let tb = tt + t.height();
-    return ((tb <= wt + w.height()) && (tt >= wt));
 }
 
 function resetPage() {

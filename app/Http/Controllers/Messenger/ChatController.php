@@ -19,6 +19,7 @@ use App\Services\FileService;
 use App\Services\ChatService;
 use App\Services\MessagesService;
 use App\Events\MessagesWebSocket;
+use App\Models\ChatMember;
 
 class ChatController extends Controller
 {
@@ -30,7 +31,6 @@ class ChatController extends Controller
     private function getData($request)
     {
         $sender = User::find(Auth::id());
-        $senderAvatar = $sender->avatar();
 
         $decryptContent = $request->content;
         $content = Crypt::encrypt($decryptContent);
@@ -38,7 +38,7 @@ class ChatController extends Controller
         $time = now();
         $timeFormat = Carbon::parse($time)->diffForHumans();
 
-        return array($sender, $senderAvatar, $decryptContent, $content, $time, $timeFormat);
+        return array($sender, $decryptContent, $content, $time, $timeFormat);
     }
 
     /**
@@ -82,8 +82,11 @@ class ChatController extends Controller
 
         $sender = User::find(Auth::id());
         $chat = Chat::find($id);
+        $senderAvatar = $chat->avatar();
 
-        list($sender, $senderAvatar, $decryptContent, $content, $sentAt, $sentAtFormat) = $this->getData($request);
+        $recipients = array_diff(ChatMember::where('chat', $chat->id)->pluck('user')->toArray(), [Auth::id()]);
+
+        list($sender, $decryptContent, $content, $sentAt, $sentAtFormat) = $this->getData($request);
 
         $request->validate([
             'content' => 'required_without:attachments|max:2000',
@@ -94,9 +97,12 @@ class ChatController extends Controller
 
         $attachments = MessagesService::saveAttachments(request()->attachments, $message);
 
+        $subtitle = $chat->title;
+        $link = route('messages', ['chat' => $chat->id]);;
+
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'chat', 'decryptContent', 'sentAtFormat', 'attachments');
 
-        // event(new MessagesWebSocket($data, true));
+        event(new MessagesWebSocket(compact('decryptContent', 'recipients', 'subtitle', 'link', 'senderAvatar'), true));
 
         return $data;
     }

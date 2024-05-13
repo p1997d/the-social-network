@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\User;
-use App\Models\Dialog;
 use App\Models\Message;
 use App\Models\DialogMessage;
 
@@ -16,7 +15,6 @@ use Illuminate\Support\Facades\Crypt;
 use App\Events\MessagesWebSocket;
 
 use App\Services\DialogService;
-use App\Services\FileService;
 use App\Services\MessagesService;
 use Carbon\Carbon;
 
@@ -55,6 +53,8 @@ class DialogController extends Controller
         $sender = User::find(Auth::id());
         $recipient = User::find($id);
 
+        $recipients = [$recipient->id];
+
         list($sender, $senderAvatar, $decryptContent, $content, $sentAt, $sentAtFormat) = $this->getData($request);
 
         $request->validate([
@@ -68,9 +68,12 @@ class DialogController extends Controller
 
         $attachments = MessagesService::saveAttachments(request()->attachments, $message);
 
+        $subtitle = "$sender->firstname $sender->surname";
+        $link = route('messages', ['to' => $sender->id]);
+
         $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent', 'sentAtFormat', 'attachments');
 
-        event(new MessagesWebSocket($data, true));
+        event(new MessagesWebSocket(compact('decryptContent', 'recipients', 'subtitle', 'link', 'senderAvatar'), true));
 
         return $data;
     }
@@ -181,31 +184,5 @@ class DialogController extends Controller
         }
 
         return redirect()->route('messages');
-    }
-
-    /**
-     * Отмечает сообщения прочитанными
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function checkRead()
-    {
-        $message = Message::find(request()->id);
-
-        $dialog = $message->dialog;
-
-        $messages = DialogService::getMessages($dialog);
-
-        $messageIds = $messages->get()->filter(function ($item) use ($message) {
-            return $item->id <= $message->id &&
-                $item->viewed_at == null &&
-                $item->author !== auth()->user()->id;
-        })->pluck('id');
-
-        Message::whereIn('id', $messageIds)->update([
-            'viewed_at' => now()
-        ]);
-
-        return $messageIds;
     }
 }

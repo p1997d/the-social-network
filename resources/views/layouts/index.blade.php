@@ -72,6 +72,7 @@
         <script src="{{ asset('js/photos.js') }}"></script>
         <script src="{{ asset('js/player.js') }}"></script>
         <script src="{{ asset('js/video.js') }}"></script>
+        <script src="{{ asset('js/posts.js') }}"></script>
         <script src="{{ asset('js/editProfile.js') }}"></script>
 
         @vite('resources/js/echo.js')
@@ -84,15 +85,16 @@
 
         @section('main')
             <div class="row gx-3 h-100">
-                <div class="col-auto p-0 d-none d-lg-block" id="sidebar">
+                <div class="col-2 p-0 d-none d-lg-block" id="sidebar">
                     @include('layouts.sidebar')
                 </div>
-                <div class="col" id="pjax-container">
+                <div class="col-10" id="pjax-container">
                     @yield('content')
                 </div>
             </div>
         @show
 
+        @include('layouts.modals.error')
         @include('layouts.modals.image')
         @include('layouts.modals.video')
         @include('layouts.offcanvasMenu')

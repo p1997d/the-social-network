@@ -12,6 +12,5 @@
 
         @include('messenger.modals.delete')
         @include('messenger.modals.allDelete')
-        @include('messenger.modals.error')
     </div>
 @endsection

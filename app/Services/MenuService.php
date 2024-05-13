@@ -53,7 +53,7 @@ class MenuService
             new self('Новости', 'bi-newspaper', route('feed')),
             new self('Сообщения', 'bi-chat-fill', route('messages'), $data['unreadMessagesCount']),
             new self('Друзья', 'bi-person-fill', route('friends'), $data['incomingCount']),
-            new self('Группы', 'bi-people-fill', route('groups')),
+            new self('Группы', 'bi-people-fill', route('groups.list')),
             new self('Фотографии', 'bi-camera-fill', route('photos')),
             new self('Аудиозаписи', 'bi-music-note-beamed', route('audios')),
             new self('Видеозаписи', 'bi-film', route('videos')),

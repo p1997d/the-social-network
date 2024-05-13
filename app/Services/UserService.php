@@ -2,14 +2,20 @@
 
 namespace App\Services;
 
+use App\Models\GroupPost;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use App\Services\InfoService;
 use App\Models\Location;
 use App\Models\User;
+use App\Models\UserPost;
+use App\Models\Post;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use morphos\Russian\Cases;
-use function morphos\Russian\inflectName;
+
+use morphos\Russian\FirstNamesInflection;
+use morphos\Russian\LastNamesInflection;
 
 class UserService
 {
@@ -73,8 +79,21 @@ class UserService
      */
     public static function getGenitiveName($user)
     {
-        $name = inflectName("$user->surname $user->firstname", Cases::RODIT, $user->sex[0] ?? null);
-        $name = implode(' ', array_reverse(explode(' ', $name)));
-        return $name;
+        $firstname = FirstNamesInflection::getCase($user->firstname, Cases::RODIT, $user->sex[0] ?? null);
+        $surname = LastNamesInflection::getCase($user->surname, Cases::RODIT, $user->sex[0] ?? null);
+
+        return $firstname . ' ' . $surname;
+    }
+
+    public static function getNews()
+    {
+        $user = User::find(Auth::id());
+        $friends = FriendsService::listFriends($user);
+        $groups = $user->groups;
+
+        $userPosts = UserPost::whereIn('user', $friends->pluck('id'))->pluck('post');
+        $groupPosts = GroupPost::whereIn('group', $groups->pluck('id'))->pluck('post');
+
+        return Post::whereIn('id', $userPosts->push(...$groupPosts))->get()->sortByDesc('created_at');
     }
 }

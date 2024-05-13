@@ -21,7 +21,7 @@
                 <a href="#" class="link-body-emphasis">
                     {{ $recipient->title }}
                 </a>
-                <p class="m-0 text-secondary">{{ $countMembers }}</p>
+                <p class="m-0 text-secondary">{{ $recipient->members_count() }}</p>
             @endif
         </div>
         <div class="d-flex align-items-center">

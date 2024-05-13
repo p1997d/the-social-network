@@ -112,16 +112,13 @@ class ChatService
     public static function getChat($page, $chat, $title)
     {
         $recipient = Chat::find($chat);
-        $members = ChatMember::where('chat', $chat);
 
         if (!$recipient) {
             return redirect()->route('messages');
         }
 
-        $countMembers = GeneralService::getPluralize($members->count(), 'участник');
-
         $messages = $recipient->messages()->sortByDesc('sent_at')->forPage($page, 25)->values();
 
-        return compact('messages', 'recipient', 'countMembers', 'title');
+        return compact('messages', 'recipient', 'title');
     }
 }

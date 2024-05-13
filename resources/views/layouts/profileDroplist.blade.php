@@ -11,7 +11,7 @@
             {{ auth()->user()->firstname }}
         </button>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Настройки</a></li>
+            <li><a class="dropdown-item" href="{{ route('info.editProfile') }}"><i class="bi bi-gear"></i> Редактировать профиль</a></li>
             <li>
                 <button class="dropdown-item btnSwitch"><i class="bi bi-palette"></i>
                     Тема: <span class="text-primary-emphasis themeText"></span>

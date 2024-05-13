@@ -1,6 +1,5 @@
 @php
     use Carbon\Carbon;
-    use Carbon\CarbonInterface;
 @endphp
 
 <div class="container">

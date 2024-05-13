@@ -10,11 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
 use App\Models\User;
-use App\Models\Chat;
-use App\Models\ChatMember;
 use App\Models\Message;
 use App\Services\ChatService;
-use App\Services\GeneralService;
 use App\Services\FriendsService;
 use App\Services\DialogService;
 
@@ -73,9 +70,30 @@ class IndexController extends Controller
         }
 
         $content = Crypt::decrypt($message->content);
-        // $attachments = $message->attachments();
         $attachments = [];
 
         return compact('content', 'attachments');
+    }
+
+    /**
+     * Отмечает сообщения прочитанными
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function checkRead(Request $request)
+    {
+        $type = $request->typeRecipient;
+        $message = Message::find(request()->id);
+
+        if ($type === 'to') {
+            $dialog = $message->dialog;
+            $messages = DialogService::getMessages($dialog)->get();
+        }
+        elseif ($type === 'chat') {
+            $chat = $message->chat;
+            $messages = $chat->userMessages;
+        }
+
+        return MessagesService::checkRead($message, $messages);
     }
 }

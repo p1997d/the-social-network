@@ -8,11 +8,10 @@ use App\Services\PhotoService;
 
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
-use function morphos\Russian\pluralize;
+use morphos\Russian\NounPluralization;
 
 class GeneralService
 {
@@ -73,11 +72,11 @@ class GeneralService
      */
     public static function getPluralize($count, $text)
     {
-        return pluralize($count, $text);
+        return number_format($count, 0, '', ' ') . ' ' . NounPluralization::pluralize($count, $text);
     }
 
     /**
-     * Undocumented function
+     * Получает заголовок страницы
      *
      * @param \App\Models\User $user
      * @param string $type
@@ -95,7 +94,7 @@ class GeneralService
 
 
     /**
-     * Undocumented function
+     * Получает содержимое модального окна
      *
      * @param Request $request
      * @return array

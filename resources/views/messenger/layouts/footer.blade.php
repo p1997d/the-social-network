@@ -11,7 +11,7 @@
             </p>
             <div class="d-flex gap-1">
                 <label for="uploadFile" class="btn btn-text"><i class="bi bi-paperclip"></i></label>
-                <input type="file" id="uploadFile" class="d-none" name="files[]" multiple></input>
+                <input type="file" id="uploadFile" class="d-none uploadFile" name="files[]" multiple></input>
 
                 <input type="text" enterkeyhint="send" class="form-control" style="resize:none" id="content"
                     name="content" autocomplete="off" placeholder="Напишите сообщение...">

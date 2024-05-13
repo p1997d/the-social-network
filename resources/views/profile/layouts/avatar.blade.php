@@ -3,7 +3,7 @@
         <div class="avatar mb-3 d-flex justify-content-center">
             <div class="position-relative" id="avatar">
                 @auth
-                    @if ($user_profile->id == auth()->user()->id)
+                    @if ($user->id == auth()->user()->id)
                         <div class="collapse position-absolute w-100" id="avatarSetting">
                             <div class="list-group bg-body bg-opacity-50">
                                 <button type="button" class="list-group-item list-group-item-action bg-transparent"
@@ -25,7 +25,7 @@
 
                 <div data-bs-toggle="collapse">
                     @include('layouts.avatar', [
-                        'model' => $user_profile,
+                        'model' => $user,
                         'width' => '350px',
                         'class' => 'rounded object-fit-cover mw-100',
                         'modal' => true,
@@ -36,10 +36,10 @@
 
         <div class="d-flex flex-column gap-3 buttons-pjax">
             @auth
-                @if ($user_profile->id == auth()->user()->id)
+                @if ($user->id == auth()->user()->id)
                     <a href="{{ route('info.editProfile') }}" class="btn btn-primary w-100">Редактировать</a>
                 @else
-                    <a href="{{ route('messages', ['to' => $user_profile->id]) }}" class="btn btn-primary">Отправить
+                    <a href="{{ route('messages', ['to' => $user->id]) }}" class="btn btn-primary">Отправить
                         сообщение</a>
                     @foreach ($friendForm as $form)
                         <form class="w-100 formFriends" method="POST" action="{{ $form->link }}">
