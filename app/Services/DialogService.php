@@ -65,6 +65,15 @@ class DialogService
         return $dialog;
     }
 
+    /**
+     * Создает сообщение
+     *
+     * @param string $content
+     * @param \App\Models\User $sender
+     * @param mixed $sentAt
+     * @param \App\Models\Dialog $dialog
+     * @return \App\Models\Message
+     */
     public static function createMessage($content, $sender, $sentAt, $dialog)
     {
         $message = MessagesService::create($content, $sender, $sentAt);
@@ -77,6 +86,14 @@ class DialogService
         return $message;
     }
 
+    /**
+     * Получает данные о диалоге
+     *
+     * @param \App\Models\User $to
+     * @param \App\Models\User $sender
+     * @param string $title
+     * @return array|\Illuminate\Contracts\Support\Renderable
+     */
     public static function getDialog($to, $sender, $title)
     {
         $recipient = User::find($to);

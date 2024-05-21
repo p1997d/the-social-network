@@ -19,18 +19,20 @@ use App\Http\Controllers\Publications\FilesController as PublicationsFilesContro
 use App\Http\Controllers\Posts\IndexController as PostsIndexController;
 use App\Http\Controllers\Groups\IndexController as GroupsIndexController;
 use App\Http\Controllers\Search\IndexController as SearchIndexController;
+use App\Http\Controllers\Interaction\IndexController as InteractionIndexController;
 
 Route::group(['namespace' => 'Index'], function () {
     Route::get('/', [MainIndexController::class, 'index'])->name('index');
     Route::get('/id{user}', [MainIndexController::class, 'profile'])->name('profile');
     Route::get('/signup', [MainIndexController::class, 'signup'])->name('auth.signup');
     Route::get('/signin', [MainIndexController::class, 'signin'])->name('auth.signin');
-
     Route::get('/feed', [MainIndexController::class, 'feed'])->name('feed');
+
+    Route::post('/getCounters', [MainIndexController::class, 'getCounters'])->name('getCounters');
 });
 
 Route::group(['namespace' => 'Search'], function () {
-    Route::get('/search', [SearchIndexController::class, 'index'])->name('search.index');
+    Route::get('/search', [SearchIndexController::class, 'all'])->name('search.all');
     Route::get('/search/people', [SearchIndexController::class, 'people'])->name('search.people');
     Route::get('/search/news', [SearchIndexController::class, 'news'])->name('search.news');
     Route::get('/search/group', [SearchIndexController::class, 'group'])->name('search.group');
@@ -115,6 +117,8 @@ Route::group(['namespace' => 'Publications'], function () {
 });
 
 Route::group(['namespace' => 'Posts'], function () {
+    Route::get('/post{id}', [PostsIndexController::class, 'index'])->name('posts.index');
+
     Route::post('/posts/create', [PostsIndexController::class, 'create'])->name('posts.create');
     Route::post('/posts/{id}/delete', [PostsIndexController::class, 'delete'])->name('posts.delete');
 });
@@ -131,6 +135,13 @@ Route::group(['namespace' => 'Group'], function () {
 
     Route::post('/group/{id}/kick', [GroupsIndexController::class, 'kick'])->name('groups.kick');
     Route::post('/group/{id}/switchAdmin', [GroupsIndexController::class, 'switchAdmin'])->name('groups.switchAdmin');
+});
+
+Route::group(['namespace' => 'Interaction'], function () {
+    Route::post('/like', [InteractionIndexController::class, 'like'])->name('like');
+
+    Route::post('/comment/create', [InteractionIndexController::class, 'commentCreate'])->name('comment.create');
+    Route::post('/comment/delete', [InteractionIndexController::class, 'commentDelete'])->name('comment.delete');
 });
 
 Auth::routes();

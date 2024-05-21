@@ -78,10 +78,11 @@ class IndexController extends Controller
     /**
      * Отмечает сообщения прочитанными
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return array
      */
     public function checkRead(Request $request)
     {
+        $user = User::find(Auth::id());
         $type = $request->typeRecipient;
         $message = Message::find(request()->id);
 
@@ -94,6 +95,9 @@ class IndexController extends Controller
             $messages = $chat->userMessages;
         }
 
-        return MessagesService::checkRead($message, $messages);
+        return [
+            'messageIds' => MessagesService::checkRead($message, $messages),
+            'messageCounter' => MessagesService::getUnreadMessagesCount(),
+        ];
     }
 }

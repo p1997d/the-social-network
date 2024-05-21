@@ -1,7 +1,3 @@
-@php
-    use Carbon\Carbon;
-@endphp
-
 <div class="list-group list-group-flush w-100 h-100">
     @forelse ($chatLogs as $chatLog)
         <a href="@if (class_basename($chatLog) == 'Dialog') {{ route('messages', ['to' => $chatLog->interlocutor->id]) }} @else {{ route('messages', ['chat' => $chatLog->id]) }} @endif"
@@ -37,7 +33,7 @@
                         <div class="fw-bold">{{ $chatLog->title }}</div>
                     @endif
                     <div class="text-secondary fs-7">
-                        {{ Carbon::parse($chatLog->messages()->last()->sent_at)->diffForHumans() }}
+                        {{ $chatLog->messages()->last()->sentAtDiffForHumans() }}
                     </div>
                 </div>
                 <div class="d-flex justify-content-between w-100">

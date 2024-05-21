@@ -1,7 +1,3 @@
-@php
-    use Carbon\Carbon;
-@endphp
-
 <div class="card shadow mb-3">
     <div class="card-header d-flex align-items-center gap-2">
         <a href="{{ $postHeaderLink }}">
@@ -14,10 +10,12 @@
             ])
         </a>
         <div>
-            <a href="{{ $postHeaderLink }}">
-                <p class="m-0">{{ $postHeaderTitle }}</p>
+            <p class="m-0">
+                <a href="{{ $postHeaderLink }}">{{ $postHeaderTitle }}</a>
+            </p>
+            <a href="{{ route('posts.index', $post->id) }}" class="postLink link-secondary link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+                <span class="text-secondary fs-7">{{ $post->createdAtDiffForHumans() }}</span>
             </a>
-            <span class="text-secondary"><small>{{ Carbon::parse($post->created_at)->diffForHumans() }}</small></span>
         </div>
 
         @if ($post->authorUser->id === optional(auth()->user())->id || $postAdminCondition)
@@ -27,7 +25,7 @@
                         aria-expanded="false"><i class="bi bi-three-dots"></i></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <form action="{{ route('posts.delete', $post->id) }}" method="post">
+                            <form action="{{ route('posts.delete', $post->id) }}" method="post" class="postDelete">
                                 @csrf
                                 <button class="dropdown-item" type="submit">Удалить запись</button>
                             </form>
@@ -46,14 +44,25 @@
             ])
         </div>
     </div>
-    {{-- <div class="card-footer">
+    <div class="card-footer">
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-danger active btn-sm"><i class="bi bi-heart-fill"></i>
-                <span>15</span></button>
-            <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-chat-left"></i>
-                <span>15</span></button>
-            <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-share"></i>
-                <span>15</span></button>
+            <form action="{{ route('like') }}" method="post" class="setLike"
+                data-like="{{ class_basename($post) }}{{ $post->id }}">
+                @csrf
+                <input type="hidden" name="id" value="{{ $post->id }}">
+                <input type="hidden" name="type" value="{{ $post->getMorphClass() }}">
+                <button type="submit"
+                    class="btn btn-sm @if ($post->myLike !== null) btn-outline-danger active
+                    @else btn-outline-secondary @endif">
+                    <i class="bi bi-heart-fill"></i>
+                    <span class="countLikes">{{ $post->likes->count() }}</span>
+                </button>
+            </form>
+            <a href="{{ route('posts.index', $post->id) }}#comments" type="button" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-chat-left"></i>
+                <span>{{ $post->comments->count() }}</span>
+            </a>
+            {{-- <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-share"></i><span>15</span></button> --}}
         </div>
-    </div> --}}
+    </div>
 </div>

@@ -3,8 +3,11 @@
 namespace App\Services;
 
 use App\Models\Chat;
+use App\Models\Group;
+use App\Models\GroupFile;
 use App\Models\MessageFile;
 use App\Models\Photo;
+use App\Models\Post;
 use App\Models\PostFile;
 use App\Models\User;
 use App\Models\UserAvatar;
@@ -71,17 +74,21 @@ class PhotoService
     /**
      * Получает фотографии
      *
-     * @param \App\Models\User $user
-     * @param string $type
+     * @param [type] $user
+     * @param [type] $type
+     * @param [type] $to
+     * @param [type] $chat
      * @return \App\Models\Photo[]
      */
-    public static function getPhotos($user, $type = null, $to = null, $chat = null)
+    public static function getPhotos($user = null, $type = null, $to = null, $chat = null)
     {
         return match (true) {
             $type === 'profile' => self::profilePhotos($user),
             $type === 'uploaded' => self::uploadedPhotos($user),
-            $type === 'messages' => self::messagesPhotos($user, $to, $chat),
+            $type === 'messages' => self::messagesPhotos($to, $chat),
             str_starts_with($type, 'post') => self::postPhotos($type),
+            str_starts_with($type, 'group') => self::groupPhotos($type),
+            $type === 'wall' => self::wallPhotos($user),
             $type === null => self::allPhotos($user),
         };
     }
@@ -89,42 +96,98 @@ class PhotoService
     private static function profilePhotos($user)
     {
         $profileIds = UserAvatar::where([['user', $user->id], ['deleted_at', null]])->pluck('avatar');
-        return Photo::whereIn('id', $profileIds)->where('deleted_at', null)->get();
+        return Photo::whereIn('id', $profileIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
     }
 
     private static function uploadedPhotos($user)
     {
         $uploadedIds = UserFile::where([['user', $user->id], ['file_type', Photo::class]])->pluck('file_id');
-        return Photo::whereIn('id', $uploadedIds)->where('deleted_at', null)->get();
+        return Photo::whereIn('id', $uploadedIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
     }
 
-    private static function messagesPhotos($user, $to, $chat)
+    private static function messagesPhotos($to, $chat)
     {
+        $user = User::find(Auth::id());
+
         if ($to) {
             $dialog = DialogService::getOrCreateDialog($user->id, $to);
             $messagesIds = MessageFile::whereIn('message', $dialog->messages()->pluck('id'))->whereHasMorph('file', [Photo::class])->get()->pluck('file_id');
-        }
-        if ($chat) {
+        } else if ($chat) {
             $chat = Chat::find($chat);
             $messagesIds = MessageFile::whereIn('message', $chat->userMessages->pluck('id'))->whereHasMorph('file', [Photo::class])->get()->pluck('file_id');
+        } else {
+            abort(404);
         }
 
-        return Photo::whereIn('id', $messagesIds)->where('deleted_at', null)->get();
+        return Photo::whereIn('id', $messagesIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
     }
 
     private static function postPhotos($type)
     {
         $post_id = str_replace('post', '', $type);
         $postsIds = PostFile::where([['post', $post_id], ['file_type', Photo::class]])->pluck('file_id');
-        return Photo::whereIn('id', $postsIds)->where('deleted_at', null)->get();
+        return Photo::whereIn('id', $postsIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
+    }
+    private static function groupPhotos($type)
+    {
+        $group_id = str_replace('group', '', $type);
+        $postsIds = GroupFile::where([['group', $group_id], ['file_type', Photo::class]])->pluck('file_id');
+        return Photo::whereIn('id', $postsIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
+    }
+
+    private static function wallPhotos($user)
+    {
+        $posts_id = $user->postsWithDeleted->pluck('id');
+        $postsIds = PostFile::whereIn('post', $posts_id)->where([['file_type', Photo::class]])->pluck('file_id');
+        return Photo::whereIn('id', $postsIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
     }
 
     private static function allPhotos($user)
     {
-        $profileIds = UserAvatar::where([['user', $user->id], ['deleted_at', null]])->pluck('avatar');
-        $uploadedIds = UserFile::where([['user', $user->id], ['file_type', Photo::class]])->pluck('file_id');
+        $profileIds = self::profilePhotos($user)->pluck('id');
+        $uploadedIds = self::uploadedPhotos($user)->pluck('id');
+        $postsIds = self::wallPhotos($user)->pluck('id');
 
-        $allIds = $profileIds->merge($uploadedIds);
-        return Photo::whereIn('id', $allIds)->where('deleted_at', null)->get();
+        $allIds = $profileIds->merge($uploadedIds)->merge($postsIds);
+        return Photo::whereIn('id', $allIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
     }
+
+    public static function getAuthorLinks($type, $author)
+    {
+        return match (true) {
+            str_starts_with($type, 'post') => self::getForPostLinks($type, $author),
+            str_starts_with($type, 'group') => self::getForGroupLinks($type),
+            default => [
+                'photoModalAvatar' => $author->avatar()->thumbnailPath,
+                'photoModalLink' => ['title' => "$author->firstname $author->surname", 'href' => route('profile', $author->id)],
+            ],
+        };
+    }
+
+    private static function getForGroupLinks($type){
+        $groupID = str_replace('group', '', $type);
+        $group = Group::find($groupID);
+        return [
+            'photoModalAvatar' => $group->avatar()->thumbnailPath,
+            'photoModalLink' => ['title' => $group->title, 'href' => route('groups.index', $group->id)],
+        ];
+    }
+    private static function getForPostLinks($type, $author)
+    {
+        $postID = str_replace('post', '', $type);
+        $post = Post::find($postID);
+
+        if ($post->group) {
+            return [
+                'photoModalAvatar' => $post->group->avatar()->thumbnailPath,
+                'photoModalLink' => ['title' => $post->group->title, 'href' => route('groups.index', $post->group->id)],
+            ];
+        }
+
+        return [
+            'photoModalAvatar' => $author->avatar()->thumbnailPath,
+            'photoModalLink' => ['title' => "$author->firstname $author->surname", 'href' => route('profile', $author->id)],
+        ];
+    }
+
 }

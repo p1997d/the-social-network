@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Publications;
 
 use App\Http\Controllers\Controller;
-
+use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
-use App\Models\UserFile;
 use App\Models\Photo;
 
 use App\Services\FileService;
 use App\Services\GeneralService;
 use App\Services\PhotoService;
+use App\Services\PublicationService;
 
 class PhotosController extends Controller
 {
@@ -25,15 +25,18 @@ class PhotosController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
+        $groupID = $request->query('group');
 
-        $title = GeneralService::getTitle($user, "Фотографии");
+        if ($groupID) {
+            $model = Group::find($groupID);
+        } else {
+            $model = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
+        }
+        if (!$model) {
+            return view('main.info', ['title' => 'Информация', 'info' => 'Страница удалена либо ещё не создана.']);
+        }
 
-        $type = $request->query('type');
-
-        $photos = PhotoService::getPhotos($user, $type);
-
-        return view('publications.photos.index', compact('title', 'user', 'photos', 'type'));
+        return view('publications.photos.index', PublicationService::getPage('photo', $model, $request));
     }
 
     /**
@@ -48,12 +51,24 @@ class PhotosController extends Controller
             'photos' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user = User::find(Auth::id());
         $photo = FileService::create($request->photos);
 
-        FileService::saveForUser($user, $photo);
+        if ($request->group) {
+            $group = Group::find($request->group);
+            FileService::saveForGroup($group, $photo);
+        } else {
+            $user = User::find(Auth::id());
+            FileService::saveForUser($user, $photo);
+        }
 
-        return ['color' => 'success', 'message' => 'Фотография успешно загружена'];
+        return [
+            'photo',
+            $photo,
+            'notification' => [
+                'color' => 'success',
+                'message' => 'Фотография успешно загружена'
+            ]
+        ];
     }
 
     /**
@@ -68,7 +83,7 @@ class PhotosController extends Controller
         return FileService::delete($file);
     }
 
-     /**
+    /**
      * Получает фотографию и данные о ее владельце
      *
      * @param Request $request
@@ -80,8 +95,37 @@ class PhotosController extends Controller
 
         $photo = Photo::find($id);
         $author = $photo->authorUser;
-        $avatar = $author->avatar();
 
-        return compact('photo', 'author', 'avatar');
+        $to = $request->to;
+        $chat = $request->chat;
+
+        $queryContent = $request->content;
+        $contentArray = explode('_', $queryContent);
+        $typeContent = $contentArray[0];
+        $user = User::find($contentArray[1]);
+        $activeContent = $contentArray[2];
+        $groupContent = array_key_exists(3, $contentArray) ? $contentArray[3] : null;
+
+        $content = PhotoService::getPhotos($user, $groupContent, $to, $chat);
+
+        $links = PhotoService::getAuthorLinks($groupContent, $author);
+
+        return [
+            'photo' => $photo,
+            ...$links,
+            'photoModalDate' => $photo->createdAtDiffForHumans(),
+            'photoModalComments' => 'Возможность комментирования этой фотографии ограничена.',
+            'photoModalSetLike' => [
+                'id' => $photo->id,
+                'type' => $photo->getMorphClass(),
+                'data' => class_basename($photo) . $photo->id,
+                'count' => $photo->likes->count(),
+                'class' => $photo->myLike !== null ? 'btn btn-sm btn-outline-danger active' : 'btn btn-sm btn-outline-secondary',
+            ],
+            'content' => $content,
+            'typeContent' => $typeContent,
+            'activeContent' => $activeContent,
+            'groupContent' => $groupContent
+        ];
     }
 }

@@ -112,3 +112,8 @@ html[data-bs-theme="light"] .btn-emphasis-invert {
         display: contents;
     }
 }
+
+.modal-open {
+    overflow: hidden !important;
+    padding-right: 17px !important;
+}

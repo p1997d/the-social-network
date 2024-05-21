@@ -9,9 +9,37 @@ use Illuminate\Support\Facades\Crypt;
 use App\Models\User;
 use App\Models\Post;
 use App\Services\PostService;
+use Illuminate\Support\Facades\Auth;
 
 class IndexController extends Controller
 {
+    /**
+     * Отображает страницу с постом
+     *
+     * @param integer $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index($id)
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            return view('main.info', ['title' => 'Ошибка', 'info' => 'Запись не найдена.']);
+        }
+
+        $data = PostService::getPost($post);
+        $data['title'] = "Запись со стены";
+        $data['user'] = User::find(Auth::id());
+
+        return view('main.post', $data);
+    }
+
+    /**
+     * Создает новый пост
+     *
+     * @param Request $request
+     * @return array
+     */
     public function create(Request $request)
     {
         if (!$request->user && !$request->group) {
@@ -38,8 +66,15 @@ class IndexController extends Controller
 
         $attachments = PostService::saveAttachments(request()->attachments, $post);
 
-        return back();
+        return PostService::getPost($post);
     }
+
+    /**
+     * Удаляет пост
+     *
+     * @param integer $id
+     * @return array
+     */
     public function delete($id)
     {
         $post = Post::find($id);
@@ -47,6 +82,6 @@ class IndexController extends Controller
             'deleted_at' => now(),
         ]);
 
-        return back();
+        return ['status' => 'success'];
     }
 }

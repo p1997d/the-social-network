@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\Audio;
+use App\Models\Group;
 use App\Models\User;
 use App\Services\AudioService;
 use App\Services\FileService;
 use App\Services\GeneralService;
+use App\Services\PublicationService;
 
 class AudiosController extends Controller
 {
@@ -28,14 +30,18 @@ class AudiosController extends Controller
             return redirect()->route('auth.signin');
         }
 
-        $user = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
+        $groupID = $request->query('group');
 
-        $title = GeneralService::getTitle($user, "Аудиозаписи");
+        if ($groupID) {
+            $model = Group::find($groupID);
+        } else {
+            $model = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
+        }
+        if (!$model) {
+            return view('main.info', ['title' => 'Информация', 'info' => 'Страница удалена либо ещё не создана.']);
+        }
 
-        $playlist = $user->playlist;
-        $audios = AudioService::getAudios($playlist);
-
-        return view('publications.audios.index', compact('title', 'user', 'audios', 'playlist'));
+        return view('publications.audios.index', PublicationService::getPage('audio', $model, $request));
     }
 
     /**
@@ -50,17 +56,35 @@ class AudiosController extends Controller
             'audios' => 'required|mimes:mp3|max:204800',
         ]);
 
-        $user = User::find(Auth::id());
         $data = (object) collect(['title' => $request->title, 'artist' => $request->artist])->all();
         $audio = FileService::create($request->audios, $data);
 
-        AudioService::saveToPlaylist($audio);
-
-        if (!$audio) {
-            return ['color' => 'danger', 'message' => 'Загрузка аудиозаписи завершилась с ошибкой'];
+        if ($request->group) {
+            $model = Group::find($request->group);
+        } else {
+            $model = User::find(Auth::id());
         }
 
-        return ['color' => 'success', 'message' => 'Аудиозапись успешно загружена'];
+        $playlist = AudioService::saveToPlaylist($audio, $model);
+
+        if (!$audio) {
+            return [
+                'notification' => [
+                    'color' => 'danger',
+                    'message' => 'Загрузка аудиозаписи завершилась с ошибкой'
+                ]
+            ];
+        }
+
+        return [
+            'audio' => $audio,
+            'playlist' => $playlist,
+            'audioDownloadUrl' => route('audios.download', $audio->id),
+            'notification' => [
+                'color' => 'success',
+                'message' => 'Аудиозапись успешно загружена'
+            ]
+        ];
     }
 
     /**
@@ -71,9 +95,7 @@ class AudiosController extends Controller
      */
     public function delete(Request $request)
     {
-        $file = Audio::find($request->audio);
-        FileService::delete($file);
-        return ['color' => 'success', 'message' => 'Аудиозапись успешно удалена'];
+        return AudioService::delete($request->audio);
     }
 
     /**
@@ -82,15 +104,11 @@ class AudiosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function download(Request $request, $id)
+    public function download($id)
     {
         $file = Audio::find($id);
 
-        if (Storage::exists($file->path)) {
-            return response()->download(storage_path('app/' . $file->path));
-        } else {
-            abort(404, 'File not found');
-        }
+        return FileService::download($file);
     }
 
     /**

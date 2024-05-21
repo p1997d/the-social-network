@@ -2,11 +2,6 @@
 
 @section('title', 'The Social Network')
 
-@php
-    use Carbon\Carbon;
-    use Carbon\CarbonInterface;
-@endphp
-
 @section('main')
     <div class="row h-100">
         <div class="col d-flex align-items-center justify-content-center">
@@ -101,7 +96,7 @@
                                             @for ($i = 1; $i <= 12; $i++)
                                                 <option value="{{ $i }}"
                                                     {{ old('birthMonth') == $i ? 'selected' : '' }}>
-                                                    {{ Carbon::create()->month($i)->getTranslatedMonthName('MMMM') }}
+                                                    {{ $months[$i] }}
                                                 </option>
                                             @endfor
                                         </select>

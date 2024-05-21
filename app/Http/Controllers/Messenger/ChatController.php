@@ -31,6 +31,7 @@ class ChatController extends Controller
     private function getData($request)
     {
         $sender = User::find(Auth::id());
+        $senderAvatar = $sender->avatar();
 
         $decryptContent = $request->content;
         $content = Crypt::encrypt($decryptContent);
@@ -38,7 +39,7 @@ class ChatController extends Controller
         $time = now();
         $timeFormat = Carbon::parse($time)->diffForHumans();
 
-        return array($sender, $decryptContent, $content, $time, $timeFormat);
+        return array($sender, $senderAvatar, $decryptContent, $content, $time, $timeFormat);
     }
 
     /**
@@ -82,11 +83,11 @@ class ChatController extends Controller
 
         $sender = User::find(Auth::id());
         $chat = Chat::find($id);
-        $senderAvatar = $chat->avatar();
+        $chatAvatar = $chat->avatar();
 
         $recipients = array_diff(ChatMember::where('chat', $chat->id)->pluck('user')->toArray(), [Auth::id()]);
 
-        list($sender, $decryptContent, $content, $sentAt, $sentAtFormat) = $this->getData($request);
+        list($sender, $senderAvatar, $decryptContent, $content, $sentAt, $sentAtFormat) = $this->getData($request);
 
         $request->validate([
             'content' => 'required_without:attachments|max:2000',
@@ -100,9 +101,9 @@ class ChatController extends Controller
         $subtitle = $chat->title;
         $link = route('messages', ['chat' => $chat->id]);;
 
-        $data = compact('type', 'message', 'sender', 'senderAvatar', 'chat', 'decryptContent', 'sentAtFormat', 'attachments');
+        $data = compact('type', 'message', 'sender', 'senderAvatar', 'chat', 'recipients', 'decryptContent', 'sentAtFormat', 'attachments', 'subtitle', 'link', 'chatAvatar');
 
-        event(new MessagesWebSocket(compact('decryptContent', 'recipients', 'subtitle', 'link', 'senderAvatar'), true));
+        event(new MessagesWebSocket($data, true));
 
         return $data;
     }
@@ -119,6 +120,8 @@ class ChatController extends Controller
         $type = __FUNCTION__;
 
         $message = Message::find($id);
+        $chat = $message->chat;
+        $recipients = array_diff(ChatMember::where('chat', $chat->id)->pluck('user')->toArray(), [Auth::id()]);
 
         list($sender, $senderAvatar, $decryptContent, $content, $changedAt, $changedAtFormat) = $this->getData($request);
 
@@ -134,9 +137,9 @@ class ChatController extends Controller
         // $attachments = $message->attachments();
         $attachments = [];
 
-        $data = compact('type', 'message', 'sender', 'senderAvatar', 'decryptContent', 'changedAtFormat', 'attachments');
+        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipients', 'decryptContent', 'changedAtFormat', 'attachments');
 
-        // event(new MessagesWebSocket($data));
+        event(new MessagesWebSocket($data));
         return $data;
     }
 
@@ -152,10 +155,12 @@ class ChatController extends Controller
         $type = __FUNCTION__;
 
         $message = Message::find($id);
+        $chat = $message->chat;
+        $recipients = array_diff(ChatMember::where('chat', $chat->id)->pluck('user')->toArray(), [Auth::id()]);
 
         list($sender, $senderAvatar, $decryptContent, $content) = $this->getData($request);
 
-        $data = compact('type', 'message', 'sender', 'senderAvatar', 'decryptContent');
+        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipients', 'decryptContent');
 
         if ($message->author == auth()->user()->id) {
             $deleteForAll = isset ($request->deleteForAll);
@@ -171,7 +176,7 @@ class ChatController extends Controller
                     'delete_for_all' => 1,
                 ]);
 
-                // event(new MessagesWebSocket($data));
+                event(new MessagesWebSocket($data));
             } else {
                 $model = new ChatMessageDelete();
 

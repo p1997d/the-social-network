@@ -62,8 +62,10 @@ function select2Initialization() {
     let options = {
         language: "ru",
         theme: 'bootstrap-5',
-        minimumResultsForSearch: -1
     };
 
-    $('#selectSex, #selectFamilyStatus, #selectEducation, #InputDay, #InputMonth, #InputYear').select2(options);
+    $('#InputDay, #InputMonth, #InputYear').select2(options);
+
+    options.minimumResultsForSearch = -1;
+    $('#selectSex, #selectFamilyStatus, #selectEducation').select2(options);
 }

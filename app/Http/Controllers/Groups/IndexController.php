@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Services\GeneralService;
 use App\Services\GroupService;
-
+use App\Services\PostService;
 
 class IndexController extends Controller
 {
@@ -41,6 +41,13 @@ class IndexController extends Controller
         return view('groups.list.index', compact('title', 'user', 'groups', 'administeredGroups', 'listGroups', 'tab'));
     }
 
+    /**
+     * Отображает группу
+     *
+     * @param Request $request
+     * @param integer $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function index(Request $request, $id)
     {
         $group = Group::find($id);
@@ -53,9 +60,17 @@ class IndexController extends Controller
 
         $friends = GroupService::friendInGroup($group);
 
-        return view('groups.group.index', compact('group', 'title', 'friends'));
+        $posts = PostService::getPosts($group->posts);
+
+        return view('groups.group.index', compact('group', 'title', 'friends', 'posts'));
     }
 
+    /**
+     * Создает группу
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function create(Request $request)
     {
         $group = GroupService::create($request->title, $request->theme);
@@ -65,6 +80,12 @@ class IndexController extends Controller
         return back();
     }
 
+    /**
+     * Подписывает пользователя на группу
+     *
+     * @param integer $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function subscribe($id)
     {
         GroupService::subscribe($id);
@@ -72,6 +93,12 @@ class IndexController extends Controller
         return back();
     }
 
+    /**
+     * Отписывает пользователя от группы
+     *
+     * @param integer $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function unsubscribe($id)
     {
         GroupService::unsubscribe($id);
@@ -79,6 +106,13 @@ class IndexController extends Controller
         return back();
     }
 
+    /**
+     * Отображает настройки группы
+     *
+     * @param Request $request
+     * @param integer $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function settings(Request $request, $id)
     {
         $act = $request->query('act');
@@ -101,6 +135,13 @@ class IndexController extends Controller
         };
     }
 
+    /**
+     * Редактирует информацию о группе
+     *
+     * @param Request $request
+     * @param integer $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $group = Group::find($id);
@@ -113,6 +154,13 @@ class IndexController extends Controller
         return back();
     }
 
+    /**
+     * Выгоняет пользователя из группы
+     *
+     * @param Request $request
+     * @param integer $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function kick(Request $request, $id)
     {
         $group = Group::find($id);
@@ -134,6 +182,13 @@ class IndexController extends Controller
         return back();
     }
 
+    /**
+     * Выдает или забирает права администратора у пользователя
+     *
+     * @param Request $request
+     * @param integer $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function switchAdmin(Request $request, $id){
         $group = Group::find($id);
         $user = User::find($request->user);

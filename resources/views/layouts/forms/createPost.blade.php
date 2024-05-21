@@ -14,11 +14,5 @@
         </div>
     </div>
 
-    <div class="listfiles d-flex gap-2 mx-5 flex-wrap">
-        <div class="badge fileBadgeEmpty text-bg-secondary mt-2 d-none justify-content-between align-items-center"
-            style="max-width: 50%">
-            <div class="file-name text-break text-truncate"></div>
-            <button type="button" class="btn-close" aria-label="Close"></button>
-        </div>
-    </div>
+    <div class="listfiles d-flex gap-2 mx-5 flex-wrap"></div>
 </form>

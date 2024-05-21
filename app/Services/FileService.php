@@ -6,6 +6,7 @@ use App\Models\Photo;
 use App\Models\Audio;
 use App\Models\Video;
 use App\Models\File;
+use App\Models\GroupFile;
 use App\Models\User;
 use App\Models\UserAvatar;
 use App\Models\UserFile;
@@ -53,6 +54,7 @@ class FileService
         $model->path = $storagePath;
         $model->type = $file->getMimeType();
         $model->size = $file->getSize();
+        $model->name = $file->getClientOriginalName();
         $model->author = $user->id;
 
         $model->save();
@@ -63,7 +65,7 @@ class FileService
     /**
      * Удаляет файл
      *
-     * @param object $photo
+     * @param object $file
      * @return array
      */
     public static function delete($file)
@@ -131,7 +133,7 @@ class FileService
     public static function getSize($size)
     {
         $base = log($size, 1024);
-        $suffixes = array('', 'КБ', 'МБ', 'ГБ', 'ТБ');
+        $suffixes = array('Б', 'КБ', 'МБ', 'ГБ', 'ТБ');
 
         return round(pow(1024, $base - floor($base)), 1) . ' ' . $suffixes[floor($base)];
     }
@@ -153,11 +155,40 @@ class FileService
         $model->save();
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param \App\Models\Group $group
+     * @param object $file
+     * @return void
+     */
+    public static function saveForGroup($group, $file)
+    {
+        $model = new GroupFile();
+        $model->group = $group->id;
+        $model->file_id = $file->id;
+        $model->file_type = $file->getMorphClass();
+
+        $model->save();
+    }
+
     public static function uploadFile($type, $file)
     {
         $user = User::find(Auth::id());
         $filePath = $user->id . '/' . $type;
         $path = Storage::putFile('public/files/' . $filePath, $file);
         return Storage::url($path);
+    }
+
+    public static function download($file)
+    {
+        $relativePath = str_replace("/storage/", "", $file->path);
+        $filePath = storage_path('app/public/' . $relativePath);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found');
+        }
+
+        return response()->download($filePath);
     }
 }

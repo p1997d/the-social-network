@@ -10,9 +10,9 @@
                     {{ $item->title }}
                 </div>
 
-                @if ($item->counter)
-                    <span class="badge bg-primary rounded-pill">{{ $item->counter }}</span>
-                @endif
+                {{-- @if ($item->counter) --}}
+                    <span class="badge bg-primary rounded-pill {{ $item->name . 'Counter' }}">{{ $item->counter }}</span>
+                {{-- @endif --}}
             </a>
         @endforeach
     @else

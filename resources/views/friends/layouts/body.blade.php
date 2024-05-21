@@ -35,15 +35,10 @@
                     <a href="{{ route('messages', ['to' => $friend->id]) }}" class="fs-7">
                         Написать сообщение
                     </a>
-                    @foreach ($friend->friendForm() as $friendForm)
-                        <span>·</span>
-                        <form class="formFriends" method="POST" action="{{ $friendForm->link }}">
-                            @csrf
-                            <button type="submit" class="btn btn-link p-0 fs-7">
-                                {{ $friendForm->title }}
-                            </button>
-                        </form>
-                    @endforeach
+                    @include('layouts.forms.friends', [
+                        'friendForm' => $friend->friendForm(),
+                        'buttons' => false,
+                    ])
                 </div>
             </div>
         </li>

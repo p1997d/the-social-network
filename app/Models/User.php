@@ -17,6 +17,7 @@ use App\Services\UserService;
 use App\Services\FriendsService;
 use App\Services\DialogService;
 use App\Services\PhotoService;
+use App\Services\VideoService;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class User extends Authenticatable
@@ -144,6 +145,11 @@ class User extends Authenticatable
         return $this->hasManyThrough(Post::class, UserPost::class, 'user', 'id', 'id', 'post')->where('deleted_at', null)->orderByDesc('created_at');
     }
 
+    public function postsWithDeleted()
+    {
+        return $this->hasManyThrough(Post::class, UserPost::class, 'user', 'id', 'id', 'post')->orderByDesc('created_at');
+    }
+
     public function groups()
     {
         return $this->hasManyThrough(Group::class, GroupUser::class, 'user', 'id', 'id', 'group');
@@ -162,5 +168,16 @@ class User extends Authenticatable
     public function allInfo()
     {
         return UserService::getInfo($this);
+    }
+
+    public function videos()
+    {
+        return $this->belongsToMany(Video::class, UserFile::class, 'user', 'file_id')->where([['file_type', Video::class], ['deleted_at', null]])->orderByDesc('created_at');
+
+    }
+
+    public function birthDate()
+    {
+        return Carbon::parse($this->birth);
     }
 }

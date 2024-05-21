@@ -67,7 +67,7 @@ class FriendsController extends Controller
      * Отправляет заявку в друзья пользователю
      *
      * @param int $id
-     * @return void
+     * @return array
      */
     public function addFriend($id)
     {
@@ -88,13 +88,17 @@ class FriendsController extends Controller
         }
 
         event(new FriendsWebSocket($auth_user, $user, true, 'Новая заявка в друзья', 'хочет добавить Вас в друзья'));
+
+        return [
+            'form' => FriendsService::getFriendsForms($user),
+        ];
     }
 
     /**
      * Отменяет заявку в друзья пользователю
      *
      * @param int $id
-     * @return void
+     * @return array
      */
     public function cancelAddFriend($id)
     {
@@ -114,13 +118,17 @@ class FriendsController extends Controller
         }
 
         event(new FriendsWebSocket($auth_user, $user));
+
+        return [
+            'form' => FriendsService::getFriendsForms($user),
+        ];
     }
 
     /**
      * Принимает заявку в друзья от пользователя
      *
      * @param int $id
-     * @return void
+     * @return array
      */
     public function approveAddFriend($id)
     {
@@ -140,13 +148,17 @@ class FriendsController extends Controller
         }
 
         event(new FriendsWebSocket($auth_user, $user, true, 'Заявка принята', 'принял Вашу заявку в друзья'));
+
+        return [
+            'form' => FriendsService::getFriendsForms($user),
+        ];
     }
 
     /**
      * Отклоняет заявку в друзья от пользователя
      *
      * @param int $id
-     * @return void
+     * @return array
      */
     public function rejectAddFriend($id)
     {
@@ -166,13 +178,17 @@ class FriendsController extends Controller
         }
 
         event(new FriendsWebSocket($auth_user, $user));
+
+        return [
+            'form' => FriendsService::getFriendsForms($user),
+        ];
     }
 
     /**
      * Удаляет пользователя из списка друзей
      *
      * @param int $id
-     * @return void
+     * @return array
      */
     public function unfriend($id)
     {
@@ -193,5 +209,9 @@ class FriendsController extends Controller
         }
 
         event(new FriendsWebSocket($auth_user, $user));
+
+        return [
+            'form' => FriendsService::getFriendsForms($user),
+        ];
     }
 }

@@ -1,5 +1,5 @@
 <ul class="list-group list-group-flush">
-    @foreach ($items as $user)
+    @forelse ($items as $user)
         <li class="list-group-item border-0 d-flex gap-2 px-0">
             <div class="position-relative">
                 <a href="{{ route('profile', $user->id) }}">
@@ -36,18 +36,15 @@
                         Написать сообщение
                     </a>
                     @if ($user->id !== auth()->user()->id)
-                        @foreach ($user->friendForm() as $friendForm)
-                            <span>·</span>
-                            <form class="formFriends" method="POST" action="{{ $friendForm->link }}">
-                                @csrf
-                                <button type="submit" class="btn btn-link p-0 fs-7">
-                                    {{ $friendForm->title }}
-                                </button>
-                            </form>
-                        @endforeach
+                        @include('layouts.forms.friends', [
+                            'friendForm' => $user->friendForm(),
+                            'buttons' => false
+                        ])
                     @endif
                 </div>
             </div>
         </li>
-    @endforeach
+    @empty
+        <div class="text-center text-secondary">Ваш запрос не дал результатов</div>
+    @endforelse
 </ul>

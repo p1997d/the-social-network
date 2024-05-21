@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\AudioService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GeneralService;
 use App\Services\GroupService;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Facades\Auth;
 
 class Group extends Model
@@ -64,5 +66,25 @@ class Group extends Model
             ['group', $this->id],
             ['user', $user->id],
         ])->first()->admin;
+    }
+
+    public function photos()
+    {
+        return $this->belongsToMany(Photo::class, GroupFile::class, 'group', 'file_id')->where([['file_type', Photo::class], ['deleted_at', null]]);
+    }
+
+    public function playlist(): MorphOne
+    {
+        return $this->morphOne(Playlist::class, 'playlistable');
+    }
+
+    public function audios()
+    {
+        return AudioService::getAudios($this->playlist);
+    }
+
+    public function videos()
+    {
+        return $this->belongsToMany(Video::class, GroupFile::class, 'group', 'file_id')->where([['file_type', Video::class], ['deleted_at', null]]);
     }
 }

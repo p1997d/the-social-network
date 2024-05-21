@@ -92,34 +92,14 @@ class GeneralService
         return $type . " " . $genitiveName;
     }
 
-
-    /**
-     * Получает содержимое модального окна
-     *
-     * @param Request $request
-     * @return array
-     */
-    public static function openPublicationModal($request)
+    public static function getMonthNames()
     {
-        $queryContent = $request->query('content');
-        $contentArray = explode('_', $queryContent);
+        $months = [];
 
-        if (!$queryContent) {
-            return [];
+        for ($i = 1; $i <= 12; $i++){
+            $months[$i] = Carbon::create()->month($i)->getTranslatedMonthName('MMMM');
         }
-        $typeContent = $contentArray[0];
-        $user = User::find($contentArray[1]);
-        $to = $request->query('to');
-        $chat = $request->query('chat');
-        $activeContent = $contentArray[2];
-        $groupContent = array_key_exists(3, $contentArray) ? $contentArray[3] : null;
 
-        $content = match ($contentArray[0]) {
-            'photo' => PhotoService::getPhotos($user, $groupContent, $to, $chat),
-            'video' => VideoService::getVideos($user),
-            default => [],
-        };
-
-        return compact('content', 'typeContent', 'activeContent', 'groupContent');
+        return $months;
     }
 }

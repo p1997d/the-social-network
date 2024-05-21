@@ -17,7 +17,7 @@ use App\Services\FileService;
 
 use App\Enums\EducationEnum;
 use App\Enums\FamilyStatusEnum;
-
+use App\Services\GeneralService;
 
 class InfoController extends Controller
 {
@@ -89,8 +89,9 @@ class InfoController extends Controller
         $userinfo = optional($user->info);
 
         $title = 'Редактирование профиля';
+        $months = GeneralService::getMonthNames();
 
-        return view('main.editProfile', compact('familyStatus', 'education', 'location', 'userinfo', 'title'));
+        return view('main.editProfile', compact('familyStatus', 'education', 'location', 'userinfo', 'title', 'months'));
     }
 
     /**

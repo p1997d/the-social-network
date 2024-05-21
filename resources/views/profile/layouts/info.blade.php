@@ -1,8 +1,3 @@
-@php
-    use Carbon\Carbon;
-    use Carbon\CarbonInterface;
-@endphp
-
 <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="fs-5">{{ $user->firstname }} {{ $user->surname }}</div>

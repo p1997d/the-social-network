@@ -1,6 +1,7 @@
 $(document).ready(function () {
     initializeImageInteractions();
-
+    showModal();
+    showUploadPhotModal();
     $(document).bind('keydown', function (e) {
         if (e.keyCode == 39) {
             $('button.carousel-control-next').trigger('click');
@@ -14,18 +15,26 @@ $(document).ready(function () {
 
 $(document).on('pjax:end', function () {
     initializeImageInteractions();
+    showModal();
+    showUploadPhotModal();
 });
+
+function showUploadPhotModal() {
+    const url = new URL(window.location);
+    const modal = url.searchParams.get('modal');
+    if (modal) {
+        $('#uploadphoto').modal('show');
+    }
+}
 
 function initializeImageInteractions() {
     $('.openImageModal')
         .off('click keypress')
         .on('click keypress', function () {
-
             const [file, user, group] = getDataFromFile(this, 'photo');
-            setUrl('photo', file, user, group);
+            const photo = setUrl('photo', file, user, group);
 
-            $('#imageModal').modal('show');
-            $.pjax.reload({ container: "#imageModal", async: false });
+            showModal();
         });
 
     $('#imageModal')
@@ -34,22 +43,14 @@ function initializeImageInteractions() {
             clearUrl();
         });
 
-    $('#imageModal')
-        .off('show.bs.modal')
-        .on('show.bs.modal', () => {
-            let photo = getPhotoIdFromUrl();
-
-            getPhotoInfo(photo);
-        });
-
     $('#carouselIndicators')
-        .off('slide.bs.carousel')
-        .on('slide.bs.carousel', (event) => {
-
+        .off('slid.bs.carousel')
+        .on('slid.bs.carousel', (event) => {
             const [file, user, group] = getDataFromFile(event.relatedTarget, 'photo');
             const photo = setUrl('photo', file, user, group);
 
-            getPhotoInfo(photo, event.to + 1);
+            setCounter();
+            checkDelete();
         });
 
     $('.photoDeleteButton')
@@ -67,18 +68,12 @@ function initializeImageInteractions() {
                     photo,
                 },
                 success: function (data) {
-
-                    if (data.button == "restore") {
-                        $('.photoDeleteButton').text('Восстановить');
-                        let div = $('<div>')
-                        .addClass('shadow py-3 px-4 z-3 d-flex justify-content-between photoRestore')
-                        .append('<div>Фотография удалена.</div>')
-
-                        $('#carouselIndicators').prepend(div)
+                    if (data.button === "restore") {
+                        $('#carouselIndicators').find('div.carousel-item.active').addClass('deleted');
                     } else {
-                        $('.photoDeleteButton').text('Удалить');
-                        $('.photoRestore').remove();
+                        $('#carouselIndicators').find('div.carousel-item.active').removeClass('deleted');
                     }
+                    checkDelete();
                 }
             })
         });
@@ -89,6 +84,7 @@ function initializeImageInteractions() {
             event.preventDefault();
 
             let formData = new FormData(this);
+            let number = new Date().getTime();
 
             $.ajax({
                 url: $(this).attr('action'),
@@ -98,6 +94,7 @@ function initializeImageInteractions() {
                 processData: false,
                 beforeSend: function () {
                     $('#uploadphoto').modal('hide');
+                    showLoadingToast(number);
                 },
                 error: function (data) {
                     showMessage({
@@ -107,14 +104,13 @@ function initializeImageInteractions() {
                 },
                 success: function (data) {
                     $.pjax.reload({ container: "#pjax-container", async: false });
-                    showMessage(data);
+                    $(`.loadingToast[data-number="${number}"]`).remove();
+                    showMessage(data.notification);
                 }
             });
 
             $(this)[0].reset();
         });
-
-    showModal();
 }
 
 function getPhotoIdFromUrl() {
@@ -125,94 +121,55 @@ function getPhotoIdFromUrl() {
     return photo;
 }
 
-function getPhotoInfo(photo, currentPhoto = null) {
+function getPhoto(id) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const to = urlParams.get('to');
+    const chat = urlParams.get('chat');
+    const content = urlParams.get('content');
+
     $.ajax({
         url: '/photos/getPhoto',
         type: 'GET',
         data: {
-            id: photo,
-        },
-        beforeSend: function () {
-            $('.photoComments').html(`<div class="w-100 h-100 d-flex justify-content-center align-items-center">
-                <div class="spinner-border" role="status"></div>
-            </div>`)
-
-            $('.photoCounter').html(`<div class="spinner-border spinner-border-sm" role="status"></div>`)
+            id, to, chat, content
         },
         success: function (data) {
-            let header = $('<div>').addClass('card-header d-flex align-items-center gap-1');
-
-            let avatar = $('<div>').append(
-                $('<img>')
-                    .addClass('rounded-circle object-fit-cover')
-                    .attr('width', '40px')
-                    .attr('height', '40px')
-                    .attr('src', data.avatar.path)
-            ).appendTo(header);
-
-            let div = $('<div>').appendTo(header);
-
-            let name = $('<div>').append(
-                $('<a>')
-                    .addClass('link-body-emphasis')
-                    .attr('href', `/id${data.author.id}`)
-                    .html(`${data.author.firstname} ${data.author.surname}`)
-            ).appendTo(div);
-
-            let date = new Date(data.photo.created_at).toLocaleString("ru", {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-            });
-
-            let time = $('<div>').addClass('text-secondary fs-7').html(date).appendTo(div);
-
-            let body = $('<div>')
-                .addClass('card-body')
-                .addClass('text-center text-secondary')
-                .addClass('w-100 h-100 d-flex justify-content-center align-items-center')
-                .html('Возможность комментирования этой фотографии ограничена.');
-
-            $('.photoComments')
-                .html('')
-                .append(header)
-                .append(body);
-
-            let groupContent = {
-                profile: {
-                    description: 'Фото профиля',
-                    url: `photos?id=${data.author.id}&type=profile`
-                },
-                uploaded: {
-                    description: 'Загруженные фото',
-                    url: `photos?id=${data.author.id}&type=uploaded`
-                },
-                messages: {
-                    description: '',
-                    url: ''
-                }
+            if (!data.photo.deleted_at) {
+                $('#imageModal').modal('show');
+            } else {
+                clearUrl();
+                showAccessError()
+                return;
             }
 
-            let photosLength = $('#carouselIndicators .carousel-item').length;
+            setCarousel(data);
 
-            if (!currentPhoto) {
-                currentPhoto = $('#carouselIndicators').find('div.carousel-item.active').index() + 1;
-            }
+            $('.photoComments').removeClass('placeholder-glow');
+            $('.photoComments').find('.photoModalAvatar').attr('src', data.photoModalAvatar).removeClass('placeholder');
+            $('.photoComments').find('.photoModalLink').attr('href', data.photoModalLink.href).text(data.photoModalLink.title);
+            $('.photoComments').find('.photoModalImageLink').attr('href', data.photoModalLink.href);
+            $('.photoComments').find('.photoModalDate').text(data.photoModalDate);
+            $('.photoComments').find('.setLike')
+                .attr('data-like', data.photoModalSetLike.data)
+                .find('input[name="id"]')
+                .val(data.photoModalSetLike.id)
+                .end()
+                .find('input[name="type"]')
+                .val(data.photoModalSetLike.type)
+                .end()
+                .find('button[type="submit"]')
+                .prop('disabled', false)
+                .attr('class', data.photoModalSetLike.class)
+                .find('.countLikes')
+                .text(data.photoModalSetLike.count)
+                .end()
+                .end();
 
-            if (photosLength <= 1) {
-                $('#carouselIndicators .carousel-control-prev, #carouselIndicators .carousel-control-next').hide();
-            }
+            $('.photoComments').find('.photoModalComments').text(data.photoModalComments);
 
-            // let typeLink = $('<a>')
-            //     .attr('href', groupContent[data.photo.group].url)
-            //     .html(groupContent[data.photo.group].description)
-            //     .addClass('link-body-emphasis');
-
-            $('.photoCounter')
-                .html('')
-                // .append(typeLink)
-                .append(`${currentPhoto} из ${photosLength}`)
-                .addClass('text-secondary');
+            initializationInteraction();
+            setCounter();
+            checkDelete();
 
             if (userId !== data.photo.author) {
                 $('.photoDeleteButton').remove();
@@ -221,21 +178,54 @@ function getPhotoInfo(photo, currentPhoto = null) {
     });
 }
 
-function getPhoto(file) {
-    $.ajax({
-        url: '/photos/getPhoto',
-        type: 'GET',
-        data: {
-            id: file,
-        },
-        success: function (data) {
-            if (!data.photo.deleted_at && $(`#carouselIndicators .carousel-item[data-photo='${data.photo.id}']`).length) {
-                $('#imageModal').modal('show');
-            } else {
-                clearUrl();
-                showAccessError()
-            }
-        }
+function setCarousel(data) {
+    let list = $('.imageModalCarousel');
+    list.empty();
 
+    data.content.forEach(item => {
+        addPhoto(item, data).appendTo(list);
     });
+
+    initializeImageInteractions();
+}
+
+function addPhoto(item, data) {
+    let photo = $($('#photo-template').html());
+
+    photo.attr('data-photo', item.id)
+        .attr('data-user', item.author)
+        .attr('data-group', data.groupContent)
+        .find('.displayedImage')
+        .attr('src', item.path)
+        .end();
+
+    if (item.id == data.activeContent) {
+        photo.addClass('active')
+    }
+
+    return photo;
+}
+
+function setCounter() {
+    let photosLength = $('#carouselIndicators .carousel-item').length;
+    let currentPhoto = $('#carouselIndicators').find('div.carousel-item.active').index() + 1;
+
+    $('.photoCounter')
+        .empty()
+        .append(`${currentPhoto} из ${photosLength}`)
+        .addClass('text-secondary');
+}
+
+function checkDelete() {
+    if ($('#carouselIndicators').find('div.carousel-item.active').hasClass('deleted')) {
+        $('.photoDeleteButton').text('Восстановить');
+        let div = $('<div>')
+            .addClass('shadow py-3 px-4 z-3 d-flex justify-content-between photoRestore')
+            .append('<div>Фотография удалена.</div>')
+
+        $('#carouselIndicators').prepend(div)
+    } else {
+        $('.photoDeleteButton').text('Удалить');
+        $('.photoRestore').remove();
+    }
 }

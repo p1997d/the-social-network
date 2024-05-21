@@ -33,9 +33,9 @@
                 <a href="{{ route('files.download', $file->id) }}" target="_blank"
                     class="link-underline link-underline-opacity-0">
                     <div class="card">
-                        <div class="card-body d-flex justify content-start gap-2">
+                        <div class="card-body d-flex justify-content-start gap-2">
                             <i class="bi bi-file-earmark"></i>
-                            <div>Файл</div>
+                            <div>{{ $file->name }}</div>
                             <div class="text-secondary">{{ $file->size() }}</div>
                         </div>
                     </div>

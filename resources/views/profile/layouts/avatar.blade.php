@@ -41,15 +41,10 @@
                 @else
                     <a href="{{ route('messages', ['to' => $user->id]) }}" class="btn btn-primary">Отправить
                         сообщение</a>
-                    @foreach ($friendForm as $form)
-                        <form class="w-100 formFriends" method="POST" action="{{ $form->link }}">
-                            @csrf
-                            <button type="submit" class="btn {{ $form->color }} w-100">
-                                <i class="bi {{ $form->icon }}"></i>
-                                {{ $form->title }}
-                            </button>
-                        </form>
-                    @endforeach
+                    @include('layouts.forms.friends', [
+                        'friendForm' => $friendForm,
+                        'buttons' => true,
+                    ])
                 @endif
             @endauth
         </div>

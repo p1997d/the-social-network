@@ -34,10 +34,6 @@ class AppServiceProvider extends ServiceProvider
 
             $data = array_merge($counter, compact('sidebar', 'menu'));
 
-            $dataPublication = GeneralService::openPublicationModal($request);
-
-            $data = array_merge($data, $dataPublication);
-
             $view->with($data);
         });
     }

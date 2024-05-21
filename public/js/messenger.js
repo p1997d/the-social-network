@@ -132,7 +132,6 @@ function restartingHandlers() {
             },
             success: function (data) {
                 changeMessagesBlock(data);
-                $.pjax.reload({ container: ".sidebar", async: false });
                 $(document).scrollTop($(document).height());
                 $('.listfiles').find('.fileBadge').remove();
                 restartingHandlers();
@@ -226,12 +225,12 @@ function checkRead() {
                 id: unread.attr('id'),
                 typeRecipient
             },
-            success: function (messageIds) {
-                messageIds.forEach(item => {
+            success: function (data) {
+                data.messageIds.forEach(item => {
                     $(`.unread#${item}`).removeClass('unread')
                 });
-                $.pjax.reload({ container: ".sidebar", async: false });
-                $.pjax.reload({ container: ".header-pjax", async: false });
+
+                $('.messagesCounter').text(data.messageCounter > 0 ? data.messageCounter : '');
             }
         });
     }
@@ -254,10 +253,9 @@ function resetPage() {
 function changeMessagesBlock(data) {
     switch (data.type) {
         case 'create':
-            $row = getAttachments(data);
+            $row = getAttachments(data.attachments);
 
-            $(".list-group-item-empty").clone()
-                .removeClass('list-group-item-empty')
+            $($('#message-template').html())
                 .addClass('list-group-item-message')
                 .addClass(userId === data.sender.id ? '' : 'unread')
                 .attr('id', data.message.id)
@@ -277,7 +275,7 @@ function changeMessagesBlock(data) {
                 .prependTo(".messages-list-group");
             break;
         case 'update':
-            $row = getAttachments(data);
+            $row = getAttachments(data.attachments);
 
             let $span = $('<span>')
                 .addClass('text-secondary')
@@ -309,10 +307,7 @@ function viewFileList(fileInput) {
     for (let i = 0; i < fileInput.files.length; i++) {
         let file = fileInput.files[i];
 
-        $('.fileBadgeEmpty')
-            .clone()
-            .removeClass('d-none fileBadgeEmpty')
-            .addClass('d-flex fileBadge')
+        $($('#filebadge-template').html())
             .find('.file-name')
             .text(file.name)
             .end()
@@ -321,67 +316,6 @@ function viewFileList(fileInput) {
             .end()
             .appendTo('.listfiles');
     };
-}
-
-function getAttachments(data) {
-    let $row = $('<div>').addClass(`row row-cols-5 g-2 my-2`);
-
-    data.attachments.forEach(item => {
-        switch (item.type.split('/')[0]) {
-            case 'image':
-                $col = $('<div>').addClass('col').appendTo($row);
-
-                $div = $('<div>')
-                    .addClass('openImageModal')
-                    .attr('data-user', item.author)
-                    .attr('data-photo', item.id)
-                    .attr('data-group', 'messages')
-                    .attr('tabindex', '0')
-                    .appendTo($col);
-
-                $img = $('<img>')
-                    .attr('src', item.thumbnailPath)
-                    .addClass('photos rounded')
-                    .appendTo($div);
-
-                break;
-
-            case 'audio':
-                $col = $('<div>').addClass('col-12').appendTo($row);
-                $audio = $('<audio>').addClass('player').attr('controls', true).appendTo($col);
-                $source = $('<source>').attr('src', item.path).attr('type', item.type).appendTo($audio);
-
-                players.push(new Plyr($audio));
-                break;
-
-            case 'video':
-                $col = $('<div>').addClass('col-12').appendTo($row);
-                $video = $('<video>').addClass('player').attr('controls', true).appendTo($col);
-                $source = $('<source>').attr('src', item.path).attr('type', item.type).appendTo($video);
-
-                players.push(new Plyr($video));
-                break;
-
-            default:
-                $col = $('<div>').addClass('col').appendTo($row);
-                $a = $('<a>')
-                    .attr('href',item.path)
-                    .attr('target', '_blank')
-                    .addClass('link-underline link-underline-opacity-0')
-                    .appendTo($col);
-                $card = $('<div>').addClass('card').appendTo($a);
-                $cardBody = $('<div>')
-                    .addClass('card-body d-flex justify content-start gap-2')
-                    .append('<i class="bi bi-file-earmark"></i>')
-                    // .append(`<div> ${item.name} </div>`)
-                    .append(`<div> Файл </div>`)
-                    .append(`<div class="text-secondary"> ${getSize(item.size)} </div>`)
-                    .appendTo($card);
-                break;
-        }
-    });
-
-    return $row;
 }
 
 function removeFile(removeIndex) {
@@ -406,7 +340,7 @@ function removeFile(removeIndex) {
 
 function getSize(bite) {
     base = Math.log(bite) / Math.log(1024);
-    suffixes = ['', 'КБ', 'МБ', 'ГБ', 'ТБ'];
+    suffixes = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
     size = Math.round(Math.pow(1024, base - Math.floor(base)) * 10) / 10 + ' ' + suffixes[Math.floor(base)]
     return size
 }

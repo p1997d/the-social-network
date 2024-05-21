@@ -3,15 +3,11 @@
 namespace App\Services;
 
 use App\Models\Audio;
-use App\Models\File;
 use App\Models\User;
-use App\Models\UserAvatar;
-use App\Models\UserFile;
 use App\Models\Playlist;
 use App\Models\PlaylistAudio;
 use App\Models\CurrentPlaylist;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class AudioService
 {
@@ -69,19 +65,19 @@ class AudioService
      * @param \App\Models\Playlist $playlist
      * @return \App\Models\Playlist
      */
-    public static function getOrCreatePlaylist($playlist)
+    public static function getOrCreatePlaylist($model)
     {
-        $user = User::find(Auth::id());
+        $playlist = $model->playlist;
 
         if ($playlist == null) {
-            $model = new Playlist();
+            $newPlaylist = new Playlist();
 
-            $model->playlistable_id = $user->id;
-            $model->playlistable_type = $user->getMorphClass();
+            $newPlaylist->playlistable_id = $model->id;
+            $newPlaylist->playlistable_type = $model->getMorphClass();
 
-            $model->save();
+            $newPlaylist->save();
 
-            $playlist = $model;
+            $playlist = $newPlaylist;
         }
 
         return $playlist;
@@ -91,12 +87,11 @@ class AudioService
      * Сохраняет аудиозапись в плейлист
      *
      * @param \App\Models\Audio $audio
-     * @return void
+     * @return \App\Models\Playlist
      */
-    public static function saveToPlaylist($audio)
+    public static function saveToPlaylist($audio, $model)
     {
-        $user = User::find(Auth::id());
-        $playlist = self::getOrCreatePlaylist($user->playlist);
+        $playlist = self::getOrCreatePlaylist($model);
 
         $playlist_audio = new PlaylistAudio();
 
@@ -104,6 +99,8 @@ class AudioService
         $playlist_audio->audio = $audio->id;
 
         $playlist_audio->save();
+
+        return $playlist;
     }
 
     /**
@@ -117,7 +114,7 @@ class AudioService
         $user = User::find(Auth::id());
 
         $audio = Audio::find($id);
-        $playlist = self::getOrCreatePlaylist($user->playlist);
+        $playlist = self::getOrCreatePlaylist($user);
 
         if (!$audio || !$user) {
             abort(404);
@@ -128,7 +125,12 @@ class AudioService
             ->first();
 
         if ($existingUserAudio) {
-            return ['color' => 'danger', 'message' => 'Эта аудиозапись уже добавлена'];
+            return [
+                'notification' => [
+                    'color' => 'danger',
+                    'message' => 'Эта аудиозапись уже добавлена'
+                ]
+            ];
         }
 
         $playlist_audio = new PlaylistAudio();
@@ -138,7 +140,14 @@ class AudioService
 
         $playlist_audio->save();
 
-        return ['color' => 'success', 'message' => 'Аудиозапись успешно добавлена'];
+        return [
+            'audio' => $audio,
+            'playlist' => $playlist,
+            'notification' => [
+                'color' => 'success',
+                'message' => 'Аудиозапись успешно добавлена'
+            ]
+        ];
     }
 
     /**
@@ -194,7 +203,7 @@ class AudioService
      * Получает аудиозаписи из плейлиста
      *
      * @param string $type
-     * @return array
+     * @return array|null
      */
     public static function getPlaylist($type)
     {
@@ -212,6 +221,10 @@ class AudioService
                     $playlist = $user->currentPlaylist->getPlaylist;
                 }
                 break;
+        }
+
+        if (!isset($playlist)) {
+            return null;
         }
 
         $audios = $playlist->audios;
@@ -239,5 +252,33 @@ class AudioService
         $path = $audio->path;
 
         return compact('audio', 'playlist', 'path');
+    }
+
+    /**
+     * Удаляет аудиозапись
+     *
+     * @param integer $audioId
+     * @return array
+     */
+    public static function delete($audioId)
+    {
+        $audio = Audio::find($audioId);
+        $user = User::find(Auth::id());
+        $playlist = self::getOrCreatePlaylist($user);
+
+        if (!$audio) {
+            abort(404);
+        }
+
+        PlaylistAudio::where('playlist', $playlist->id)
+            ->where('audio', $audio->id)
+            ->delete();
+
+        return [
+            'notification' => [
+                'color' => 'success',
+                'message' => 'Аудиозапись успешно удалена'
+            ]
+        ];
     }
 }

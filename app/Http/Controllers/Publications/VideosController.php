@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Publications;
 
 use App\Http\Controllers\Controller;
-
+use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +13,7 @@ use App\Models\Video;
 use App\Services\GeneralService;
 use App\Services\VideoService;
 use App\Services\FileService;
-
+use App\Services\PublicationService;
 use Carbon\Carbon;
 
 class VideosController extends Controller
@@ -26,13 +26,18 @@ class VideosController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
+        $groupID = $request->query('group');
 
-        $title = GeneralService::getTitle($user, 'Видеозаписи');
+        if ($groupID) {
+            $model = Group::find($groupID);
+        } else {
+            $model = $request->query('id') ? User::find($request->query('id')) : User::find(Auth::id());
+        }
+        if (!$model) {
+            return view('main.info', ['title' => 'Информация', 'info' => 'Страница удалена либо ещё не создана.']);
+        }
 
-        $videos = VideoService::getVideos($user);
-
-        return view('publications.videos.index', compact('title', 'user', 'videos'));
+        return view('publications.videos.index', PublicationService::getPage('video', $model, $request));
     }
 
     /**
@@ -51,13 +56,41 @@ class VideosController extends Controller
         $data = (object) collect(['title' => $request->title])->all();
         $video = FileService::create($request->videos, $data);
 
-        FileService::saveForUser($user, $video);
-
-        if (!$video) {
-            return ['color' => 'danger', 'message' => 'Загрузка видеозаписи завершилась с ошибкой'];
+        if ($request->group) {
+            $group = Group::find($request->group);
+            FileService::saveForGroup($group, $video);
+        } else {
+            $user = User::find(Auth::id());
+            FileService::saveForUser($user, $video);
         }
 
-        return ['color' => 'success', 'message' => 'Видеозапись успешно загружена'];
+        $newVideo = [
+            'id' => $video->id,
+            'title' => $video->title,
+            'author' => $video->author,
+            'duration' => $video->duration,
+            'thumbnailPath' => $video->thumbnailPath,
+            'viewsWithText' => $video->viewsWithText(),
+            'createdAtDiffForHumans' => $video->createdAtDiffForHumans(),
+        ];
+
+        if (!$video) {
+            return [
+                'video' => $newVideo,
+                'notification' => [
+                    'color' => 'danger',
+                    'message' => 'Загрузка видеозаписи завершилась с ошибкой'
+                ]
+            ];
+        }
+
+        return [
+            'video' => $newVideo,
+            'notification' => [
+                'color' => 'success',
+                'message' => 'Видеозапись успешно загружена'
+            ]
+        ];
     }
 
     /**
@@ -68,16 +101,40 @@ class VideosController extends Controller
      */
     public function getVideo(Request $request)
     {
-        $userID = $request->user;
-        $user = User::find($userID);
         $video = Video::find($request->id);
-        $viewsWithText = $video->viewsWithText();
-        $avatar = $video->authorUser->avatar();
-        $createdAt = Carbon::parse($video->created_at)->diffForHumans();
-        $playlist = VideoService::getVideos($user)->pluck("id");
-        $path = $video->path;
+        $author = $video->authorUser;
 
-        return compact('video', 'avatar', 'viewsWithText', 'createdAt', 'playlist', 'userID', 'path');
+        $model = $request->model;
+        list($user, $group, $videos) = VideoService::getInfoForVideo($model);
+
+        $playlist = $videos->map(function ($video) use ($group) {
+            return [
+                'id' => $video->id,
+                'title' => $video->title,
+                'author' => $video->author,
+                'duration' => $video->duration,
+                'thumbnailPath' => $video->thumbnailPath,
+                'viewsWithText' => $video->viewsWithText(),
+                'createdAtDiffForHumans' => $video->createdAtDiffForHumans(),
+                'group' => $group ? $group->id : null,
+            ];
+        });
+
+        return [
+            'video' => $video,
+            'videoModalAvatar' => $author->avatar()->thumbnailPath,
+            'videoModalDate' => $video->createdAtDiffForHumans(),
+            'viewsWithText' => $video->viewsWithText(),
+            'playlist' => $playlist,
+            'userID' => $user->id,
+            'videoModalSetLike' => [
+                'id' => $video->id,
+                'type' => $video->getMorphClass(),
+                'data' => class_basename($video) . $video->id,
+                'count' => $video->likes->count(),
+                'class' => $video->myLike !== null ? 'btn btn-sm btn-outline-danger active' : 'btn btn-sm btn-outline-secondary',
+            ]
+        ];
     }
 
     /**
@@ -91,5 +148,18 @@ class VideosController extends Controller
         $video = Video::find($request->id);
         $video->increment('views');
         $video->update();
+    }
+
+    /**
+     * Удаляет видео
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete(Request $request)
+    {
+        $video = Video::find($request->id);
+        $video->delete();
+        return back();
     }
 }

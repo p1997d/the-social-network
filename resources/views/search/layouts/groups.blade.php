@@ -1,5 +1,5 @@
 <div class="list-group list-group-flush h-100">
-    @foreach ($items as $group)
+    @forelse ($items as $group)
         <div class="list-group-item d-flex gap-2 w-100 pb-3 mb-1">
             <div>
                 <a href="{{ route('groups.index', $group->id) }}">
@@ -19,5 +19,7 @@
                 <p class="text-secondary m-0">{{ $group->members_count() }}</p>
             </div>
         </div>
-    @endforeach
+    @empty
+        <div class="text-center text-secondary">Ваш запрос не дал результатов</div>
+    @endforelse
 </div>

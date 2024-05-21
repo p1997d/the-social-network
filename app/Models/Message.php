@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GeneralService;
-use App\Services\MessagesService;
+use Carbon\Carbon;
 
 class Message extends Model
 {
@@ -65,5 +65,25 @@ class Message extends Model
         $videos = $this->attachmentsVideos;
         $files = $this->attachmentsFiles;
         return $files->push(...$photos, ...$audios, ...$videos)->sortBy('sent_at');
+    }
+
+    public function sentAtDiffForHumans()
+    {
+        return Carbon::parse($this->sent_at)->diffForHumans();
+    }
+
+    public function sentAtIsoFormat()
+    {
+        return Carbon::parse($this->sent_at)->isoFormat('LL LTS');
+    }
+
+    public function changedAtDiffForHumans()
+    {
+        return Carbon::parse($this->changed_at)->diffForHumans();
+    }
+
+    public function sentTheSameDay($message)
+    {
+        return Carbon::parse($this->sent_at)->isSameDay(Carbon::parse($message->sent_at));
     }
 }

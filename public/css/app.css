@@ -114,19 +114,15 @@ body {
     margin: auto 0;
 }
 
-.list-group-item-empty {
-    display: none !important;
-}
-
 /* end Messages */
 
 .openPlayerButton {
     max-width: 400px;
 }
 
-#imageModal .modal-dialog, #videoModal .modal-dialog {
+/* #imageModal .modal-dialog, #videoModal .modal-dialog {
     padding: 3rem !important;
-}
+} */
 
 .carousel-control-next,
 .carousel-control-prev {
@@ -193,7 +189,8 @@ body {
         max-width: 250px;
     }
 
-    #imageModal .modal-dialog, #videoModal .modal-dialog {
+    #imageModal .modal-dialog,
+    #videoModal .modal-dialog {
         padding: 0 !important;
     }
 }

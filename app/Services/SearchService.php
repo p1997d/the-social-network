@@ -35,8 +35,8 @@ class SearchService
 
     public static function news($query, $quantity = null)
     {
-        $news = UserService::getNews()->filter(function ($item) use ($query) {
-            return str_contains(Crypt::decrypt($item->content), $query);
+        $news = PostService::getNews()->filter(function ($item) use ($query) {
+            return str_contains($item['postDecryptContent'], $query);
         });
 
         if ($quantity) {
@@ -78,7 +78,7 @@ class SearchService
 
     public static function video($query, $quantity = null)
     {
-        $videos =  Video::where([
+        $videos = Video::where([
             ['title', '!=', ''],
             ['title', 'like', '%' . $query . '%'],
             ['deleted_at', null]
@@ -99,7 +99,9 @@ class SearchService
         $music = self::music($query, 3);
         $video = self::video($query, 3);
 
-        return array($people, $news, $groups, $music, $video);
+        return array_filter(array($people, $news, $groups, $music, $video), function ($item) {
+            return $item->items->count() > 0;
+        });
     }
 
 

@@ -29,6 +29,13 @@ class ChatService
         })->count();
     }
 
+    /**
+     * Создает чат
+     *
+     * @param string $title
+     * @param \App\Models\User $user
+     * @return \App\Models\Chat
+     */
     public static function create($title, $user)
     {
         $chat = new Chat();
@@ -40,6 +47,14 @@ class ChatService
         return $chat;
     }
 
+    /**
+     * Создает системное сообщение
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Chat $chat
+     * @param string $content
+     * @return \App\Models\ChatSystemMessage
+     */
     public static function createSystemMessage($user, $chat, $content)
     {
         $message = new ChatSystemMessage();
@@ -56,6 +71,13 @@ class ChatService
         return $message;
     }
 
+    /**
+     * Добавляет пользователя в чат
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Chat $chat
+     * @return \App\Models\ChatMember
+     */
     public static function addMember($user, $chat)
     {
         $member = new ChatMember();
@@ -72,6 +94,14 @@ class ChatService
 
         return $member;
     }
+
+    /**
+     * Добавляет несколько пользователей в чат
+     *
+     * @param array $users
+     * @param \App\Models\Chat $chat
+     * @return void
+     */
     public static function addMembers($users, $chat)
     {
         $usersData = [];
@@ -86,9 +116,19 @@ class ChatService
                 'joined_at' => now(),
             ];
         }
+
         ChatMember::insert($usersData);
     }
 
+    /**
+     * Создает сообщение
+     *
+     * @param string $content
+     * @param \App\Models\User $sender
+     * @param mixed $sentAt
+     * @param \App\Models\Chat $chat
+     * @return \App\Models\Message
+     */
     public static function createMessage($content, $sender, $sentAt, $chat)
     {
         $message = MessagesService::create($content, $sender, $sentAt);
@@ -98,6 +138,13 @@ class ChatService
         return $message;
     }
 
+    /**
+     * Сохраняет сообщение в чате
+     *
+     * @param \App\Models\Chat $chat
+     * @param mixed $message
+     * @return \App\Models\ChatMessage
+     */
     public static function saveMessage($chat, $message)
     {
         $cm = new ChatMessage();
@@ -109,6 +156,14 @@ class ChatService
         return $cm;
     }
 
+    /**
+     * Получает данные о чате
+     *
+     * @param integer $page
+     * @param \App\Models\Chat $chat
+     * @param string $title
+     * @return array
+     */
     public static function getChat($page, $chat, $title)
     {
         $recipient = Chat::find($chat);

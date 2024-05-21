@@ -5,7 +5,8 @@
                 @include('layouts.forms.createPost', [
                     'recipientName' => 'user',
                     'recipientValue' => $user->id,
-                    'contentPlaceholder' => auth()->user()->id == $user->id ? 'Что у вас нового?' : 'Напишите что-нибудь...',
+                    'contentPlaceholder' =>
+                        auth()->user()->id == $user->id ? 'Что у вас нового?' : 'Напишите что-нибудь...',
                 ])
             </div>
         </div>
@@ -17,19 +18,15 @@
         </div>
     </div>
 
-    @forelse ($user->posts as $post)
-        @include('layouts.post', [
-            'post' => $post,
-            'postHeaderLink' => route('profile', $post->authorUser->id),
-            'postHeaderAvatar' => $post->authorUser,
-            'postHeaderTitle' => $post->authorUser->firstname . ' ' . $post->authorUser->surname,
-            'postAdminCondition' => optional(auth()->user())->id == $user->id,
-        ])
-    @empty
-        <div class="card shadow m-0">
-            <div class="card-body">
-                <p class="text-center">На стене пока нет ни одной записи</p>
+    <div class="postsList">
+        @forelse ($posts as $post)
+            @include('layouts.post', $post)
+        @empty
+            <div class="card shadow m-0 emptyMessage">
+                <div class="card-body">
+                    <p class="text-center">На стене пока нет ни одной записи</p>
+                </div>
             </div>
-        </div>
-    @endforelse
+        @endforelse
+    </div>
 </div>

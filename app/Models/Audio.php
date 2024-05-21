@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\FileService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class Audio extends Model
 {
@@ -16,5 +16,10 @@ class Audio extends Model
     public function authorUser()
     {
         return $this->belongsTo(User::class, 'author');
+    }
+
+    public function size()
+    {
+        return FileService::getSize($this->size);
     }
 }

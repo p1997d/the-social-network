@@ -1,4 +1,4 @@
-<header class="header-pjax">
+<header>
     <nav class="navbar bg-body-tertiary fixed-top shadow">
         <div class="container">
             <div class="d-flex align-items-center">
@@ -9,7 +9,7 @@
                 </a>
 
                 @if (isset($title))
-                    <div class="d-lg-none d-flex fs-5 fw-bold me-3" id="header-title-pjax">{{ $title }}</div>
+                    <div class="d-lg-none d-flex fs-5 fw-bold me-3" id="header-title">{{ $title }}</div>
                 @endif
 
                 @auth
@@ -44,7 +44,7 @@
 
                                     @if ($item->counter)
                                         <span
-                                            class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger"
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger {{ $item->name . 'Counter' }}"
                                             style="font-size: 0.6rem">
                                             {{ $item->counter }}
                                         </span>

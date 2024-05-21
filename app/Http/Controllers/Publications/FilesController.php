@@ -4,18 +4,20 @@ namespace App\Http\Controllers\Publications;
 
 use App\Http\Controllers\Controller;
 use App\Models\File;
-use Illuminate\Support\Facades\Storage;
+use App\Services\FileService;
 
 class FilesController extends Controller
 {
+    /**
+     * Undocumented function
+     *
+     * @param integer $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function download($id)
     {
         $file = File::find($id);
 
-        if (Storage::exists($file->path)) {
-            return response()->download(storage_path('app/' . $file->path));
-        } else {
-            abort(404, 'File not found');
-        }
+        return FileService::download($file);
     }
 }

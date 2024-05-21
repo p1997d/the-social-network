@@ -10,56 +10,45 @@
 
     @section('css')
         <!-- Bootstrap -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}">
 
         <!-- Bootstrap icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="{{ asset('plugins/bootstrap-icons/bootstrap-icons.min.css') }}">
 
         <!-- Plyr -->
-        <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+        <link rel="stylesheet" href="{{ asset('plugins/plyr/plyr.css') }}" />
 
         <!-- Select2 -->
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <link rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2-bootstrap-5-theme.min.css') }}" />
 
-        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/bootstrapAddons.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/bootstrapAddons.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/select2.css') }}">
     @show
 
     @section('js')
         <!-- jQuery -->
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="{{ asset('plugins/jquery/jquery-3.7.1.min.js') }}"></script>
 
         <!-- Bootstrap -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-        </script>
+        <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
         <!-- jQuery Cookie -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"
-            integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="{{ asset('plugins/jquery/jquery.cookie.min.js') }}"></script>
 
         <!-- jQuery PJAX -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.min.js"
-            integrity="sha512-7G7ueVi8m7Ldo2APeWMCoGjs4EjXDhJ20DrPglDQqy8fnxsFQZeJNtuQlTT0xoBQJzWRFp4+ikyMdzDOcW36kQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="{{ asset('plugins/jquery/jquery.pjax.min.js') }}"></script>
 
         <!-- Plyr -->
-        <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+        <script src="{{ asset('plugins/plyr/plyr.js') }}"></script>
 
         <!-- isInViewport -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/is-in-viewport/3.0.4/isInViewport.min.js"
-            integrity="sha512-eAT5Hvi9/Yx33YvSUPOpAYEA3HnUt5oKCSyPGRQwNgqD7K/90JRpFnkaL1M6ROZtLkckQKJ4WYh9cS7Urr4YjA=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="{{ asset('plugins/isInViewport/isInViewport.min.js') }}"></script>
 
         <!-- Select2 -->
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/ru.js"></script>
+        <script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
+        <script src="{{ asset('plugins/select2/js/ru.js') }}"></script>
 
         <script>
             const userId = {{ auth()->check() ? auth()->user()->id : 'null' }};
@@ -74,6 +63,7 @@
         <script src="{{ asset('js/video.js') }}"></script>
         <script src="{{ asset('js/posts.js') }}"></script>
         <script src="{{ asset('js/editProfile.js') }}"></script>
+        <script src="{{ asset('js/interaction.js') }}"></script>
 
         @vite('resources/js/echo.js')
     @show
@@ -84,11 +74,11 @@
         @include('layouts.header')
 
         @section('main')
-            <div class="row gx-3 h-100">
-                <div class="col-2 p-0 d-none d-lg-block" id="sidebar">
+            <div class="row gx-3 h-100 my-lg-0 mt-3 mb-5">
+                <div class="col-lg-2 p-0 d-none d-lg-block" id="sidebar">
                     @include('layouts.sidebar')
                 </div>
-                <div class="col-10" id="pjax-container">
+                <div class="col-lg-10" id="pjax-container">
                     @yield('content')
                 </div>
             </div>
@@ -98,8 +88,10 @@
         @include('layouts.modals.image')
         @include('layouts.modals.video')
         @include('layouts.offcanvasMenu')
-        @include('layouts.notifications')
         @include('layouts.toasts')
+        @include('layouts.templates')
+
+        <div class="toast-container position-fixed p-3" style="bottom: 5%; left: 0"></div>
     </main>
     @yield('footer')
 </body>

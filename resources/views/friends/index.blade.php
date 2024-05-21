@@ -7,7 +7,7 @@
 @section('content')
     <div class="row">
         <div class="col">
-            <div class="card friends-pjax shadow">
+            <div class="card shadow">
                 @include('layouts.cardHeader')
                 <div class="card-body">
                     @include('friends.layouts.body')

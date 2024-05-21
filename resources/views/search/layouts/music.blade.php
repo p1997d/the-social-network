@@ -1,5 +1,5 @@
 <ul class="list-group list-group-flush">
-    @foreach ($items as $i => $audio)
+    @forelse ($items as $i => $audio)
         <li
             class="list-group-item d-flex justify-content-between align-items-start align-items-lg-center mt-2 flex-column flex-lg-row w-100 gap-2">
             <div class="d-flex align-items-center gap-1">
@@ -27,5 +27,7 @@
                 {{ $audio->duration }}
             </div>
         </li>
-    @endforeach
+    @empty
+        <div class="text-center text-secondary">Ваш запрос не дал результатов</div>
+    @endforelse
 </ul>

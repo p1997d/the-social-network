@@ -1,12 +1,13 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="row flex-column flex-lg-row g-3">
+    <div class="row flex-column flex-lg-row g-3 mb-5">
         <div class="col-lg-4 d-contents d-lg-block">
             <div class="order-1 mb-3"> @include('profile.layouts.avatar') </div>
             <div class="order-3 mb-3"> @include('profile.layouts.friends') </div>
             <div class="order-5 mb-3"> @include('profile.layouts.groups') </div>
             <div class="order-5 mb-3"> @include('profile.layouts.audios') </div>
+            <div class="order-5 mb-3"> @include('profile.layouts.videos') </div>
         </div>
         <div class="col-lg-8 d-contents d-lg-block">
             <div class="order-2 mb-3"> @include('profile.layouts.info') </div>

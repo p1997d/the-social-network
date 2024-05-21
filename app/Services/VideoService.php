@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Video;
 use App\Models\File;
+use App\Models\Group;
 use App\Models\User;
 use App\Models\UserAvatar;
 use App\Models\UserFile;
@@ -59,7 +60,7 @@ class VideoService
     public static function getVideos($user)
     {
         $videoIds = UserFile::where([['user', $user->id], ['file_type', Video::class]])->pluck('file_id');
-        return Video::whereIn('id', $videoIds)->where('deleted_at', null)->get();
+        return Video::whereIn('id', $videoIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
     }
 
     /**
@@ -93,5 +94,32 @@ class VideoService
         Storage::put($thumbnailPath, $imagedata, 'public');
 
         return $thumbnailPath;
+    }
+
+    public static function getInfoForVideo($model)
+    {
+        return match (true) {
+            str_starts_with($model, 'group') => self::getGroupForVideo($model),
+            str_starts_with($model, 'user') => self::getUserForVideo($model),
+        };
+    }
+
+    private static function getUserForVideo($model)
+    {
+        $userId = str_replace('user', '', $model);
+        $user = User::find($userId);
+        $group = null;
+        $videos = $user->videos;
+        return [$user, $group, $videos];
+    }
+
+    private static function getGroupForVideo($model)
+    {
+        $ids = str_replace('group', '', $model);
+        list($groupId, $userId) = explode('-', $ids);
+        $user = User::find($userId);
+        $group = Group::find($groupId);
+        $videos = $group->videos;
+        return [$user, $group, $videos];
     }
 }

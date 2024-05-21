@@ -10,13 +10,23 @@ $(document).ready(function () {
     initializationPlayers();
     initializationPlayerButton();
     getLastAudio();
+    showUploadAudioModal();
 });
 
 $(document).on('pjax:end', function () {
     initializationPlayers();
     initializationPlayerButton();
-    setPlayIcon()
+    setPlayIcon();
+    showUploadAudioModal();
 });
+
+function showUploadAudioModal() {
+    const url = new URL(window.location);
+    const modal = url.searchParams.get('modal');
+    if (modal) {
+        $('#uploadaudio').modal('show');
+    }
+}
 
 
 function initializationPlayers() {
@@ -152,8 +162,9 @@ function initializationPlayerButton() {
                 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (data) {
-                $.pjax.reload({ container: "#pjax-container", async: false });
-                showMessage(data);
+                addAudioToList(data, `#listAudio[data-owner="user${userId}"]`);
+                showMessage(data.notification);
+                initializationPlayerButton();
             }
         });
     });
@@ -170,8 +181,14 @@ function initializationPlayerButton() {
                 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (data) {
-                $.pjax.reload({ container: "#pjax-container", async: false });
-                showMessage(data);
+                button.closest('.list-group-item').remove();
+                if ($('#listAudio').children().length === 0) {
+                    $('#listAudio').append(
+                        $('<div>').attr('class', 'w-100 text-center emptyMessage').append($('<p>').text('Вы ещё не загружали аудиозаписи'))
+                    );
+                }
+                showMessage(data.notification);
+                initializationPlayerButton();
             }
         });
     });
@@ -180,6 +197,7 @@ function initializationPlayerButton() {
         event.preventDefault();
 
         let formData = new FormData(this);
+        let number = new Date().getTime();
 
         $.ajax({
             url: $(this).attr('action'),
@@ -189,6 +207,7 @@ function initializationPlayerButton() {
             processData: false,
             beforeSend: function () {
                 $('#uploadaudio').modal('hide');
+                showLoadingToast(number);
             },
             error: function (data) {
                 showMessage({
@@ -197,13 +216,40 @@ function initializationPlayerButton() {
                 });
             },
             success: function (data) {
-                $.pjax.reload({ container: "#pjax-container", async: false });
-                showMessage(data);
+                $(`.loadingToast[data-number="${number}"]`).remove();
+                showMessage(data.notification);
+                addAudioToList(data, '#listAudio');
+                initializationPlayerButton();
             }
         });
 
         $(this)[0].reset();
     });
+}
+
+function addAudioToList(data, listSelector) {
+    let list = $(listSelector);
+
+    $('.emptyMessage').remove();
+
+    $($('#audio-template').html())
+        .find('.playAudioButton')
+        .attr('data-id', data.audio.id)
+        .attr('data-playlist', data.playlist.id)
+        .end()
+        .find('.audioDownload')
+        .attr('href', data.audioDownloadUrl)
+        .end()
+        .find('.deleteAudioButton')
+        .attr('data-audio', data.audio.id)
+        .end()
+        .find('.audioTitle')
+        .text(`${data.audio.artist} - ${data.audio.title}`)
+        .end()
+        .find('.audioDuration')
+        .text(data.audio.duration)
+        .end()
+        .prependTo(list);
 }
 
 function togglePlayPauseClasses(element, state) {
@@ -294,8 +340,7 @@ function selectPlaylist(activePlaylist) {
             `)
         },
         success: function (data) {
-            console.log(data)
-            forPlaylist.html('');
+            forPlaylist.empty();
             if (data.audios && data.audios.length > 0) {
                 data.audios.forEach(item => {
                     li = $('<li>')

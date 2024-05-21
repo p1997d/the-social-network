@@ -1,9 +1,5 @@
 @extends('layouts.index')
 
-@php
-    use Carbon\Carbon;
-@endphp
-
 @section('content')
     <div class="row">
         <div class="col">
@@ -46,7 +42,7 @@
                                         <option selected disabled>День</option>
                                         @for ($i = 1; $i <= 31; $i++)
                                             <option value="{{ $i }}"
-                                                {{ Carbon::parse(auth()->user()->birth)->day == $i ? 'selected' : '' }}>
+                                                {{ auth()->user()->birthDate()->day == $i ? 'selected' : '' }}>
                                                 {{ $i }}
                                             </option>
                                         @endfor
@@ -57,8 +53,8 @@
                                         <option selected disabled>Месяц</option>
                                         @for ($i = 1; $i <= 12; $i++)
                                             <option value="{{ $i }}"
-                                                {{ Carbon::parse(auth()->user()->birth)->month == $i ? 'selected' : '' }}>
-                                                {{ Carbon::create()->month($i)->getTranslatedMonthName('MMMM') }}
+                                                {{ auth()->user()->birthDate()->month == $i ? 'selected' : '' }}>
+                                                {{ $months[$i] }}
                                             </option>
                                         @endfor
                                     </select>
@@ -68,7 +64,7 @@
                                         <option selected disabled>Год</option>
                                         @for ($i = date('Y'); $i >= date('Y') - 120; $i--)
                                             <option value="{{ $i }}"
-                                                {{ Carbon::parse(auth()->user()->birth)->year == $i ? 'selected' : '' }}>
+                                                {{ auth()->user()->birthDate()->year == $i ? 'selected' : '' }}>
                                                 {{ $i }}
                                             </option>
                                         @endfor

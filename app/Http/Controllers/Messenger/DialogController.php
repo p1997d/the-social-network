@@ -51,8 +51,8 @@ class DialogController extends Controller
         $type = __FUNCTION__;
 
         $sender = User::find(Auth::id());
-        $recipient = User::find($id);
 
+        $recipient = User::find($id);
         $recipients = [$recipient->id];
 
         list($sender, $senderAvatar, $decryptContent, $content, $sentAt, $sentAtFormat) = $this->getData($request);
@@ -71,9 +71,9 @@ class DialogController extends Controller
         $subtitle = "$sender->firstname $sender->surname";
         $link = route('messages', ['to' => $sender->id]);
 
-        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent', 'sentAtFormat', 'attachments');
+        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipients','decryptContent', 'sentAtFormat', 'attachments', 'subtitle', 'link');
 
-        event(new MessagesWebSocket(compact('decryptContent', 'recipients', 'subtitle', 'link', 'senderAvatar'), true));
+        event(new MessagesWebSocket($data, true));
 
         return $data;
     }
@@ -92,6 +92,7 @@ class DialogController extends Controller
         $message = Message::find($id);
 
         $recipient = $message->dialog->interlocutor;
+        $recipients = [$recipient->id];
 
         list($sender, $senderAvatar, $decryptContent, $content, $changedAt, $changedAtFormat) = $this->getData($request);
 
@@ -106,7 +107,7 @@ class DialogController extends Controller
 
         $attachments = $message->attachments();
 
-        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent', 'changedAtFormat', 'attachments');
+        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipients', 'decryptContent', 'changedAtFormat', 'attachments');
 
         event(new MessagesWebSocket($data));
         return $data;
@@ -126,10 +127,11 @@ class DialogController extends Controller
         $message = Message::find($id);
 
         $recipient = $message->dialog->interlocutor;
+        $recipients = [$recipient->id];
 
         list($sender, $senderAvatar, $decryptContent, $content) = $this->getData($request);
 
-        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipient', 'decryptContent');
+        $data = compact('type', 'message', 'sender', 'senderAvatar', 'recipients', 'decryptContent');
 
         $dm = DialogMessage::where([
             ['message', $message->id],

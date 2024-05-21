@@ -1,9 +1,5 @@
-@php
-    use Carbon\Carbon;
-@endphp
-
 <div class="row row-cols-4 g-3">
-    @foreach ($items as $i => $video)
+    @forelse ($items as $i => $video)
         <div class="col">
             <button class="btn btn-text m-0 p-0 videoCard openVideoModal" data-user="{{ $video->author }}"
                 data-video="{{ $video->id }}">
@@ -18,11 +14,12 @@
                         <h5 class="card-title">{{ $video->title }}</h5>
                         <span class="card-text text-secondary fs-7">{{ $video->viewsWithText() }}</span>
                         <span class="separator text-secondary fs-7">•</span>
-                        <span
-                            class="card-text text-secondary fs-7">{{ Carbon::parse($video->created_at)->diffForHumans() }}</span>
+                        <span class="card-text text-secondary fs-7">{{ $video->createdAtDiffForHumans() }}</span>
                     </div>
                 </div>
             </button>
         </div>
-    @endforeach
+    @empty
+        <div class="col-12 text-center text-secondary">Ваш запрос не дал результатов</div>
+    @endforelse
 </div>

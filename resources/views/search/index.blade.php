@@ -10,8 +10,8 @@
             <div class="card mb-3">
                 @include('layouts.cardHeader')
                 <div class="card-body">
-                    @foreach ($results as $result)
-                        @if (isset(optional($result)->items) && $result->items->isNotEmpty())
+                    @forelse ($results as $result)
+                        @if ((isset(optional($result)->items) && $result->items->isNotEmpty()) || $type !== 'all')
                             <div class="mb-3">
                                 @include('search.layouts.title', [
                                     'title' => $result->title,
@@ -19,11 +19,13 @@
                                     'linkTitle' => $result->linkTitle,
                                 ])
                                 @include($result->template, [
-                                    'items' => $result->items
+                                    'items' => $result->items,
                                 ])
                             </div>
                         @endif
-                    @endforeach
+                    @empty
+                        <div class="text-center text-secondary">Ваш запрос не дал результатов</div>
+                    @endforelse
                 </div>
             </div>
         </div>

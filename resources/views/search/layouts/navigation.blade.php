@@ -3,7 +3,7 @@
         <div class="card shadow position-sticky shadow" style="top: 5rem">
             <div class="card-body">
                 <div class="list-group">
-                    <a href="{{ route('search.index', ['query' => $query]) }}"
+                    <a href="{{ route('search.all', ['query' => $query]) }}"
                         class="list-group-item list-group-item-action">Все</a>
                     <a href="{{ route('search.people', ['query' => $query]) }}"
                         class="list-group-item list-group-item-action">Люди</a>

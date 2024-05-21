@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GeneralService;
+use Carbon\Carbon;
 
 class ChatSystemMessage extends Model
 {
@@ -27,5 +28,10 @@ class ChatSystemMessage extends Model
     public function date()
     {
         return GeneralService::getDate($this->sent_at);
+    }
+
+    public function sentTheSameDay($message)
+    {
+        return Carbon::parse($this->sent_at)->isSameDay(Carbon::parse($message->sent_at));
     }
 }

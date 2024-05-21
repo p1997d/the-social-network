@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 use App\Services\FriendsService;
+use App\Services\GeneralService;
+use App\Services\MenuService;
+use App\Services\PostService;
 use App\Services\UserService;
 
 class IndexController extends Controller
@@ -31,7 +34,7 @@ class IndexController extends Controller
      * Отображает страницу пользователя
      *
      * @param Request $request
-     * @param int $id
+     * @param integer $id
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function profile(Request $request, $id)
@@ -47,6 +50,8 @@ class IndexController extends Controller
 
         list($listFriends, $listCommonFriends, $listOnline, $listOutgoing, $listIncoming) = FriendsService::getAllFriendsLists($user);
 
+        $posts = PostService::getPosts($user->posts);
+
         return view(
             'profile.index',
             compact(
@@ -58,6 +63,7 @@ class IndexController extends Controller
                 'listIncoming',
                 'listOnline',
                 'friendForm',
+                'posts',
             )
         );
     }
@@ -69,7 +75,11 @@ class IndexController extends Controller
      */
     public function signup()
     {
-        return view('auth.signup', ['title' => 'Регистрация']);
+        $title = 'Регистрация';
+
+        $months = GeneralService::getMonthNames();
+
+        return view('auth.signup', compact('title', 'months'));
     }
 
     /**
@@ -87,7 +97,7 @@ class IndexController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function feed()
+    public function feed(Request $request)
     {
         $title = 'Новости';
 
@@ -96,8 +106,24 @@ class IndexController extends Controller
         }
 
         $user = User::find(Auth::id());
-        $posts = UserService::getNews()->forPage(0, 25);
 
-        return view('main.feed', compact('title', 'posts', 'user'));
+        $section = $request->query('section');
+
+        $posts = match($section) {
+            default => PostService::getNews(),
+            'likes' => PostService::getLikes(),
+        };
+
+        return view('main.feed', compact('title', 'posts', 'user', 'section'));
+    }
+
+    /**
+     * Получает счетчики непрочитанных сообщений и входящих заявок в друзья
+     *
+     * @return array
+     */
+    public function getCounters()
+    {
+        return MenuService::getCounters();
     }
 }

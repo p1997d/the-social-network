@@ -84,16 +84,4 @@ class UserService
 
         return $firstname . ' ' . $surname;
     }
-
-    public static function getNews()
-    {
-        $user = User::find(Auth::id());
-        $friends = FriendsService::listFriends($user);
-        $groups = $user->groups;
-
-        $userPosts = UserPost::whereIn('user', $friends->pluck('id'))->pluck('post');
-        $groupPosts = GroupPost::whereIn('group', $groups->pluck('id'))->pluck('post');
-
-        return Post::whereIn('id', $userPosts->push(...$groupPosts))->get()->sortByDesc('created_at');
-    }
 }
