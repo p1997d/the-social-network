@@ -17,7 +17,7 @@
         "php-ffmpeg/php-ffmpeg": "^1.2",
         "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-pjax": "^2.3",
-        "wapmorgan/morphos": "^3.2"
+        "wapmorgan/morphos": "dev-master"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

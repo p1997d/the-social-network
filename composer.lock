@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e33bf85e8050b6773f46f587828ecda2",
+    "content-hash": "3a4a29ef3f70883455806a3151c8f93b",
     "packages": [
         {
             "name": "beyondcode/laravel-websockets",
@@ -7989,16 +7989,16 @@
         },
         {
             "name": "wapmorgan/morphos",
-            "version": "3.2.29",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wapmorgan/Morphos.git",
-                "reference": "08012186ff7957766fea67114846f2840fad63f9"
+                "reference": "55cba44282bdb2090cd6df1dfd4fa0452142588f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wapmorgan/Morphos/zipball/08012186ff7957766fea67114846f2840fad63f9",
-                "reference": "08012186ff7957766fea67114846f2840fad63f9",
+                "url": "https://api.github.com/repos/wapmorgan/Morphos/zipball/55cba44282bdb2090cd6df1dfd4fa0452142588f",
+                "reference": "55cba44282bdb2090cd6df1dfd4fa0452142588f",
                 "shasum": ""
             },
             "require": {
@@ -8012,6 +8012,7 @@
             "suggest": {
                 "ext-readline": "For using interactive version of script"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -8057,9 +8058,9 @@
             ],
             "support": {
                 "issues": "https://github.com/wapmorgan/Morphos/issues",
-                "source": "https://github.com/wapmorgan/Morphos/tree/3.2.29"
+                "source": "https://github.com/wapmorgan/Morphos/tree/master"
             },
-            "time": "2023-08-08T22:15:35+00:00"
+            "time": "2024-05-14T22:27:39+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -11835,7 +11836,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "wapmorgan/morphos": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
