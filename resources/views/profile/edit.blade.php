@@ -79,7 +79,7 @@
                                     <option selected value="">Не выбрано</option>
                                     @foreach ($familyStatus as $item)
                                         <option value="{{ $item }}"
-                                            {{ $userinfo->family_status == $item ? 'selected' : '' }}>
+                                            {{ $info->family_status == $item ? 'selected' : '' }}>
                                             {{ $item->description(auth()->user()->sex) }}
                                         </option>
                                     @endforeach
@@ -93,7 +93,7 @@
                                     <option selected value="">Не выбрано</option>
                                     @foreach ($education as $item)
                                         <option value="{{ $item }}"
-                                            {{ $userinfo->education == $item ? 'selected' : '' }}>
+                                            {{ $info->education == $item ? 'selected' : '' }}>
                                             {{ $item->description() }}
                                         </option>
                                     @endforeach
@@ -108,7 +108,7 @@
                                         <option selected value="">Не выбрано</option>
                                         @foreach ($location[0] as $area)
                                             <option value="{{ $area['id'] }}"
-                                                {{ optional(json_decode($userinfo->location))[0] == $area['id'] ? 'selected' : '' }}>
+                                                {{ optional(json_decode($info->location))[0] == $area['id'] ? 'selected' : '' }}>
                                                 {{ $area['name'] }}
                                             </option>
                                         @endforeach
@@ -119,7 +119,7 @@
                                         <option selected value="">Не выбрано</option>
                                         @foreach ($location[1] ?? [] as $area)
                                             <option value="{{ $area['id'] }}"
-                                                {{ optional(json_decode($userinfo->location))[1] == $area['id'] ? 'selected' : '' }}>
+                                                {{ optional(json_decode($info->location))[1] == $area['id'] ? 'selected' : '' }}>
                                                 {{ $area['name'] }}
                                             </option>
                                         @endforeach
@@ -130,7 +130,7 @@
                                         <option selected value="">Не выбрано</option>
                                         @foreach ($location[2] ?? [] as $area)
                                             <option value="{{ $area['id'] }}"
-                                                {{ optional(json_decode($userinfo->location))[2] == $area['id'] ? 'selected' : '' }}>
+                                                {{ optional(json_decode($info->location))[2] == $area['id'] ? 'selected' : '' }}>
                                                 {{ $area['name'] }}
                                             </option>
                                         @endforeach

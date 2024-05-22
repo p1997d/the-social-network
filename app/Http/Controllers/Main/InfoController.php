@@ -86,12 +86,12 @@ class InfoController extends Controller
         $familyStatus = FamilyStatusEnum::cases();
         $location = InfoService::getLocation();
 
-        $userinfo = optional($user->info);
+        $info = optional($user->info);
 
         $title = 'Редактирование профиля';
         $months = GeneralService::getMonthNames();
 
-        return view('main.editProfile', compact('familyStatus', 'education', 'location', 'userinfo', 'title', 'months'));
+        return view('profile.edit', compact('familyStatus', 'education', 'location', 'info', 'title', 'months'));
     }
 
     /**
