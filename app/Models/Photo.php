@@ -30,6 +30,7 @@ class Photo extends Model
     {
         return $this->morphMany(Like::class, 'likeable');
     }
+
     public function myLike()
     {
         return $this->morphOne(Like::class, 'likeable')->where('user', Auth::id());

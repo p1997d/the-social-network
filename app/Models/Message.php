@@ -29,6 +29,7 @@ class Message extends Model
     {
         return $this->hasOneThrough(Dialog::class, DialogMessage::class, 'message', 'id', 'id', 'dialog');
     }
+
     public function chat()
     {
         return $this->hasOneThrough(Chat::class, ChatMessage::class, 'message_id', 'id', 'id', 'chat');

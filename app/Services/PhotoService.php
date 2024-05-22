@@ -128,6 +128,7 @@ class PhotoService
         $postsIds = PostFile::where([['post', $post_id], ['file_type', Photo::class]])->pluck('file_id');
         return Photo::whereIn('id', $postsIds)->where('deleted_at', null)->orderByDesc('created_at')->get();
     }
+
     private static function groupPhotos($type)
     {
         $group_id = str_replace('group', '', $type);
@@ -172,6 +173,7 @@ class PhotoService
             'photoModalLink' => ['title' => $group->title, 'href' => route('groups.index', $group->id)],
         ];
     }
+
     private static function getForPostLinks($type, $author)
     {
         $postID = str_replace('post', '', $type);
