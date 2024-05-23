@@ -82,15 +82,20 @@ class PhotoService
      */
     public static function getPhotos($user = null, $type = null, $to = null, $chat = null)
     {
-        return match (true) {
-            $type === 'profile' => self::profilePhotos($user),
-            $type === 'uploaded' => self::uploadedPhotos($user),
-            $type === 'messages' => self::messagesPhotos($to, $chat),
-            str_starts_with($type, 'post') => self::postPhotos($type),
-            str_starts_with($type, 'group') => self::groupPhotos($type),
-            $type === 'wall' => self::wallPhotos($user),
-            $type === null => self::allPhotos($user),
-        };
+        if (str_starts_with($type, 'post')) {
+            return self::postPhotos($type);
+        } else if (str_starts_with($type, 'group')) {
+            return self::groupPhotos($type);
+        } else {
+            return match ($type) {
+                'profile' => self::profilePhotos($user),
+                'uploaded' => self::uploadedPhotos($user),
+                'messages' => self::messagesPhotos($to, $chat),
+                'wall' => self::wallPhotos($user),
+                default => self::allPhotos($user),
+            };
+        }
+
     }
 
     private static function profilePhotos($user)
@@ -155,17 +160,20 @@ class PhotoService
 
     public static function getAuthorLinks($type, $author)
     {
-        return match (true) {
-            str_starts_with($type, 'post') => self::getForPostLinks($type, $author),
-            str_starts_with($type, 'group') => self::getForGroupLinks($type),
-            default => [
+        if (str_starts_with($type, 'post')) {
+            return self::getForPostLinks($type, $author);
+        } else if (str_starts_with($type, 'group')) {
+            return self::getForGroupLinks($type);
+        } else {
+            return [
                 'photoModalAvatar' => $author->avatar()->thumbnailPath,
                 'photoModalLink' => ['title' => "$author->firstname $author->surname", 'href' => route('profile', $author->id)],
-            ],
-        };
+            ];
+        }
     }
 
-    private static function getForGroupLinks($type){
+    private static function getForGroupLinks($type)
+    {
         $groupID = str_replace('group', '', $type);
         $group = Group::find($groupID);
         return [

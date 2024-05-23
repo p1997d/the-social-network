@@ -26,18 +26,18 @@ class GeneralService
         $file = $model->avatarFile;
 
         if ($file && $file->deleted_at === null) {
-            return (object) collect([
+            return (object) [
                 'path' => $file->path,
                 'thumbnailPath' => $file->thumbnailPath,
                 'default' => false,
-            ])->all();
+            ];
         }
 
-        return (object) collect([
+        return (object) [
             'path' => $model->avatarDefault(),
             'thumbnailPath' => $model->avatarDefault(),
             'default' => true,
-        ])->all();
+        ];
     }
 
     /**

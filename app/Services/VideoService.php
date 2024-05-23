@@ -95,31 +95,4 @@ class VideoService
 
         return $thumbnailPath;
     }
-
-    public static function getInfoForVideo($model)
-    {
-        return match (true) {
-            str_starts_with($model, 'group') => self::getGroupForVideo($model),
-            str_starts_with($model, 'user') => self::getUserForVideo($model),
-        };
-    }
-
-    private static function getUserForVideo($model)
-    {
-        $userId = str_replace('user', '', $model);
-        $user = User::find($userId);
-        $group = null;
-        $videos = $user->videos;
-        return [$user, $group, $videos];
-    }
-
-    private static function getGroupForVideo($model)
-    {
-        $ids = str_replace('group', '', $model);
-        list($groupId, $userId) = explode('-', $ids);
-        $user = User::find($userId);
-        $group = Group::find($groupId);
-        $videos = $group->videos;
-        return [$user, $group, $videos];
-    }
 }

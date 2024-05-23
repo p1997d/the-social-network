@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Publications;
 
+use App\DTO\VideoDTO;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Http\Request;
@@ -104,8 +105,15 @@ class VideosController extends Controller
         $video = Video::find($request->id);
         $author = $video->authorUser;
 
-        $model = $request->model;
-        list($user, $group, $videos) = VideoService::getInfoForVideo($model);
+        $data = new VideoDTO($request->model);
+        $user = $data->user;
+        $group = $data->group;
+
+        if ($group) {
+            $videos = Group::find($group)->videos;
+        } else {
+            $videos = User::find($user)->videos;
+        }
 
         $playlist = $videos->map(function ($video) use ($group) {
             return [
@@ -116,7 +124,7 @@ class VideosController extends Controller
                 'thumbnailPath' => $video->thumbnailPath,
                 'viewsWithText' => $video->viewsWithText(),
                 'createdAtDiffForHumans' => $video->createdAtDiffForHumans(),
-                'group' => $group ? $group->id : null,
+                'group' => $group,
             ];
         });
 
@@ -126,7 +134,7 @@ class VideosController extends Controller
             'videoModalDate' => $video->createdAtDiffForHumans(),
             'viewsWithText' => $video->viewsWithText(),
             'playlist' => $playlist,
-            'userID' => $user->id,
+            'userID' => $user,
             'videoModalSetLike' => [
                 'id' => $video->id,
                 'type' => $video->getMorphClass(),
