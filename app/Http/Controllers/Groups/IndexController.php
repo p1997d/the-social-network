@@ -27,7 +27,7 @@ class IndexController extends Controller
         $title = GeneralService::getTitle($user, "Группы");
 
         $groups = $user->groups;
-        $administeredGroups = GroupService::administered($groups, $user);
+        $administeredGroups = $user->groupsWhereAdmin();
 
         $listGroups = match ($tab) {
             default => $groups,

@@ -29,7 +29,6 @@ class IndexController extends Controller
 
         $data = PostService::getPost($post);
         $data['title'] = "Запись со стены";
-        $data['user'] = User::find(Auth::id());
 
         return view('main.post', $data);
     }
@@ -83,5 +82,11 @@ class IndexController extends Controller
         ]);
 
         return ['status' => 'success'];
+    }
+
+    public function getPosts(Request $request)
+    {
+        $model = $request->type::find($request->id);
+        return PostService::getPosts($model->posts, $request->page);
     }
 }

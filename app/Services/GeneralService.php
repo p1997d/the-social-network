@@ -2,14 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\User;
-
-use App\Services\PhotoService;
-
-use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
-
 use Carbon\Carbon;
 use morphos\Russian\NounPluralization;
 
@@ -96,7 +89,7 @@ class GeneralService
     {
         $months = [];
 
-        for ($i = 1; $i <= 12; $i++){
+        for ($i = 1; $i <= 12; $i++) {
             $months[$i] = Carbon::create()->month($i)->getTranslatedMonthName('MMMM');
         }
 

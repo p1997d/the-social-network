@@ -13,7 +13,8 @@
             <div class="modal-body p-0" style="overflow: clip">
                 <div class="photoContainer h-100">
                     <div class="photoImage h-inherit row g-0">
-                        <div id="carouselIndicators" class="carousel slide h-inherit d-flex flex-column col-12 col-lg-8">
+                        <div id="carouselIndicators"
+                            class="carousel slide h-inherit d-flex flex-column col-12 col-lg-8">
                             <div class="carousel-inner h-inherit imageModalCarousel"></div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators"
                                 data-bs-slide="prev">
@@ -35,7 +36,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4 d-lg-flex d-none">
+                        <div class="col-4 d-lg-flex d-none h-100">
                             <div class="card shadow photoComments w-100 h-100 placeholder-glow">
                                 <div class="card-header d-flex align-items-center gap-1">
                                     <div>
@@ -55,8 +56,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body d-flex flex-column p-0">
-                                    <div class="border-bottom p-3 d-flex">
+                                <div class="card-body d-flex flex-column p-0 h-50">
+                                    <div class="border-bottom p-3 d-flex gap-2">
                                         <form action="{{ route('like') }}" method="post" class="setLike">
                                             @csrf
                                             <input type="hidden" name="id" value="">
@@ -66,14 +67,47 @@
                                                 <span class="countLikes"></span>
                                             </button>
                                         </form>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm shareLink"
+                                            data-bs-toggle="modal" data-bs-target="#shareModal" data-bs-id=""
+                                            data-bs-type="App\Models\Photo">
+                                            <i class="bi bi-share"></i>
+                                        </button>
                                     </div>
                                     <div
-                                        class="text-center text-secondary d-flex justify-content-center align-items-center flex-fill p-3 w-100 h-100 photoModalComments">
-                                        <div class="w-100 h-100 d-flex justify-content-center align-items-center">
-                                            <div class="spinner-border" role="status"></div>
-                                        </div>
+                                        class="d-flex flex-column flex-fill p-3 w-100 photoModalComments commentsBlock overflow-y-auto">
+                                        <div class="spinner-border m-auto text-secondary" role="status"></div>
                                     </div>
                                 </div>
+                                @auth
+                                    <div class="card-footer">
+                                        <form method="POST" action="{{ route('comment.create') }}" id="sendCommentForm">
+                                            @csrf
+                                            <div class="d-flex gap-2 align-items-center">
+                                                <div>
+                                                    @include('layouts.avatar', [
+                                                        'model' => auth()->user(),
+                                                        'width' => '32px',
+                                                        'height' => '32px',
+                                                        'class' => 'rounded-circle object-fit-cover',
+                                                        'modal' => false,
+                                                    ])
+                                                </div>
+
+                                                <input type="hidden" name="id" value="">
+                                                <input type="hidden" name="type" value="App\Models\Photo">
+
+                                                <input type="text" enterkeyhint="send" class="form-control"
+                                                    style="resize:none" id="content" name="content" autocomplete="off"
+                                                    placeholder="Написать комментарий...">
+                                                <div id="forButton">
+                                                    <button type="submit" class="btn btn-outline-secondary">
+                                                        <i class="bi bi-send"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                @endauth
                             </div>
                         </div>
                     </div>

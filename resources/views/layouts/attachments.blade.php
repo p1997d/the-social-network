@@ -42,5 +42,48 @@
                 </a>
             </div>
         @endforeach
+        @foreach ($model->attachmentsPosts() as $post)
+            @php
+                extract($post);
+            @endphp
+
+            <div class="col-12 border-start ps-2">
+                @if (!$post->deleted_at)
+                    <div class="card shadow mb-3">
+                        <div class="card-header d-flex align-items-center gap-2">
+                            <a href="{{ $postHeaderLink }}">
+                                @include('layouts.avatar', [
+                                    'model' => $postHeaderAvatar,
+                                    'width' => '40px',
+                                    'height' => '40px',
+                                    'class' => 'rounded-circle object-fit-cover',
+                                    'modal' => false,
+                                ])
+                            </a>
+                            <div>
+                                <p class="m-0">
+                                    <a href="{{ $postHeaderLink }}">{{ $postHeaderTitle }}</a>
+                                </p>
+                                <a href="{{ route('posts.index', $post->id) }}"
+                                    class="postLink link-secondary link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+                                    <span class="text-secondary fs-7">{{ $post->createdAtDiffForHumans() }}</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="content">
+                                {{ Crypt::decrypt($post->content) }}
+                                @include('layouts.attachments', [
+                                    'model' => $post,
+                                    'group' => 'post' . $post->id,
+                                ])
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <span class="text-secondary">Запись удалена</span>
+                @endif
+            </div>
+        @endforeach
     </div>
 </div>

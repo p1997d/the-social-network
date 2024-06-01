@@ -24,4 +24,10 @@
             </div>
         </div>
     @endforelse
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-secondary getPostsButton" data-page="2" data-id="{{ $group->id }}"
+            data-type="{{ $group->getMorphClass() }}">
+            Загрузить ещё...
+        </button>
+    </div>
 </div>

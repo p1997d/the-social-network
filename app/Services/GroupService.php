@@ -50,20 +50,12 @@ class GroupService
         $group_user->delete();
     }
 
-    public static function administered($groups, $user)
-    {
-        return $groups->filter(function ($item) use ($user) {
-            $groups = GroupUser::where([
-                ['user', $user->id],
-                ['admin', 1],
-            ])->pluck('group')->toArray();
-
-            return $item->author === $user->id || in_array($item->id, $groups);
-        });
-    }
-
     public static function friendInGroup($group)
     {
+        if (Auth::guest()) {
+            return null;
+        }
+
         $user = User::find(Auth::id());
         $listFriends = FriendsService::listFriends($user)->pluck('id')->toArray();
         $members = $group->members()->pluck('id')->toArray();

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GeneralService;
+use App\Services\PostService;
 use Carbon\Carbon;
 
 class Message extends Model
@@ -51,6 +52,14 @@ class Message extends Model
     {
         return $this->belongsToMany(Video::class, MessageFile::class, 'message', 'file_id')
             ->where('file_type', Video::class);
+    }
+
+    public function attachmentsPosts()
+    {
+        return $this->belongsToMany(Post::class, MessageFile::class, 'message', 'file_id')
+            ->where('file_type', Post::class)->get()->map(function ($post) {
+                return PostService::getPost($post);
+            });
     }
 
     public function attachmentsFiles()

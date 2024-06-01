@@ -33,7 +33,6 @@ function initializeImageInteractions() {
         .on('click keypress', function () {
             const [file, user, group] = getDataFromFile(this, 'photo');
             const photo = setUrl('photo', file, user, group);
-
             showModal();
         });
 
@@ -48,7 +47,7 @@ function initializeImageInteractions() {
         .on('slid.bs.carousel', (event) => {
             const [file, user, group] = getDataFromFile(event.relatedTarget, 'photo');
             const photo = setUrl('photo', file, user, group);
-
+            getPhoto(file);
             setCounter();
             checkDelete();
         });
@@ -149,6 +148,7 @@ function getPhoto(id) {
             $('.photoComments').find('.photoModalLink').attr('href', data.photoModalLink.href).text(data.photoModalLink.title);
             $('.photoComments').find('.photoModalImageLink').attr('href', data.photoModalLink.href);
             $('.photoComments').find('.photoModalDate').text(data.photoModalDate);
+            $('.photoComments').find('.shareLink').attr('data-bs-id', data.photo.id);
             $('.photoComments').find('.setLike')
                 .attr('data-like', data.photoModalSetLike.data)
                 .find('input[name="id"]')
@@ -165,7 +165,65 @@ function getPhoto(id) {
                 .end()
                 .end();
 
-            $('.photoComments').find('.photoModalComments').text(data.photoModalComments);
+            let commentsBlock = $('.photoComments').find('.photoModalComments').html('');
+            if (data.comments.length > 0) {
+                data.comments.forEach(item => {
+                    let comment = $($('#comment-template').html())
+                        .find('.avatar')
+                        .attr('src', item.author.avatar.thumbnailPath)
+                        .end()
+                        .find('.profileNameLink')
+                        .attr('href', `id${item.author.id}`)
+                        .text(`${item.author.firstname} ${item.author.surname}`)
+                        .end()
+                        .find('.content')
+                        .text(item.content)
+                        .end()
+                        .find('.sent-at')
+                        .attr('data-bs-title', item.createdAtIsoFormat)
+                        .text(item.createdAtDiffForHumans)
+                        .end();
+
+                    if (item.permission) {
+                        comment
+                            .find('.deleteComment input[name="id"]')
+                            .val(item.id)
+                            .end()
+                    } else {
+                        comment
+                            .find('.deleteComment')
+                            .remove()
+                            .end()
+                    }
+
+                    commentsBlock.append(comment);
+                });
+
+                commentsBlock.append(
+                    $('<div>')
+                        .attr('class', 'd-flex justify-content-center')
+                        .append(
+                            $('<button>')
+                                .attr('class', 'btn btn-secondary getCommentsButton')
+                                .attr('data-page', 2)
+                                .attr('data-id', data.photo.id)
+                                .attr('data-type', 'App\\Models\\Photo')
+                                .text('Загрузить ещё...')
+                        )
+                );
+                initializationInteraction()
+            } else {
+                $('.photoComments')
+                    .find('.photoModalComments')
+                    .append(
+                        $('<div>')
+                            .text('Будьте среди первых, кто оставит комментарий к этой фотографии')
+                            .attr('class', 'w-100 h-100 d-flex align-items-center justify-content-center text-secondary')
+                    );
+            }
+
+
+            $('.photoComments').find('#sendCommentForm input[name="id"]').val(data.photo.id);
 
             initializationInteraction();
             setCounter();

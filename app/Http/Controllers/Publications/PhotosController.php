@@ -11,7 +11,7 @@ use App\Models\User;
 use App\Models\Photo;
 
 use App\Services\FileService;
-use App\Services\GeneralService;
+use App\Services\InteractionService;
 use App\Services\PhotoService;
 use App\Services\PublicationService;
 
@@ -110,11 +110,12 @@ class PhotosController extends Controller
 
         $links = PhotoService::getAuthorLinks($groupContent, $author);
 
+        $comments = InteractionService::getComments($photo, $links['group'] ?? null)->forPage(1, 25);
+
         return [
             'photo' => $photo,
             ...$links,
             'photoModalDate' => $photo->createdAtDiffForHumans(),
-            'photoModalComments' => 'Возможность комментирования этой фотографии ограничена.',
             'photoModalSetLike' => [
                 'id' => $photo->id,
                 'type' => $photo->getMorphClass(),
@@ -125,7 +126,8 @@ class PhotosController extends Controller
             'content' => $content,
             'typeContent' => $typeContent,
             'activeContent' => $activeContent,
-            'groupContent' => $groupContent
+            'groupContent' => $groupContent,
+            'comments' => $comments
         ];
     }
 }

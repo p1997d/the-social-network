@@ -87,6 +87,7 @@
         @include('layouts.modals.error')
         @include('layouts.modals.image')
         @include('layouts.modals.video')
+        @include('layouts.modals.share')
         @include('layouts.offcanvasMenu')
         @include('layouts.toasts')
         @include('layouts.templates')

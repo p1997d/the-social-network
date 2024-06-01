@@ -50,4 +50,9 @@ class Photo extends Model
     {
         return FileService::getSize($this->size);
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable')->orderByDesc('created_at');
+    }
 }

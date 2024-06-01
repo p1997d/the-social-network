@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\PostService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,14 @@ class Post extends Model
     {
         return $this->belongsToMany(Video::class, PostFile::class, 'post', 'file_id')
             ->where('file_type', Video::class);
+    }
+
+    public function attachmentsPosts()
+    {
+        return $this->belongsToMany(Post::class, PostFile::class, 'post', 'file_id')
+            ->where('file_type', Post::class)->get()->map(function ($post) {
+                return PostService::getPost($post);
+            });
     }
 
     public function attachmentsFiles()

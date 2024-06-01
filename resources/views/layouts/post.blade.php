@@ -13,7 +13,8 @@
             <p class="m-0">
                 <a href="{{ $postHeaderLink }}">{{ $postHeaderTitle }}</a>
             </p>
-            <a href="{{ route('posts.index', $post->id) }}" class="postLink link-secondary link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+            <a href="{{ route('posts.index', $post->id) }}"
+                class="postLink link-secondary link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
                 <span class="text-secondary fs-7">{{ $post->createdAtDiffForHumans() }}</span>
             </a>
         </div>
@@ -58,11 +59,16 @@
                     <span class="countLikes">{{ $post->likes->count() }}</span>
                 </button>
             </form>
-            <a href="{{ route('posts.index', $post->id) }}#comments" type="button" class="btn btn-outline-secondary btn-sm">
+            <a href="{{ route('posts.index', $post->id) }}#comments" type="button"
+                class="btn btn-outline-secondary btn-sm commentsLink">
                 <i class="bi bi-chat-left"></i>
                 <span>{{ $post->comments->count() }}</span>
             </a>
-            {{-- <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-share"></i><span>15</span></button> --}}
+            <button type="button" class="btn btn-outline-secondary btn-sm shareLink" data-bs-toggle="modal"
+                data-bs-target="#shareModal" data-bs-id="{{ $post->id }}"
+                data-bs-type="{{ $post->getMorphClass() }}">
+                <i class="bi bi-share"></i>
+            </button>
         </div>
     </div>
 </div>

@@ -155,6 +155,16 @@ class User extends Authenticatable
         return $this->hasManyThrough(Group::class, GroupUser::class, 'user', 'id', 'id', 'group');
     }
 
+    public function groupsWhereAdmin()
+    {
+        $groups = GroupUser::where([
+            ['user', $this->id],
+            ['admin', 1],
+        ])->pluck('group')->toArray();
+
+        return Group::where('author', $this->id)->orWhereIn('id', $groups)->get();
+    }
+
     public function photos()
     {
         return PhotoService::getPhotos($this);

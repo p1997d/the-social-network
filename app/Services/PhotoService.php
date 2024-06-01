@@ -177,6 +177,7 @@ class PhotoService
         $groupID = str_replace('group', '', $type);
         $group = Group::find($groupID);
         return [
+            'group' => $group,
             'photoModalAvatar' => $group->avatar()->thumbnailPath,
             'photoModalLink' => ['title' => $group->title, 'href' => route('groups.index', $group->id)],
         ];
@@ -189,6 +190,7 @@ class PhotoService
 
         if ($post->group) {
             return [
+                'group' => $post->group,
                 'photoModalAvatar' => $post->group->avatar()->thumbnailPath,
                 'photoModalLink' => ['title' => $post->group->title, 'href' => route('groups.index', $post->group->id)],
             ];

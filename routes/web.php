@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Main\IndexController as MainIndexController;
 use App\Http\Controllers\Main\InfoController as MainInfoController;
 use App\Http\Controllers\Main\FriendsController as MainFriendsController;
+use App\Http\Controllers\Main\FeedController as MainFeedController;
 
 use App\Http\Controllers\Messenger\IndexController as MessengerIndexController;
 use App\Http\Controllers\Messenger\DialogController as MessengerDialogController;
@@ -26,7 +27,6 @@ Route::group(['namespace' => 'Index'], function () {
     Route::get('/id{user}', [MainIndexController::class, 'profile'])->name('profile');
     Route::get('/signup', [MainIndexController::class, 'signup'])->name('auth.signup');
     Route::get('/signin', [MainIndexController::class, 'signin'])->name('auth.signin');
-    Route::get('/feed', [MainIndexController::class, 'feed'])->name('feed');
 
     Route::post('/getCounters', [MainIndexController::class, 'getCounters'])->name('getCounters');
 });
@@ -121,6 +121,8 @@ Route::group(['namespace' => 'Posts'], function () {
 
     Route::post('/posts/create', [PostsIndexController::class, 'create'])->name('posts.create');
     Route::post('/posts/{id}/delete', [PostsIndexController::class, 'delete'])->name('posts.delete');
+
+    Route::post('/getPosts', [PostsIndexController::class, 'getPosts'])->name('getPosts');
 });
 
 Route::group(['namespace' => 'Group'], function () {
@@ -142,6 +144,14 @@ Route::group(['namespace' => 'Interaction'], function () {
 
     Route::post('/comment/create', [InteractionIndexController::class, 'commentCreate'])->name('comment.create');
     Route::post('/comment/delete', [InteractionIndexController::class, 'commentDelete'])->name('comment.delete');
+    Route::post('/getComment', [InteractionIndexController::class, 'getComment'])->name('getComment');
+
+    Route::post('/share', [InteractionIndexController::class, 'share'])->name('share');
+});
+
+Route::group(['namespace' => 'Feed'], function () {
+    Route::get('/feed', [MainFeedController::class, 'feed'])->name('feed');
+    Route::post('/getNews', [MainFeedController::class, 'getNews'])->name('getNews');
 });
 
 Auth::routes();

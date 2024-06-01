@@ -129,8 +129,14 @@
                         <span class="countLikes"></span>
                     </button>
                 </form>
-                {{-- <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-chat-left"></i><span>15</span></button> --}}
-                {{-- <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-share"></i><span>15</span></button> --}}
+                <a href="" type="button" class="btn btn-outline-secondary btn-sm commentsLink">
+                    <i class="bi bi-chat-left"></i>
+                    <span>0</span>
+                </a>
+                <button type="button" class="btn btn-outline-secondary btn-sm shareLink" data-bs-toggle="modal"
+                    data-bs-target="#shareModal" data-bs-id="" data-bs-type="App\Models\Post">
+                    <i class="bi bi-share"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -172,4 +178,33 @@
             <span class="titleFriend"></span>
         </button>
     </form>
+</template>
+
+<template id="comment-template">
+    <div class="card shadow mb-3 w-100">
+        <div class="card-body d-flex gap-2 fs-7">
+            <img src="" alt="" width="40px" height="40px"
+                class="rounded-circle object-fit-cover avatar">
+            <div>
+                <div>
+                    <a href="" class="profileNameLink"></a>
+                </div>
+                <div class="m-0 p-0 text-break content"></div>
+                <div class="d-flex align-items-center gap-2">
+                    <div>
+                        <span class="text-secondary fs-7 sent-at" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            data-bs-custom-class="custom-tooltip" data-bs-title="">
+                        </span>
+                    </div>
+                    <div>
+                        <form action="{{ route('comment.delete') }}" method="POST" class="deleteComment">
+                            @csrf
+                            <input type="hidden" name="id" value="">
+                            <button type="submit" class="btn btn-link fs-7 p-0">Удалить комментарий</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>

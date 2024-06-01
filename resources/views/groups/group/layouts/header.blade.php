@@ -29,7 +29,7 @@
             </form>
         @endif
 
-        @if ($group->admins()->contains('id', auth()->user()->id))
+        @if ($group->admins()->contains('id', optional(auth()->user())->id))
             <a href="{{ route('groups.index.settings', $group->id) }}" class="btn btn-secondary btn-sm" type="submit">Управление</a>
         @endif
     </div>

@@ -76,12 +76,13 @@ class PostService
         return $attachmentFiles;
     }
 
-    public static function getPosts($posts){
-        $listPosts = $posts->map(function($post){
-            return PostService::getPost($post);
+    public static function getPosts($posts, $page = 1)
+    {
+        $listPosts = $posts->map(function ($post) {
+            return self::getPost($post);
         });
 
-        return collect($listPosts);
+        return collect($listPosts)->forPage($page, 25);
     }
 
     public static function getPost($post)
@@ -95,7 +96,7 @@ class PostService
             'postHeaderAvatar' => $post->group ?: $post->authorUser,
             'postHeaderAvatarModel' => $post->group ? $post->group->avatar() : $post->authorUser->avatar(),
             'postHeaderTitle' => $post->group ? $post->group->title : $post->authorUser->firstname . ' ' . $post->authorUser->surname,
-            'postAdminCondition' => $post->group ? $post->group->admins()->contains('id', auth()->user()->id) : optional(auth()->user())->id == $post->authorUser->id,
+            'postAdminCondition' => $post->group ? $post->group->admins()->contains('id', optional(auth()->user())->id) : optional(auth()->user())->id == $post->authorUser->id,
             'postSetLike' => [
                 'id' => $post->id,
                 'type' => $post->getMorphClass(),
@@ -103,10 +104,11 @@ class PostService
                 'count' => $post->likes->count(),
                 'class' => $post->myLike !== null ? 'btn btn-sm btn-outline-danger active' : 'btn btn-sm btn-outline-secondary',
             ],
+            'comments' => InteractionService::getComments($post, $post->group ?? null)->forPage(1, 25),
         ];
     }
 
-    public static function getNews()
+    public static function getNews($page = 1)
     {
         $user = User::find(Auth::id());
         $friends = FriendsService::listFriends($user);
@@ -115,12 +117,12 @@ class PostService
         $userPosts = UserPost::whereIn('user', $friends->pluck('id'))->pluck('post');
         $groupPosts = GroupPost::whereIn('group', $groups->pluck('id'))->pluck('post');
 
-        $listPosts = Post::whereIn('id', $userPosts->push(...$groupPosts))->where('deleted_at', null)->orderByDesc('created_at')->get()->forPage(0, 25);
+        $listPosts = Post::whereIn('id', $userPosts->push(...$groupPosts))->where('deleted_at', null)->orderByDesc('created_at')->get()->forPage($page, 25);
 
-        return PostService::getPosts($listPosts);
+        return self::getPosts($listPosts);
     }
 
-    public static function getLikes()
+    public static function getLikes($page = 1)
     {
         $user = User::find(Auth::id());
         $postsIds = Like::where([
@@ -128,8 +130,8 @@ class PostService
             ['likeable_type', Post::class]
         ])->pluck('likeable_id');
 
-        $listPosts = Post::whereIn('id', $postsIds)->where('deleted_at', null)->orderByDesc('created_at')->get()->forPage(0, 25);
+        $listPosts = Post::whereIn('id', $postsIds)->where('deleted_at', null)->orderByDesc('created_at')->get()->forPage($page, 25);
 
-        return PostService::getPosts($listPosts);
+        return self::getPosts($listPosts);
     }
 }

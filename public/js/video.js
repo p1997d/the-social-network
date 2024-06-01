@@ -24,6 +24,8 @@ function initializationVideoPlayer() {
     videoPlayer.on('ended', () => {
         let currentVideo = $(videoPlayer.media).find('source').attr('data-id');
         let user = $(videoPlayer.media).find('source').attr('data-user');
+        let group = $(videoPlayer.media).find('source').attr('data-group');
+        let model = group ? `group${group}-${user}` : `user${user}`;
 
         $.ajax({
             url: '/videos/addView',
@@ -38,8 +40,8 @@ function initializationVideoPlayer() {
 
         let nextVideo = videoPlaylist.indexOf(Number(currentVideo)) + 1 >= videoPlaylist.length ? videoPlaylist[0] : videoPlaylist[videoPlaylist.indexOf(Number(currentVideo)) + 1];
 
-        setUrl('video', nextVideo, user);
-        getVideo(nextVideo, user);
+        setUrl('video', nextVideo, model);
+        getVideo(nextVideo, model);
     });
 }
 
@@ -137,6 +139,8 @@ function getVideo(id, model) {
             $('.viewsModalVideo').text(data.viewsWithText);
             $('.createdAtModalVideo').text(data.videoModalDate);
 
+            $('#videoModal').find('.shareLink').attr('data-bs-id', data.video.id);
+
             $('#videoModal').find('.setLike')
                 .attr('data-like', data.videoModalSetLike.data)
                 .find('input[name="id"]')
@@ -153,10 +157,61 @@ function getVideo(id, model) {
                 .end()
                 .end();
 
+            let commentsBlock = $('#videoModal').find('.comments').html('');
+            if (data.comments.length > 0) {
+                data.comments.forEach(item => {
+                    let comment = $($('#comment-template').html())
+                        .find('.avatar')
+                        .attr('src', item.author.avatar.thumbnailPath)
+                        .end()
+                        .find('.profileNameLink')
+                        .attr('href', `id${item.author.id}`)
+                        .text(`${item.author.firstname} ${item.author.surname}`)
+                        .end()
+                        .find('.content')
+                        .text(item.content)
+                        .end()
+                        .find('.sent-at')
+                        .attr('data-bs-title', item.createdAtIsoFormat)
+                        .text(item.createdAtDiffForHumans)
+                        .end();
+
+                    if (item.permission) {
+                        comment
+                            .find('.deleteComment input[name="id"]')
+                            .val(item.id)
+                            .end()
+                    } else {
+                        comment
+                            .find('.deleteComment')
+                            .remove()
+                            .end()
+                    }
+
+                    commentsBlock.append(comment);
+                });
+
+                commentsBlock.append(
+                    $('<div>')
+                        .attr('class', 'd-flex justify-content-center')
+                        .append(
+                            $('<button>')
+                                .attr('class', 'btn btn-secondary getCommentsButton')
+                                .attr('data-page', 2)
+                                .attr('data-id', data.video.id)
+                                .attr('data-type', 'App\\Models\\Video')
+                                .text('Загрузить ещё...')
+                        )
+                );
+                initializationInteraction()
+            }
+
+            $('#videoModal').find('#sendCommentForm input[name="id"]').val(data.video.id);
+
             if (userId !== data.video.author) {
                 $('.adminsButtons').remove();
             } else {
-                $('.formDeleteVideo').find('input[name="id"]').val(data.video.id);
+                $('.formDeleteVideo').find('#sendCommentForm input[name="id"]').val(data.video.id);
             }
 
             videoPlayer.play();

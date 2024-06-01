@@ -13,7 +13,6 @@ use App\Services\FriendsService;
 use App\Services\GeneralService;
 use App\Services\MenuService;
 use App\Services\PostService;
-use App\Services\UserService;
 
 class IndexController extends Controller
 {
@@ -90,31 +89,6 @@ class IndexController extends Controller
     public function signin()
     {
         return view('auth.signin', ['title' => 'Вход']);
-    }
-
-    /**
-     * Отображает страницу новости
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function feed(Request $request)
-    {
-        $title = 'Новости';
-
-        if (Auth::guest()) {
-            return redirect()->route('auth.signin');
-        }
-
-        $user = User::find(Auth::id());
-
-        $section = $request->query('section');
-
-        $posts = match($section) {
-            default => PostService::getNews(),
-            'likes' => PostService::getLikes(),
-        };
-
-        return view('main.feed', compact('title', 'posts', 'user', 'section'));
     }
 
     /**

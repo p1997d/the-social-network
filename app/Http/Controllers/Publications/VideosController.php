@@ -11,11 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Video;
 
-use App\Services\GeneralService;
-use App\Services\VideoService;
 use App\Services\FileService;
+use App\Services\InteractionService;
 use App\Services\PublicationService;
-use Carbon\Carbon;
 
 class VideosController extends Controller
 {
@@ -128,6 +126,8 @@ class VideosController extends Controller
             ];
         });
 
+        $comments = InteractionService::getComments($video, Group::find($group) ?? null)->forPage(1, 25);
+
         return [
             'video' => $video,
             'videoModalAvatar' => $author->avatar()->thumbnailPath,
@@ -141,7 +141,8 @@ class VideosController extends Controller
                 'data' => class_basename($video) . $video->id,
                 'count' => $video->likes->count(),
                 'class' => $video->myLike !== null ? 'btn btn-sm btn-outline-danger active' : 'btn btn-sm btn-outline-secondary',
-            ]
+            ],
+            'comments' => $comments
         ];
     }
 

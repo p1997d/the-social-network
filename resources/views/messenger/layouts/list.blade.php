@@ -38,7 +38,10 @@
                 </div>
                 <div class="d-flex justify-content-between w-100">
                     <div class="m-0 d-flex gap-2">
-                        @if (class_basename($chatLog->messages()->last()) !== 'ChatSystemMessage' && $chatLog->messages()->last()->senderUser->id == auth()->user()->id || class_basename($chatLog) === 'Chat')
+                        @if (
+                            (class_basename($chatLog->messages()->last()) !== 'ChatSystemMessage' &&
+                                $chatLog->messages()->last()->senderUser->id == auth()->user()->id) ||
+                                class_basename($chatLog) === 'Chat')
                             <div>
                                 @include('layouts.avatar', [
                                     'model' => $chatLog->messages()->last()->senderUser,
@@ -58,8 +61,12 @@
                                 @if (Crypt::decrypt($chatLog->messages()->last()->content))
                                     {{ Crypt::decrypt($chatLog->messages()->last()->content) }}
                                 @else
-                                    <i>Файлов:
-                                        {{ count(json_decode($chatLog->messages()->last()->attachments())) }}</i>
+                                    @if (count($chatLog->messages()->last()->attachmentsPosts()) > 0)
+                                        <i>Запись на стене</i>
+                                    @else
+                                        <i>Файлов:
+                                            {{ count(json_decode($chatLog->messages()->last()->attachments())) }}</i>
+                                    @endif
                                 @endif
                             @endif
 

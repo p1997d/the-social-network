@@ -18,7 +18,6 @@ $(document).ready(function () {
     onResizeWindow();
     initializePageInteractions();
     initializeWebSockets();
-
 });
 
 $(document).on('pjax:end', function (event) {
@@ -238,7 +237,7 @@ function showLoadingToast(number) {
         .addClass('w-100')
         .append(
             $('<h3>')
-            .text('Загрузка...')
+                .text('Загрузка...')
         )
         .append(
             $('<div>')

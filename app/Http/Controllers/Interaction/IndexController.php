@@ -7,6 +7,8 @@ use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Like;
+use App\Services\InteractionService;
+use App\Services\PostService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 
@@ -77,5 +79,19 @@ class IndexController extends Controller
         $comment->delete();
 
         return back();
+    }
+
+    public function share(Request $request)
+    {
+        return InteractionService::share($request);
+    }
+
+    public function getComment(Request $request)
+    {
+        $page = $request->page;
+        $modelType = $request->type;
+        $model = $modelType::find($request->id);
+
+        return InteractionService::getComments($model, $model->group ?? null)->forPage($page, 25);
     }
 }

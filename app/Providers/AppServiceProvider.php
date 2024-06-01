@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Request;
-use App\Services\GeneralService;
 use App\Services\MenuService;
 use Carbon\Carbon;
 
