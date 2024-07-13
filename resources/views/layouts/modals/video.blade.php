@@ -52,13 +52,15 @@
                                 @csrf
                                 <div class="d-flex gap-2 align-items-center">
                                     <div>
-                                        @include('layouts.avatar', [
-                                            'model' => auth()->user(),
-                                            'width' => '32px',
-                                            'height' => '32px',
-                                            'class' => 'rounded-circle object-fit-cover',
-                                            'modal' => false,
-                                        ])
+                                        @auth
+                                            @include('layouts.avatar', [
+                                                'model' => auth()->user(),
+                                                'width' => '32px',
+                                                'height' => '32px',
+                                                'class' => 'rounded-circle object-fit-cover',
+                                                'modal' => false,
+                                            ])
+                                        @endauth
                                     </div>
 
                                     <input type="hidden" name="id" value="">

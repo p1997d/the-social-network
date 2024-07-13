@@ -11,14 +11,16 @@
                     <input type="hidden" name="type" value="">
 
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="radioShare" id="radioShareInPage" value="page">
+                        <input class="form-check-input" type="radio" name="radioShare" id="radioShareInPage"
+                            value="page">
                         <label class="form-check-label" for="radioShareInPage">
                             На своей стене
                         </label>
                     </div>
 
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="radioShare" id="radioShareInGroup" value="group">
+                        <input class="form-check-input" type="radio" name="radioShare" id="radioShareInGroup"
+                            value="group">
                         <label class="form-check-label" for="radioShareInGroup">
                             В группе
                         </label>
@@ -27,17 +29,19 @@
                     <div class="mb-2 selectShareInGroupDiv d-none">
                         <select class="form-select" id="selectShareInGroup" name="selectShareInGroup">
                             <option selected disabled value="">В сообществе</option>
-                            @foreach (auth()->user()->groupsWhereAdmin() as $group)
-                                <option value="{{ $group->id }}">
-                                    {{ $group->title }}
-                                </option>
-                            @endforeach
+                            @auth
+                                @foreach (auth()->user()->groupsWhereAdmin() as $group)
+                                    <option value="{{ $group->id }}">
+                                        {{ $group->title }}
+                                    </option>
+                                @endforeach
+                            @endauth
                         </select>
                     </div>
 
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="radioShare" id="radioShareInMessage" value="message"
-                            checked>
+                        <input class="form-check-input" type="radio" name="radioShare" id="radioShareInMessage"
+                            value="message" checked>
                         <label class="form-check-label" for="radioShareInMessage">
                             В личном сообщении
                         </label>
@@ -46,18 +50,20 @@
                     <div class="mb-2 selectShareInMessageDiv">
                         <select class="form-select" id="selectShareInMessage" name="selectShareInMessage" required>
                             <option selected disabled value="">Введите имя получателя или название чата</option>
-                            @foreach (auth()->user()->dialogsAndChatsWithMessages() as $chatLog)
-                                @if (class_basename($chatLog) == 'Dialog')
-                                    <option value="Dialog_{{ $chatLog->id }}">
-                                        {{ $chatLog->interlocutor->firstname }}
-                                        {{ $chatLog->interlocutor->surname }}
-                                    </option>
-                                @else
-                                    <option value="Chat_{{ $chatLog->id }}">
-                                        {{ $chatLog->title }}
-                                    </option>
-                                @endif
-                            @endforeach
+                            @auth
+                                @foreach (auth()->user()->dialogsAndChatsWithMessages() as $chatLog)
+                                    @if (class_basename($chatLog) == 'Dialog')
+                                        <option value="Dialog_{{ $chatLog->id }}">
+                                            {{ $chatLog->interlocutor->firstname }}
+                                            {{ $chatLog->interlocutor->surname }}
+                                        </option>
+                                    @else
+                                        <option value="Chat_{{ $chatLog->id }}">
+                                            {{ $chatLog->title }}
+                                        </option>
+                                    @endif
+                                @endforeach
+                            @endauth
                         </select>
                     </div>
 
