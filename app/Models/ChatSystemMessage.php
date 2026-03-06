@@ -34,4 +34,9 @@ class ChatSystemMessage extends Model
     {
         return Carbon::parse($this->sent_at)->isSameDay(Carbon::parse($message->sent_at));
     }
+    
+    public function sentAtDiffForHumans()
+    {
+        return Carbon::parse($this->sent_at)->diffForHumans();
+    }
 }
