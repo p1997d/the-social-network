@@ -13,7 +13,6 @@ class Message extends Model
     use HasFactory;
 
     protected $table = 'messages';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function senderUser()

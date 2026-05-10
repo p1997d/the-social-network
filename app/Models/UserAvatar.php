@@ -9,7 +9,6 @@ class UserAvatar extends Model
 {
     use HasFactory;
     protected $table = 'user_avatars';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function files()

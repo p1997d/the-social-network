@@ -13,7 +13,6 @@ class Chat extends Model
     use HasFactory;
 
     protected $table = 'chats';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function avatar()

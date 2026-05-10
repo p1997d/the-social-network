@@ -10,6 +10,5 @@ class Location extends Model
     use HasFactory;
 
     protected $table = 'locations';
-    protected $quarde = false;
     protected $guarded = [];
 }

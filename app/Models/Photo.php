@@ -13,7 +13,6 @@ class Photo extends Model
 {
     use HasFactory;
     protected $table = 'photos';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function date()

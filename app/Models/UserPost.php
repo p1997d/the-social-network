@@ -9,6 +9,5 @@ class UserPost extends Model
 {
     use HasFactory;
     protected $table = 'user_posts';
-    protected $quarde = false;
     protected $guarded = [];
 }

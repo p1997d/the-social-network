@@ -12,7 +12,6 @@ class File extends Model
     use HasFactory;
 
     protected $table = 'files';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function size()

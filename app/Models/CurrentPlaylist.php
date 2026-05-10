@@ -9,7 +9,6 @@ class CurrentPlaylist extends Model
 {
     use HasFactory;
     protected $table = 'current_playlists';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function getPlaylist()

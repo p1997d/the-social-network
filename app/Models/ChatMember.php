@@ -10,6 +10,5 @@ class ChatMember extends Model
     use HasFactory;
 
     protected $table = 'chat_members';
-    protected $quarde = false;
     protected $guarded = [];
 }

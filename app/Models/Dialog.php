@@ -11,7 +11,6 @@ class Dialog extends Model
     use HasFactory;
 
     protected $table = 'dialogs';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function interlocutor()

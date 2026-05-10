@@ -12,7 +12,6 @@ class ChatSystemMessage extends Model
     use HasFactory;
 
     protected $table = 'chat_system_messages';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function senderUser()

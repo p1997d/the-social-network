@@ -10,7 +10,6 @@ class ChatMessageDelete extends Model
     use HasFactory;
 
     protected $table = 'chat_message_delete';
-    protected $quarde = false;
     protected $guarded = [];
 
 }

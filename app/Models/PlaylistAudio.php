@@ -9,6 +9,5 @@ class PlaylistAudio extends Model
 {
     use HasFactory;
     protected $table = 'playlist_audio';
-    protected $quarde = false;
     protected $guarded = [];
 }

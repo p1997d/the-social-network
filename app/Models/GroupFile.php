@@ -9,6 +9,5 @@ class GroupFile extends Model
 {
     use HasFactory;
     protected $table = 'group_files';
-    protected $quarde = false;
     protected $guarded = [];
 }

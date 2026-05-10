@@ -9,6 +9,5 @@ class PostFile extends Model
 {
     use HasFactory;
     protected $table = 'post_files';
-    protected $quarde = false;
     protected $guarded = [];
 }

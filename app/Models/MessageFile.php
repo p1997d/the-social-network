@@ -11,7 +11,6 @@ class MessageFile extends Model
     use HasFactory;
 
     protected $table = 'message_files';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function file(): MorphTo

@@ -12,7 +12,6 @@ class Info extends Model
     use HasFactory;
 
     protected $table = 'user_info';
-    protected $quarde = false;
     protected $guarded = [];
 
     protected $casts = [

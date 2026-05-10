@@ -12,7 +12,6 @@ class Post extends Model
 {
     use HasFactory;
     protected $table = 'posts';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function authorUser()

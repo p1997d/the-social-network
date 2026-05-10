@@ -13,7 +13,6 @@ class Video extends Model
 {
     use HasFactory;
     protected $table = 'videos';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function viewsWithText() {

@@ -10,6 +10,5 @@ class DialogMessage extends Model
     use HasFactory;
 
     protected $table = 'dialog_messages';
-    protected $quarde = false;
     protected $guarded = [];
 }

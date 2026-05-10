@@ -11,7 +11,6 @@ class Friends extends Model
     use HasFactory;
 
     protected $table = 'friends';
-    protected $quarde = false;
     protected $guarded = [];
 
     protected $casts = [

@@ -12,7 +12,6 @@ class Comment extends Model
     use HasFactory;
 
     protected $table = 'comments';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function authorUser()

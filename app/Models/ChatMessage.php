@@ -11,7 +11,6 @@ class ChatMessage extends Model
     use HasFactory;
 
     protected $table = 'chat_messages';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function message(): MorphTo

@@ -14,7 +14,6 @@ class Group extends Model
 {
     use HasFactory;
     protected $table = 'groups';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function members()

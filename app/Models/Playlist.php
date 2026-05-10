@@ -11,7 +11,6 @@ class Playlist extends Model
     use HasFactory;
 
     protected $table = 'playlists';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function playlistable(): MorphTo

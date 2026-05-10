@@ -10,7 +10,6 @@ class Audio extends Model
 {
     use HasFactory;
     protected $table = 'audios';
-    protected $quarde = false;
     protected $guarded = [];
 
     public function authorUser()
