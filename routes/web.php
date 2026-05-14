@@ -139,7 +139,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/group/create', [GroupsIndexController::class, 'create'])->name('groups.create');
         Route::post('/group/{id}/update', [GroupsIndexController::class, 'update'])->name('groups.update');
         Route::post('/group/{id}/subscribe', [GroupsIndexController::class, 'subscribe'])->name('groups.subscribe');
-        Route::post('/group/{id}/unsubscribe', [GroupsIndexController::class, 'unsubscribe'])->name('groups.unsubscribe');
 
         Route::post('/group/{id}/kick', [GroupsIndexController::class, 'kick'])->name('groups.kick');
         Route::post('/group/{id}/switchAdmin', [GroupsIndexController::class, 'switchAdmin'])->name('groups.switchAdmin');

@@ -17,17 +17,11 @@
         @endif
     </div>
     <div class="flex-fill d-flex justify-content-end align-items-center gap-2">
-        @if ($group->ifSubscribed())
-            <form action="{{ route('groups.unsubscribe', $group->id) }}" method="post">
-                @csrf
-                <button class="btn btn-secondary btn-sm" type="submit">Отписаться</button>
-            </form>
-        @else
-            <form action="{{ route('groups.subscribe', $group->id) }}" method="post">
-                @csrf
-                <button class="btn btn-primary btn-sm" type="submit">Подписаться</button>
-            </form>
-        @endif
+        
+        <form action="{{ route('groups.subscribe', $group->id) }}" method="post">
+            @csrf
+            <button class="btn btn-{{$group->ifSubscribed() ? "secondary" : "primary"}} btn-sm" type="submit">{{$group->ifSubscribed() ? "Отписаться" : "Подписаться"}}</button>
+        </form>
 
         @if ($group->admins()->contains('id', optional(auth()->user())->id))
             <a href="{{ route('groups.index.settings', $group->id) }}" class="btn btn-secondary btn-sm" type="submit">Управление</a>

@@ -91,6 +91,9 @@ class DialogController extends Controller
 
         $message = Message::find($id);
 
+        if ($message['author'] !== Auth::id())
+            abort(403);
+
         $recipient = $message->dialog->interlocutor;
         $recipients = [$recipient->id];
 

@@ -83,27 +83,17 @@ class IndexController extends Controller
     }
 
     /**
-     * Подписывает пользователя на группу
+     * Подписывает или отписывает пользователя на группу
      *
      * @param integer $id
      * @return \Illuminate\Http\RedirectResponse
      */
     public function subscribe($id)
     {
-        GroupService::subscribe($id);
-
-        return back();
-    }
-
-    /**
-     * Отписывает пользователя от группы
-     *
-     * @param integer $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function unsubscribe($id)
-    {
-        GroupService::unsubscribe($id);
+        if (Group::find($id)->ifSubscribed())
+            GroupService::unsubscribe($id);
+        else
+            GroupService::subscribe($id);
 
         return back();
     }

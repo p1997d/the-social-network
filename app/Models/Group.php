@@ -61,10 +61,10 @@ class Group extends Model
 
     public function isAdmin($user)
     {
-        return GroupUser::where([
+        return (bool) optional(GroupUser::where([
             ['group', $this->id],
             ['user', $user->id],
-        ])->first()->admin;
+        ])->first())->admin;
     }
 
     public function photos()

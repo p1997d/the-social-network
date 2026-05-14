@@ -74,6 +74,9 @@ class InteractionService
     {
         $group = Group::find($request->selectShareInGroup);
 
+        if(!$group->ifSubscribed())
+            abort(403);
+
         $post = PostService::create($content);
         PostService::saveForGroup($post, $group);
 

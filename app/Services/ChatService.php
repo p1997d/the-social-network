@@ -131,6 +131,9 @@ class ChatService
      */
     public static function createMessage($content, $sender, $sentAt, $chat)
     {
+        if (!$chat->ifMember())
+            abort(403);
+
         $message = MessagesService::create($content, $sender, $sentAt);
 
         self::saveMessage($chat, $message);

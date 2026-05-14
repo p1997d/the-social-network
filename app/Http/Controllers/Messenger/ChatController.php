@@ -120,6 +120,10 @@ class ChatController extends Controller
         $type = __FUNCTION__;
 
         $message = Message::find($id);
+
+        if ($message['author'] !== Auth::id())
+            abort(403);
+
         $chat = $message->chat;
         $recipients = array_diff(ChatMember::where('chat', $chat->id)->pluck('user')->toArray(), [Auth::id()]);
 

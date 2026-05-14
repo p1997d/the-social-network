@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Services\GeneralService;
 use App\Services\ChatService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Chat extends Model
 {
@@ -73,5 +74,15 @@ class Chat extends Model
             ChatMember::where('chat', $this->id)->count(),
             'участник'
         );
+    }
+
+    public function members()
+    {
+        return User::whereIn('id', ChatMember::where('chat', $this->id)->pluck('user'));
+    }
+
+    public function ifMember()
+    {
+        return $this->members()->find(Auth::id()) !== null;
     }
 }
