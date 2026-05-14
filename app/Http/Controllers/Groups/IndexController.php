@@ -148,6 +148,10 @@ class IndexController extends Controller
     {
         $group = Group::find($id);
 
+        if (!$group->isAdmin(auth()->user()) && $group->author !== auth()->user()->id) {
+            abort(403);
+        }
+
         $group->update([
             'title' => $request->title,
             'theme' => $request->theme,

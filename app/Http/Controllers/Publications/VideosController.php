@@ -167,7 +167,11 @@ class VideosController extends Controller
      */
     public function delete(Request $request)
     {
-        $video = Video::find($request->id);
+        $video = Video::find($request['id']);
+
+        if ($video['author'] != Auth::id())
+            abort(403);
+
         $video->delete();
         return back();
     }

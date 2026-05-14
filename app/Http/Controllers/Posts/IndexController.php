@@ -82,6 +82,10 @@ class IndexController extends Controller
     public function delete($id)
     {
         $post = Post::find($id);
+
+        if ($post['author'] != Auth::id())
+            abort(403);
+
         $post->update([
             'deleted_at' => now(),
         ]);

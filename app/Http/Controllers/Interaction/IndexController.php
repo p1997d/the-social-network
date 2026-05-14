@@ -104,10 +104,9 @@ class IndexController extends Controller
 
     public function getComment(Request $request)
     {
-        $page = $request->page;
-        $modelType = $request->type;
-        $model = $modelType::find($request->id);
+        $modelType = GeneralService::getType($request['type']) ?? abort(422);
+        $model = $modelType::find($request['id']);
 
-        return InteractionService::getComments($model, $model->group ?? null)->forPage($page, 25);
+        return InteractionService::getComments($model, $model->group ?? null)->forPage($request['page'], 25);
     }
 }

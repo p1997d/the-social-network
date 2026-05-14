@@ -15,12 +15,12 @@ class PjaxMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $response = $next($request);
+
         if ($request->pjax()) {
-            // Set response headers for PJAX requests
-            return response()
-                ->header('X-PJAX-URL', $request->getRequestUri());
+            $response->header('X-PJAX-URL', $request->getRequestUri());
         }
-    
-        return $next($request);
+
+        return $response;
     }
 }
