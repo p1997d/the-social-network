@@ -76,6 +76,9 @@ class DialogService
      */
     public static function createMessage($content, $sender, $sentAt, $dialog)
     {
+        if (!$dialog->isMember())
+            abort(403);
+
         $message = MessagesService::create($content, $sender, $sentAt);
 
         $dm = new DialogMessage();

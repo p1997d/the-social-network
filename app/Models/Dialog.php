@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\DialogService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Dialog extends Model
 {
@@ -39,5 +40,10 @@ class Dialog extends Model
         }
 
         return $relationship->get();
+    }
+
+    public function isMember(): bool
+    {
+        return $this->sender === Auth::id() || $this->recipient === Auth::id();
     }
 }

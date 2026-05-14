@@ -42,12 +42,10 @@ class GroupService
         $user = User::find(Auth::id());
         $group = Group::find($id);
 
-        $group_user = GroupUser::where([
+        GroupUser::where([
             ['group', $group->id],
             ['user', $user->id],
-        ])->first();
-
-        $group_user->delete();
+        ])->delete();
     }
 
     public static function friendInGroup($group)
