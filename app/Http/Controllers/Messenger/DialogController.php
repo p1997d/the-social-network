@@ -168,7 +168,7 @@ class DialogController extends Controller
      * Очищает диалог
      *
      * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse | \Illuminate\Http\RedirectResponse
      */
     public function allDelete($id)
     {

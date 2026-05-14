@@ -1,4 +1,4 @@
-@if ($group->photos->count() > 0 || $group->admins()->contains('id', auth()->user()->id))
+@if ($group->photos->count() > 0 || $group->admins()->contains('id', auth()?->user()?->id))
     <div class="card shadow mb-3">
         <div class="card-header">
             <a href="{{ route('photos', ['group' => $group->id]) }}" class="link-body-emphasis">Фотографии</a>

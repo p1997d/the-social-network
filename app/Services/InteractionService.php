@@ -39,19 +39,22 @@ class InteractionService
     }
 
     public static function share(Request $request)
-    {
+    {        
+        $content = Crypt::encrypt($request['content']);
+
+        $file_type = GeneralService::getType($request['type']) ?? abort(422);
+
         return match ($request->radioShare) {
-            'message' => self::shareInMessage($request),
-            'group' => self::shareInGroup($request),
-            'page' => self::shareInPage($request),
+            'message' => self::shareInMessage($request, $content, $file_type),
+            'group' => self::shareInGroup($request, $content, $file_type),
+            'page' => self::shareInPage($request, $content, $file_type),
         };
     }
 
-    public static function shareInMessage(Request $request)
+    public static function shareInMessage(Request $request, $content, $file_type)
     {
         list($type, $id) = explode('_', $request->selectShareInMessage);
 
-        $content = Crypt::encrypt($request->content);
         $sender = User::find(Auth::id());
         $sentAt = now();
 
@@ -63,15 +66,13 @@ class InteractionService
         $attachment = new MessageFile();
         $attachment->message = $message->id;
         $attachment->file_id = $request->id;
-        $attachment->file_type = $request->type;
+        $attachment->file_type = $file_type;
 
         $attachment->save();
     }
-    public static function shareInGroup(Request $request)
+    public static function shareInGroup(Request $request, $content, $file_type)
     {
         $group = Group::find($request->selectShareInGroup);
-
-        $content = Crypt::encrypt($request->content);
 
         $post = PostService::create($content);
         PostService::saveForGroup($post, $group);
@@ -79,15 +80,13 @@ class InteractionService
         $attachment = new PostFile();
         $attachment->post = $post->id;
         $attachment->file_id = $request->id;
-        $attachment->file_type = $request->type;
+        $attachment->file_type = $file_type;
 
         $attachment->save();
     }
-    public static function shareInPage(Request $request)
+    public static function shareInPage(Request $request, $content, $file_type)
     {
         $user = User::find(Auth::id());
-
-        $content = Crypt::encrypt($request->content);
 
         $post = PostService::create($content);
         PostService::saveForUser($post, $user);
@@ -95,7 +94,7 @@ class InteractionService
         $attachment = new PostFile();
         $attachment->post = $post->id;
         $attachment->file_id = $request->id;
-        $attachment->file_type = $request->type;
+        $attachment->file_type = $file_type;
 
         $attachment->save();
     }

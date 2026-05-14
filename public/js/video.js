@@ -139,7 +139,9 @@ function getVideo(id, model) {
             $('.viewsModalVideo').text(data.viewsWithText);
             $('.createdAtModalVideo').text(data.videoModalDate);
 
-            $('#videoModal').find('.shareLink').attr('data-bs-id', data.video.id);
+            $('#videoModal').find('.shareLink')
+                .attr('data-bs-id', data.video.id)
+                .attr('data-bs-type', data.videoModalSetLike.type);                
 
             $('#videoModal').find('.setLike')
                 .attr('data-like', data.videoModalSetLike.data)

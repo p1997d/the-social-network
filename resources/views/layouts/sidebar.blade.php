@@ -16,10 +16,10 @@
             </a>
         @endforeach
     @else
-        <a href="{{ route('auth.signin') }}" class="btn btn-secondary my-2">
+        <a href="{{ route('login') }}" class="btn btn-secondary my-2">
             Войти
         </a>
-        <a href="{{ route('auth.signup') }}" class="btn btn-secondary my-2">
+        <a href="{{ route('register') }}" class="btn btn-secondary my-2">
             Зарегистрироваться
         </a>
     @endauth

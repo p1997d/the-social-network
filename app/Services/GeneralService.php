@@ -95,4 +95,15 @@ class GeneralService
 
         return $months;
     }
+
+    public static function getType($type)
+    {
+        $allowed = [
+            'Post' => \App\Models\Post::class,
+            'Photo' => \App\Models\Photo::class,
+            'Video' => \App\Models\Video::class,
+        ];
+
+        return $allowed[$type] ?? null;
+    }
 }

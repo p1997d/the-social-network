@@ -19,14 +19,14 @@ class IndexController extends Controller
     /**
      * Отображает главную страницу
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\Support\Renderable | \Illuminate\Http\RedirectResponse
      */
     public function index()
     {
         if (!Auth::guest()) {
             return redirect()->route('profile', Auth::id());
         }
-        return view('auth.signin', ['title' => 'Вход']);
+        return view('auth.login', ['title' => 'Вход']);
     }
 
     /**
@@ -72,13 +72,13 @@ class IndexController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function signup()
+    public function register()
     {
         $title = 'Регистрация';
 
         $months = GeneralService::getMonthNames();
 
-        return view('auth.signup', compact('title', 'months'));
+        return view('auth.register', compact('title', 'months'));
     }
 
     /**
@@ -86,9 +86,9 @@ class IndexController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function signin()
+    public function login()
     {
-        return view('auth.signin', ['title' => 'Вход']);
+        return view('auth.login', ['title' => 'Вход']);
     }
 
     /**

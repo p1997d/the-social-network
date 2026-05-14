@@ -1,4 +1,4 @@
-@if ($group->videos->count() > 0 || $group->admins()->contains('id', auth()->user()->id))
+@if ($group->videos->count() > 0 || $group->admins()->contains('id', auth()?->user()?->id))
     <div class="card shadow">
         <div class="card-header">
             <a href="{{ route('videos', ['group' => $group->id]) }}" class="link-body-emphasis">Видеозаписи</a>

@@ -17,7 +17,7 @@ class IndexController extends Controller
     /**
      * Отображает список групп пользователя
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\Support\Renderable | \Illuminate\Http\RedirectResponse
      */
     public function list(Request $request)
     {
@@ -35,7 +35,7 @@ class IndexController extends Controller
         };
 
         if (Auth::guest()) {
-            return redirect()->route('auth.signin');
+            return redirect()->route('login');
         }
 
         return view('groups.list.index', compact('title', 'user', 'groups', 'administeredGroups', 'listGroups', 'tab'));
@@ -62,7 +62,9 @@ class IndexController extends Controller
 
         $posts = PostService::getPosts($group->posts);
 
-        return view('groups.group.index', compact('group', 'title', 'friends', 'posts'));
+        $isAdmin = GroupService::getAdmins($group)->contains('id', Auth::id());
+
+        return view('groups.group.index', compact('group', 'title', 'friends', 'posts', 'isAdmin'));
     }
 
     /**
@@ -170,7 +172,7 @@ class IndexController extends Controller
             abort(404);
         }
 
-        if (!$group->isAdmin(auth()->user()) && $group->author !== auth()->user()->id){
+        if (!$group->isAdmin(auth()->user()) && $group->author !== auth()->user()->id) {
             abort(403);
         }
 
@@ -189,7 +191,8 @@ class IndexController extends Controller
      * @param integer $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function switchAdmin(Request $request, $id){
+    public function switchAdmin(Request $request, $id)
+    {
         $group = Group::find($id);
         $user = User::find($request->user);
 
@@ -197,7 +200,7 @@ class IndexController extends Controller
             abort(404);
         }
 
-        if (!$group->isAdmin(auth()->user()) && $group->author !== auth()->user()->id){
+        if (!$group->isAdmin(auth()->user()) && $group->author !== auth()->user()->id) {
             abort(403);
         }
 

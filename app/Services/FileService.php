@@ -175,7 +175,7 @@ class FileService
     public static function uploadFile($type, $file)
     {
         $user = User::find(Auth::id());
-        $filePath = $user->id . '/' . $type;
+        $filePath = $user['id'] . '/' . $type;
         $path = Storage::putFile('public/files/' . $filePath, $file);
         return Storage::url($path);
     }

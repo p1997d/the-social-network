@@ -21,12 +21,12 @@ class IndexController extends Controller
      * Отображает страницу сообщений пользователя
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\Support\Renderable | \Illuminate\Http\RedirectResponse
      */
     public function messages(Request $request)
     {
         if (Auth::guest()) {
-            return redirect()->route('auth.signin');
+            return redirect()->route('login');
         }
 
         $title = 'Сообщения';

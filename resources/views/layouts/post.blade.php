@@ -51,10 +51,16 @@
                 data-like="{{ class_basename($post) }}{{ $post->id }}">
                 @csrf
                 <input type="hidden" name="id" value="{{ $post->id }}">
-                <input type="hidden" name="type" value="{{ $post->getMorphClass() }}">
+                <input type="hidden" name="type" value="{{ class_basename($post) }}">
                 <button type="submit"
-                    class="btn btn-sm @if ($post->myLike !== null) btn-outline-danger active
-                    @else btn-outline-secondary @endif">
+                    class="
+                        btn btn-sm 
+                        @if ($post->myLike !== null) 
+                        btn-outline-danger active 
+                        @else 
+                        btn-outline-secondary 
+                        @endif
+                    ">
                     <i class="bi bi-heart-fill"></i>
                     <span class="countLikes">{{ $post->likes->count() }}</span>
                 </button>
@@ -66,7 +72,7 @@
             </a>
             <button type="button" class="btn btn-outline-secondary btn-sm shareLink" data-bs-toggle="modal"
                 data-bs-target="#shareModal" data-bs-id="{{ $post->id }}"
-                data-bs-type="{{ $post->getMorphClass() }}">
+                data-bs-type="{{ class_basename($post) }}">
                 <i class="bi bi-share"></i>
             </button>
         </div>

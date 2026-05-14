@@ -6,9 +6,8 @@
         <label for="uploadFile" class="btn btn-outline-secondary"><i class="bi bi-paperclip"></i></label>
         <input type="file" id="uploadFile" class="d-none uploadFile" name="files[]" multiple></input>
 
-        <input type="text" enterkeyhint="send" class="form-control" style="resize:none" id="content"
-            name="content" autocomplete="off"
-            placeholder="{{ $contentPlaceholder }}">
+        <input type="text" enterkeyhint="send" class="form-control" style="resize:none" id="content" name="content"
+            autocomplete="off" placeholder="{{ $contentPlaceholder }}">
         <div id="forButton">
             <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-send"></i></button>
         </div>

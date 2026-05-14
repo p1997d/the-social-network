@@ -1,4 +1,4 @@
-@if ($group->audios()->count() > 0 || $group->admins()->contains('id', auth()->user()->id))
+@if ($group->audios()->count() > 0 || $group->admins()->contains('id', auth()?->user()?->id))
     <div class="card shadow mb-3">
         <div class="card-header">
             <a href="{{ route('audios', ['group' => $group->id]) }}" class="link-body-emphasis">Аудиозаписи</a>

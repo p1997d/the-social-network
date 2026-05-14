@@ -15,7 +15,7 @@
                 </div>
             @empty
                 <div class="col-12 p-2">
-                    @if (auth()->user()->id == $user->id)
+                    @if (auth()->check() && auth()->user()->id == $user->id)
                         <p>Вы ещё не добавили фото</p>
                     @else
                         <p>{{ $user->firstname }} ещё

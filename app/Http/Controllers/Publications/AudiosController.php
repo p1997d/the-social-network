@@ -22,12 +22,12 @@ class AudiosController extends Controller
      * Отображает страницу аудиозаписей пользователя
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\Support\Renderable | \Illuminate\Http\RedirectResponse
      */
     public function index(Request $request)
     {
         if (Auth::guest()) {
-            return redirect()->route('auth.signin');
+            return redirect()->route('login');
         }
 
         $groupID = $request->query('group');
@@ -53,7 +53,7 @@ class AudiosController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'audios' => 'required|mimes:mp3|max:204800',
+            'audios' => 'required|mimes:mp3,wav,ogg|max:204800',
         ]);
 
         $data = (object) collect(['title' => $request->title, 'artist' => $request->artist])->all();

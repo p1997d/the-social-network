@@ -8,9 +8,11 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Like;
 use App\Services\InteractionService;
-use App\Services\PostService;
+use App\Services\GeneralService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+
+
 
 class IndexController extends Controller
 {
@@ -23,7 +25,13 @@ class IndexController extends Controller
     public function like(Request $request)
     {
         $user = User::find(Auth::id());
-        $model = $request->type::find($request->id);
+
+        $type = GeneralService::getType($request['type']) ?? abort(422);
+        $model = $type::find($request['id']);
+
+        if (!$user) {
+            abort(403);
+        }
 
         if (!$model) {
             abort(404);
@@ -32,7 +40,7 @@ class IndexController extends Controller
         $like = Like::where([
             ['user', $user->id],
             ['likeable_id', $request->id],
-            ['likeable_type', $request->type],
+            ['likeable_type', $type],
         ]);
 
         if ($like->exists()) {
@@ -43,7 +51,7 @@ class IndexController extends Controller
             $like = new Like();
             $like->user = $user->id;
             $like->likeable_id = $request->id;
-            $like->likeable_type = $request->type;
+            $like->likeable_type = $type;
 
             $like->save();
 
@@ -58,16 +66,17 @@ class IndexController extends Controller
 
     public function commentCreate(Request $request)
     {
+        $type = GeneralService::getType($request['type']) ?? abort(422);
+
         $comment = new Comment();
         $user = User::find(Auth::id());
 
-        $decryptContent = $request->content;
-        $content = Crypt::encrypt($decryptContent);
+        $content = Crypt::encrypt($request['content']);
 
-        $comment->content = $content;
-        $comment->commentable_id = $request->id;
-        $comment->commentable_type = $request->type;
-        $comment->author = $user->id;
+        $comment['content'] = $content;
+        $comment['commentable_id'] = $request['id'];
+        $comment['commentable_type'] = $type;
+        $comment['author'] = $user['id'];
         $comment->save();
 
         return back();
@@ -75,7 +84,14 @@ class IndexController extends Controller
 
     public function commentDelete(Request $request)
     {
-        $comment = Comment::find($request->id);
+        if (!Auth::check())
+            abort(403);
+        
+        $comment = Comment::find($request['id']);
+
+        if ($comment['author'] != Auth::id() && $comment->commentable->author != Auth::id())
+            abort(403);
+
         $comment->delete();
 
         return back();

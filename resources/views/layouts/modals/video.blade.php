@@ -32,7 +32,7 @@
                                 </form>
                                 <button type="button" class="btn btn-outline-secondary btn-sm shareLink"
                                     data-bs-toggle="modal" data-bs-target="#shareModal" data-bs-id=""
-                                    data-bs-type="App\Models\Video">
+                                    data-bs-type="">
                                     <i class="bi bi-share"></i>
                                 </button>
                             </div>

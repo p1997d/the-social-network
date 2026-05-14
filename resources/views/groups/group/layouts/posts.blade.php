@@ -1,3 +1,4 @@
+@if ($isAdmin)
 <div class="card shadow mb-3">
     <div class="card-body">
         @include('layouts.forms.createPost', [
@@ -7,6 +8,7 @@
         ])
     </div>
 </div>
+@endif
 
 <div class="card shadow mb-3">
     <div class="card-body d-flex justify-content-between">
@@ -26,7 +28,7 @@
     @endforelse
     <div class="d-flex justify-content-center">
         <button class="btn btn-secondary getPostsButton" data-page="2" data-id="{{ $group->id }}"
-            data-type="{{ $group->getMorphClass() }}">
+            data-type="{{ class_basename($group) }}">
             Загрузить ещё...
         </button>
     </div>

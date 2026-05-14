@@ -28,4 +28,9 @@ class Comment extends Model
     {
         return Carbon::parse($this->created_at)->isoFormat('LL LTS');
     }
+
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
 }

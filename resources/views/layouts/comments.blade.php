@@ -15,7 +15,8 @@
                     </div>
 
                     <input type="hidden" name="id" value="{{ $model->id }}">
-                    <input type="hidden" name="type" value="{{ $model->getMorphClass() }}">
+                    <!-- <input type="hidden" name="type" value="{{ $model->getMorphClass() }}"> -->
+                    <input type="hidden" name="type" value="{{ class_basename($model) }}">
 
                     <input type="text" enterkeyhint="send" class="form-control" style="resize:none" id="content"
                         name="content" autocomplete="off" placeholder="Написать комментарий...">
@@ -56,7 +57,7 @@
                             </span>
                         </div>
                         @auth
-                            @if ($comment->author === auth()->user()->id || $model->author === auth()->user()->id)
+                            @if ($comment->author['id'] === auth()->user()->id || $model->author === auth()->user()->id)
                                 <div>
                                     <form action="{{ route('comment.delete') }}" method="POST">
                                         @csrf
@@ -73,7 +74,7 @@
     @endforeach
     <div class="d-flex justify-content-center">
         <button class="btn btn-secondary getCommentsButton" data-page="2" data-id="{{ $model->id }}"
-            data-type="{{ $model->getMorphClass() }}">
+            data-type="{{ class_basename($model) }}">
             Загрузить ещё...
         </button>
     </div>

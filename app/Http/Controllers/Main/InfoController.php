@@ -72,12 +72,12 @@ class InfoController extends Controller
     /**
      * Отображает страницу редактирования профиля
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\Support\Renderable | \Illuminate\Http\RedirectResponse
      */
     public function editProfile()
     {
         if (Auth::guest()) {
-            return redirect()->route('auth.signin');
+            return redirect()->route('login');
         }
 
         $user = User::find(Auth::id());

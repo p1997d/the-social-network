@@ -20,6 +20,7 @@ class AudioService
     public static function create($file, $data)
     {
         $type = 'audios';
+
         $user = User::find(Auth::id());
 
         $path = FileService::uploadFile($type, $file);
@@ -73,7 +74,7 @@ class AudioService
             $newPlaylist = new Playlist();
 
             $newPlaylist->playlistable_id = $model->id;
-            $newPlaylist->playlistable_type = $model->getMorphClass();
+            $newPlaylist->playlistable_type = $model->getMorphClass();            
 
             $newPlaylist->save();
 

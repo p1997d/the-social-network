@@ -91,16 +91,13 @@ class PhotosController extends Controller
      */
     public function getPhoto(Request $request)
     {
-        $id = $request->id;
-
-        $photo = Photo::find($id);
+        $photo = Photo::find($request['id']);
         $author = $photo->authorUser;
 
-        $to = $request->to;
-        $chat = $request->chat;
+        $to = $request['to'];
+        $chat = $request['chat'];
 
-        $queryContent = $request->content;
-        $contentArray = explode('_', $queryContent);
+        $contentArray = explode('_', $request['content']);
         $typeContent = $contentArray[0];
         $user = User::find($contentArray[1]);
         $activeContent = $contentArray[2];
@@ -113,13 +110,13 @@ class PhotosController extends Controller
         $comments = InteractionService::getComments($photo, $links['group'] ?? null)->forPage(1, 25);
 
         return [
-            'photo' => $photo,
+            'photo' => $photo->only(['id', 'path', 'created_at', 'author', 'comments', 'likes', 'my_like']),
             ...$links,
             'photoModalDate' => $photo->createdAtDiffForHumans(),
             'photoModalSetLike' => [
                 'id' => $photo->id,
-                'type' => $photo->getMorphClass(),
-                'data' => class_basename($photo) . $photo->id,
+                'type' => class_basename($photo),
+                'data' => class_basename($photo) . $photo['id'],
                 'count' => $photo->likes->count(),
                 'class' => $photo->myLike !== null ? 'btn btn-sm btn-outline-danger active' : 'btn btn-sm btn-outline-secondary',
             ],

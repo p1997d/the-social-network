@@ -137,7 +137,7 @@ class VideosController extends Controller
             'userID' => $user,
             'videoModalSetLike' => [
                 'id' => $video->id,
-                'type' => $video->getMorphClass(),
+                'type' => class_basename($video),
                 'data' => class_basename($video) . $video->id,
                 'count' => $video->likes->count(),
                 'class' => $video->myLike !== null ? 'btn btn-sm btn-outline-danger active' : 'btn btn-sm btn-outline-secondary',

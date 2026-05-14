@@ -37,13 +37,13 @@ class PhotoService
 
         $model = new Photo();
 
-        $model->path = $path;
-        $model->thumbnailPath = $storageThumbnailPath;
-        $model->type = $file->getMimeType();
-        $model->size = $file->getSize();
-        $model->width = $image->width();
-        $model->height = $image->height();
-        $model->author = $user->id;
+        $model['path'] = $path;
+        $model['thumbnailPath'] = $storageThumbnailPath;
+        $model['type'] = $file->getMimeType();
+        $model['size'] = $file->getSize();
+        $model['width'] = $image->width();
+        $model['height'] = $image->height();
+        $model['author'] = $user['id'];
 
         $model->save();
 
@@ -54,7 +54,8 @@ class PhotoService
      * Создает миниатюру изображения
      *
      * @param object $image
-     * @param string $filePath
+     * @param string $type
+     * @param \App\Models\User $user
      * @param string $fileName
      * @return string
      */

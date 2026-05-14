@@ -22,7 +22,7 @@ class FriendsController extends Controller
      * Отображает страницу друзей
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\Support\Renderable | \Illuminate\Http\RedirectResponse
      */
     public function friends(Request $request)
     {
@@ -31,7 +31,7 @@ class FriendsController extends Controller
         $section = $request->query('section');
 
         if (Auth::guest()) {
-            return redirect()->route('auth.signin');
+            return redirect()->route('login');
         }
 
         $title = GeneralService::getTitle($user, 'Друзья');

@@ -54,7 +54,7 @@ class MenuService
         $data = self::getCounters();
 
         $sidebar = [
-            new self('Моя страница', 'bi-house-door-fill', 'profile', Auth::check() ? route('profile', Auth::id()) : route('auth.signin')),
+            new self('Моя страница', 'bi-house-door-fill', 'profile', Auth::check() ? route('profile', Auth::id()) : route('login')),
             new self('Новости', 'bi-newspaper', 'feed', route('feed')),
             new self('Сообщения', 'bi-chat-fill', 'messages', route('messages'), $data['unreadMessagesCount']),
             new self('Друзья', 'bi-person-fill', 'friends', route('friends'), $data['incomingCount']),
@@ -77,7 +77,7 @@ class MenuService
         $data = self::getCounters();
 
         $menu = [
-            new self('Домой', 'bi-house', 'profile', Auth::check() ? route('profile', Auth::id()) : route('auth.signin')),
+            new self('Домой', 'bi-house', 'profile', Auth::check() ? route('profile', Auth::id()) : route('login')),
             new self('Поиск', 'bi-search', 'search', route('search.all')),
             new self('Сообщения', 'bi-chat', 'messages', route('messages'), $data['unreadMessagesCount']),
             // new self('Уведомления', 'bi-bell', 'notifications', '#'),

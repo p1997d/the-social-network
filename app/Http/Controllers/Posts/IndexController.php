@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 use App\Models\User;
 use App\Models\Post;
 use App\Services\PostService;
+use App\Services\GroupService;
 use Illuminate\Support\Facades\Auth;
 
 class IndexController extends Controller
@@ -50,8 +51,7 @@ class IndexController extends Controller
             'attachments' => 'required_without:content',
         ]);
 
-        $decryptContent = $request->content;
-        $content = Crypt::encrypt($decryptContent);
+        $content = Crypt::encrypt($request['content']);
 
         $post = PostService::create($content);
 
@@ -60,10 +60,15 @@ class IndexController extends Controller
             PostService::saveForUser($post, $user);
         } else if ($request->group) {
             $group = Group::find($request->group);
+            $admins = GroupService::getAdmins($group);
+
+            if (!$admins->contains('id', Auth::id()))
+                abort(403);
+
             PostService::saveForGroup($post, $group);
         }
 
-        $attachments = PostService::saveAttachments(request()->attachments, $post);
+        PostService::saveAttachments(request()->attachments, $post);
 
         return PostService::getPost($post);
     }
@@ -86,7 +91,14 @@ class IndexController extends Controller
 
     public function getPosts(Request $request)
     {
-        $model = $request->type::find($request->id);
+        $allowed = [
+            'User' => User::class,
+            'Group' => Group::class,
+        ];
+
+        $type = $allowed[$request['type']] ?? abort(422);
+        $model = $type::find($request['id']);
+
         return PostService::getPosts($model->posts, $request->page);
     }
 }

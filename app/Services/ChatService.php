@@ -162,7 +162,7 @@ class ChatService
      * @param integer $page
      * @param \App\Models\Chat $chat
      * @param string $title
-     * @return array
+     * @return array | \Illuminate\Http\RedirectResponse
      */
     public static function getChat($page, $chat, $title)
     {

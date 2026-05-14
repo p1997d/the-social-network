@@ -99,7 +99,7 @@ class PostService
             'postAdminCondition' => $post->group ? $post->group->admins()->contains('id', optional(auth()->user())->id) : optional(auth()->user())->id == $post->authorUser->id,
             'postSetLike' => [
                 'id' => $post->id,
-                'type' => $post->getMorphClass(),
+                'type' => class_basename($post),
                 'data' => class_basename($post) . $post->id,
                 'count' => $post->likes->count(),
                 'class' => $post->myLike !== null ? 'btn btn-sm btn-outline-danger active' : 'btn btn-sm btn-outline-secondary',
